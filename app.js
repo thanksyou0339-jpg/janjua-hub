@@ -168,25 +168,35 @@ const helpModal =
 
 
 /* =========================================================
-   ACCESS CONTROL — VERY IMPORTANT
+   ACCESS CONTROL
    ========================================================= */
 
 /*
-   Default state:
+   IMPORTANT:
+
+   Page load ہوتے ہی Login screen دکھانا غلط ہے۔
+
+   Firebase کو پہلے یہ معلوم کرنے دیں کہ user پہلے سے
+   logged-in ہے یا نہیں۔
+
+   اس لیے ابتدا میں:
+
+   Login    = HIDDEN
    Dashboard = HIDDEN
-   Login = VISIBLE
 
-   This happens immediately, before Firebase finishes checking
-   the authentication state.
-
-   Therefore the dashboard cannot flash on screen during refresh.
+   Firebase authentication state resolve ہونے کے بعد
+   صرف صحیح screen دکھائی جائے گی۔
 */
 
-function lockApp() {
 
+function bootApp() {
+
+    /* Dashboard hide */
     if (appShell) {
 
-        appShell.classList.add("app-shell-hidden");
+        appShell.classList.add(
+            "app-shell-hidden"
+        );
 
         appShell.style.setProperty(
             "display",
@@ -201,9 +211,62 @@ function lockApp() {
     }
 
 
+    /* Login hide */
     if (loginScreen) {
 
-        loginScreen.classList.remove("hidden");
+        loginScreen.classList.add(
+            "hidden"
+        );
+
+        loginScreen.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        loginScreen.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+}
+
+
+/* =========================================================
+   SHOW LOGIN
+   ========================================================= */
+
+function showLogin() {
+
+    /* Dashboard OFF */
+
+    if (appShell) {
+
+        appShell.classList.add(
+            "app-shell-hidden"
+        );
+
+        appShell.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        appShell.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    /* Login ON */
+
+    if (loginScreen) {
+
+        loginScreen.classList.remove(
+            "hidden"
+        );
 
         loginScreen.style.setProperty(
             "display",
@@ -220,11 +283,19 @@ function lockApp() {
 }
 
 
-function unlockApp() {
+/* =========================================================
+   SHOW DASHBOARD
+   ========================================================= */
+
+function showDashboard() {
+
+    /* Login OFF */
 
     if (loginScreen) {
 
-        loginScreen.classList.add("hidden");
+        loginScreen.classList.add(
+            "hidden"
+        );
 
         loginScreen.style.setProperty(
             "display",
@@ -239,9 +310,13 @@ function unlockApp() {
     }
 
 
+    /* Dashboard ON */
+
     if (appShell) {
 
-        appShell.classList.remove("app-shell-hidden");
+        appShell.classList.remove(
+            "app-shell-hidden"
+        );
 
         appShell.style.setProperty(
             "display",
@@ -259,11 +334,16 @@ function unlockApp() {
 
 
 /*
-   Lock immediately.
-   This runs before Firebase authentication is resolved.
+   VERY IMPORTANT:
+
+   یہاں showLogin() نہیں چلانا۔
+
+   صرف دونوں screens کو hide کریں۔
+
+   Firebase state resolve ہونے کے بعد فیصلہ ہوگا۔
 */
 
-lockApp();
+bootApp();
 
 
 /* =========================================================
@@ -365,6 +445,14 @@ if (loginForm) {
                     loginMessage.textContent =
                         "Please enter email and password.";
 
+                    loginMessage.classList.remove(
+                        "success"
+                    );
+
+                    loginMessage.classList.add(
+                        "error"
+                    );
+
                 }
 
                 return;
@@ -373,16 +461,22 @@ if (loginForm) {
 
 
             /*
-               Keep dashboard locked while login is processing.
+               Login processing کے دوران dashboard کبھی
+               ظاہر نہیں ہوگا۔
             */
-
-            lockApp();
-
 
             if (loginMessage) {
 
                 loginMessage.textContent =
                     "Signing in...";
+
+                loginMessage.classList.remove(
+                    "error"
+                );
+
+                loginMessage.classList.add(
+                    "loading"
+                );
 
             }
 
@@ -404,10 +498,10 @@ if (loginForm) {
 
 
                 /*
-                   Do NOT manually unlock here.
+                   یہاں Dashboard manually show نہیں کرنا۔
 
-                   onAuthStateChanged() will verify the
-                   Firebase account and admin role first.
+                   onAuthStateChanged()
+                   پہلے admin verification کرے گا۔
                 */
 
             } catch (error) {
@@ -416,9 +510,6 @@ if (loginForm) {
                     "Login error:",
                     error
                 );
-
-
-                lockApp();
 
 
                 let message =
@@ -435,6 +526,7 @@ if (loginForm) {
                         case "auth/invalid-credential":
                         case "auth/wrong-password":
                         case "auth/user-not-found":
+                        case "auth/invalid-email":
 
                             message =
                                 "Invalid email or password.";
@@ -457,6 +549,14 @@ if (loginForm) {
 
                             break;
 
+
+                        case "auth/user-disabled":
+
+                            message =
+                                "This account has been disabled.";
+
+                            break;
+
                     }
 
                 }
@@ -467,7 +567,23 @@ if (loginForm) {
                     loginMessage.textContent =
                         message;
 
+                    loginMessage.classList.remove(
+                        "loading",
+                        "success"
+                    );
+
+                    loginMessage.classList.add(
+                        "error"
+                    );
+
                 }
+
+
+                /*
+                   Login fail ہونے پر Login screen ہی رہے گی۔
+                */
+
+                showLogin();
 
             }
 
@@ -488,16 +604,39 @@ if (logoutBtn) {
         async function () {
 
             /*
-               Hide dashboard BEFORE Firebase logout finishes.
-               This prevents the dashboard remaining visible.
+               Dashboard فوراً hide کریں۔
             */
 
-            lockApp();
+            if (appShell) {
+
+                appShell.classList.add(
+                    "app-shell-hidden"
+                );
+
+                appShell.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+                appShell.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+            }
 
 
             try {
 
                 await signOut(auth);
+
+                /*
+                   signOut کے بعد Firebase
+                   onAuthStateChanged() چلائے گا۔
+
+                   وہاں showLogin() ہوگا۔
+                */
 
             } catch (error) {
 
@@ -506,12 +645,8 @@ if (logoutBtn) {
                     error
                 );
 
-                /*
-                   Even if logout throws,
-                   keep the application locked.
-                */
 
-                lockApp();
+                showLogin();
 
             }
 
@@ -586,15 +721,13 @@ onAuthStateChanged(
     async function (user) {
 
         /*
-           IMPORTANT:
-           Always lock first.
+           Firebase نے اب authentication state resolve کر دی ہے۔
 
-           Firebase may briefly report an old session while
-           the page is loading. The dashboard remains hidden
-           until admin verification is complete.
+           اب فیصلہ ہوگا:
+           User نہیں ہے  -> Login
+           Admin ہے       -> Dashboard
+           Admin نہیں ہے  -> Logout + Login
         */
-
-        lockApp();
 
 
         /* =====================================================
@@ -608,6 +741,12 @@ onAuthStateChanged(
                 loginMessage.textContent =
                     "";
 
+                loginMessage.classList.remove(
+                    "error",
+                    "success",
+                    "loading"
+                );
+
             }
 
 
@@ -618,6 +757,8 @@ onAuthStateChanged(
 
             }
 
+
+            showLogin();
 
             return;
 
@@ -631,6 +772,10 @@ onAuthStateChanged(
         const admin =
             await checkAdmin(user);
 
+
+        /* =====================================================
+           NOT ADMIN
+           ===================================================== */
 
         if (!admin) {
 
@@ -653,7 +798,7 @@ onAuthStateChanged(
             }
 
 
-            lockApp();
+            showLogin();
 
             return;
 
@@ -661,7 +806,7 @@ onAuthStateChanged(
 
 
         /* =====================================================
-           VERIFIED ADMIN — OPEN DASHBOARD
+           VERIFIED ADMIN
            ===================================================== */
 
         if (adminEmailDisplay) {
@@ -672,11 +817,15 @@ onAuthStateChanged(
         }
 
 
-        unlockApp();
+        /*
+           اب صرف verified admin کو Dashboard دکھائیں۔
+        */
+
+        showDashboard();
 
 
         /*
-           Load Firestore only AFTER admin access is confirmed.
+           Firestore صرف admin verification کے بعد load ہوگا۔
         */
 
         await loadFirebaseData();
@@ -905,10 +1054,6 @@ async function loadCategories() {
    ========================================================= */
 
 async function loadFirebaseData() {
-
-    /*
-       This function is only called after admin verification.
-    */
 
     await loadCategories();
 
