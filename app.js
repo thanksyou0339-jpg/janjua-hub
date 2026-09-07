@@ -93,7 +93,6 @@ const DEFAULT_CATEGORIES = [
    ========================================================= */
 
 let combos = [];
-
 let categories = [];
 
 
@@ -125,7 +124,6 @@ const logoutBtn =
 const adminEmailDisplay =
     document.getElementById("adminEmailDisplay");
 
-
 const comboList =
     document.getElementById("comboList");
 
@@ -156,7 +154,6 @@ const categoryFilter =
 const statusFilter =
     document.getElementById("statusFilter");
 
-
 const comboModal =
     document.getElementById("comboModal");
 
@@ -171,6 +168,105 @@ const helpModal =
 
 
 /* =========================================================
+   ACCESS CONTROL — VERY IMPORTANT
+   ========================================================= */
+
+/*
+   Default state:
+   Dashboard = HIDDEN
+   Login = VISIBLE
+
+   This happens immediately, before Firebase finishes checking
+   the authentication state.
+
+   Therefore the dashboard cannot flash on screen during refresh.
+*/
+
+function lockApp() {
+
+    if (appShell) {
+
+        appShell.classList.add("app-shell-hidden");
+
+        appShell.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        appShell.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    if (loginScreen) {
+
+        loginScreen.classList.remove("hidden");
+
+        loginScreen.style.setProperty(
+            "display",
+            "flex",
+            "important"
+        );
+
+        loginScreen.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+}
+
+
+function unlockApp() {
+
+    if (loginScreen) {
+
+        loginScreen.classList.add("hidden");
+
+        loginScreen.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        loginScreen.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    if (appShell) {
+
+        appShell.classList.remove("app-shell-hidden");
+
+        appShell.style.setProperty(
+            "display",
+            "block",
+            "important"
+        );
+
+        appShell.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+}
+
+
+/*
+   Lock immediately.
+   This runs before Firebase authentication is resolved.
+*/
+
+lockApp();
+
+
+/* =========================================================
    HTML SECURITY
    ========================================================= */
 
@@ -180,8 +276,11 @@ function escapeHTML(value) {
         value === null ||
         value === undefined
     ) {
+
         return "";
+
     }
+
 
     return String(value).replace(
         /[&<>"']/g,
@@ -201,6 +300,7 @@ function escapeHTML(value) {
 
         }
     );
+
 }
 
 
@@ -217,6 +317,7 @@ function openModal(modal) {
         );
 
     }
+
 }
 
 
@@ -229,6 +330,7 @@ function closeModal(modal) {
         );
 
     }
+
 }
 
 
@@ -244,22 +346,46 @@ if (loginForm) {
 
             event.preventDefault();
 
+
             const email =
-                loginEmail.value.trim();
+                loginEmail
+                    ? loginEmail.value.trim()
+                    : "";
 
             const password =
-                loginPassword.value;
+                loginPassword
+                    ? loginPassword.value
+                    : "";
+
 
             if (!email || !password) {
 
-                loginMessage.textContent =
-                    "Please enter email and password.";
+                if (loginMessage) {
+
+                    loginMessage.textContent =
+                        "Please enter email and password.";
+
+                }
 
                 return;
+
             }
 
-            loginMessage.textContent =
-                "Signing in...";
+
+            /*
+               Keep dashboard locked while login is processing.
+            */
+
+            lockApp();
+
+
+            if (loginMessage) {
+
+                loginMessage.textContent =
+                    "Signing in...";
+
+            }
+
 
             try {
 
@@ -269,7 +395,20 @@ if (loginForm) {
                     password
                 );
 
-                loginPassword.value = "";
+
+                if (loginPassword) {
+
+                    loginPassword.value = "";
+
+                }
+
+
+                /*
+                   Do NOT manually unlock here.
+
+                   onAuthStateChanged() will verify the
+                   Firebase account and admin role first.
+                */
 
             } catch (error) {
 
@@ -278,8 +417,57 @@ if (loginForm) {
                     error
                 );
 
-                loginMessage.textContent =
+
+                lockApp();
+
+
+                let message =
                     "Login failed. Please check your email and password.";
+
+
+                if (
+                    error &&
+                    error.code
+                ) {
+
+                    switch (error.code) {
+
+                        case "auth/invalid-credential":
+                        case "auth/wrong-password":
+                        case "auth/user-not-found":
+
+                            message =
+                                "Invalid email or password.";
+
+                            break;
+
+
+                        case "auth/too-many-requests":
+
+                            message =
+                                "Too many login attempts. Please try again later.";
+
+                            break;
+
+
+                        case "auth/network-request-failed":
+
+                            message =
+                                "Network error. Please check your internet connection.";
+
+                            break;
+
+                    }
+
+                }
+
+
+                if (loginMessage) {
+
+                    loginMessage.textContent =
+                        message;
+
+                }
 
             }
 
@@ -299,6 +487,14 @@ if (logoutBtn) {
         "click",
         async function () {
 
+            /*
+               Hide dashboard BEFORE Firebase logout finishes.
+               This prevents the dashboard remaining visible.
+            */
+
+            lockApp();
+
+
             try {
 
                 await signOut(auth);
@@ -309,6 +505,13 @@ if (logoutBtn) {
                     "Logout error:",
                     error
                 );
+
+                /*
+                   Even if logout throws,
+                   keep the application locked.
+                */
+
+                lockApp();
 
             }
 
@@ -330,6 +533,7 @@ async function checkAdmin(user) {
 
     }
 
+
     try {
 
         const userRef =
@@ -339,8 +543,10 @@ async function checkAdmin(user) {
                 user.uid
             );
 
+
         const userSnap =
             await getDoc(userRef);
+
 
         if (!userSnap.exists()) {
 
@@ -348,8 +554,10 @@ async function checkAdmin(user) {
 
         }
 
+
         const data =
             userSnap.data();
+
 
         return (
             data.role === "admin"
@@ -377,25 +585,48 @@ onAuthStateChanged(
     auth,
     async function (user) {
 
+        /*
+           IMPORTANT:
+           Always lock first.
+
+           Firebase may briefly report an old session while
+           the page is loading. The dashboard remains hidden
+           until admin verification is complete.
+        */
+
+        lockApp();
+
+
+        /* =====================================================
+           NOT LOGGED IN
+           ===================================================== */
+
         if (!user) {
 
-            appShell.style.display =
-                "none";
+            if (loginMessage) {
 
-            loginScreen.classList.remove(
-                "hidden"
-            );
+                loginMessage.textContent =
+                    "";
 
-            loginScreen.style.display =
-                "flex";
+            }
 
-            loginMessage.textContent =
-                "";
+
+            if (loginPassword) {
+
+                loginPassword.value =
+                    "";
+
+            }
+
 
             return;
 
         }
 
+
+        /* =====================================================
+           VERIFY ADMIN
+           ===================================================== */
 
         const admin =
             await checkAdmin(user);
@@ -407,23 +638,31 @@ onAuthStateChanged(
                 "This account does not have Janjua Hub admin access."
             );
 
-            await signOut(auth);
+
+            try {
+
+                await signOut(auth);
+
+            } catch (error) {
+
+                console.error(
+                    "Unauthorized logout error:",
+                    error
+                );
+
+            }
+
+
+            lockApp();
 
             return;
 
         }
 
 
-        loginScreen.classList.add(
-            "hidden"
-        );
-
-        loginScreen.style.display =
-            "none";
-
-        appShell.style.display =
-            "block";
-
+        /* =====================================================
+           VERIFIED ADMIN — OPEN DASHBOARD
+           ===================================================== */
 
         if (adminEmailDisplay) {
 
@@ -432,6 +671,13 @@ onAuthStateChanged(
 
         }
 
+
+        unlockApp();
+
+
+        /*
+           Load Firestore only AFTER admin access is confirmed.
+        */
 
         await loadFirebaseData();
 
@@ -455,6 +701,7 @@ async function loadCombos() {
                 )
             );
 
+
         combos =
             snapshot.docs.map(
                 function (item) {
@@ -462,9 +709,11 @@ async function loadCombos() {
                     const data =
                         item.data();
 
+
                     return {
 
-                        id: item.id,
+                        id:
+                            item.id,
 
                         name:
                             data.name || "",
@@ -495,6 +744,7 @@ async function loadCombos() {
                 }
             );
 
+
         combos.sort(
             function (a, b) {
 
@@ -503,10 +753,12 @@ async function loadCombos() {
                         a.createdAt
                     );
 
+
                 const bTime =
                     getTimeValue(
                         b.createdAt
                     );
+
 
                 return bTime - aTime;
 
@@ -519,6 +771,7 @@ async function loadCombos() {
             "Could not load combos:",
             error
         );
+
 
         alert(
             "Could not load Combos from Firebase."
@@ -545,12 +798,14 @@ async function loadCategories() {
                 )
             );
 
+
         categories =
             snapshot.docs.map(
                 function (item) {
 
                     const data =
                         item.data();
+
 
                     return (
                         data.name ||
@@ -588,6 +843,7 @@ async function loadCategories() {
                             ""
                         );
 
+
                 await setDoc(
                     doc(
                         db,
@@ -595,9 +851,13 @@ async function loadCategories() {
                         categoryId
                     ),
                     {
-                        name: category,
+
+                        name:
+                            category,
+
                         createdAt:
                             serverTimestamp()
+
                     }
                 );
 
@@ -605,8 +865,13 @@ async function loadCategories() {
 
         }
 
+
         categories =
-            [...new Set(categories)];
+            [
+                ...new Set(
+                    categories
+                )
+            ];
 
 
         categories.sort(
@@ -624,6 +889,7 @@ async function loadCategories() {
             error
         );
 
+
         categories =
             [
                 ...DEFAULT_CATEGORIES
@@ -639,6 +905,10 @@ async function loadCategories() {
    ========================================================= */
 
 async function loadFirebaseData() {
+
+    /*
+       This function is only called after admin verification.
+    */
 
     await loadCategories();
 
@@ -661,6 +931,7 @@ function getTimeValue(value) {
 
     }
 
+
     if (
         typeof value.toMillis ===
         "function"
@@ -669,6 +940,7 @@ function getTimeValue(value) {
         return value.toMillis();
 
     }
+
 
     if (
         value.seconds !==
@@ -679,8 +951,10 @@ function getTimeValue(value) {
 
     }
 
+
     const parsed =
         new Date(value).getTime();
+
 
     return isNaN(parsed)
         ? 0
@@ -694,10 +968,14 @@ function getTimeValue(value) {
    ========================================================= */
 
 const addBtn =
-    document.getElementById("addBtn");
+    document.getElementById(
+        "addBtn"
+    );
 
 const emptyAddBtn =
-    document.getElementById("emptyAddBtn");
+    document.getElementById(
+        "emptyAddBtn"
+    );
 
 
 if (addBtn) {
@@ -731,6 +1009,7 @@ function openAddComboModal() {
             "comboForm"
         );
 
+
     if (form) {
 
         form.reset();
@@ -738,21 +1017,45 @@ function openAddComboModal() {
     }
 
 
-    document.getElementById(
-        "editId"
-    ).value = "";
+    const editId =
+        document.getElementById(
+            "editId"
+        );
 
 
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Add Combo";
+    if (editId) {
+
+        editId.value = "";
+
+    }
 
 
-    document.getElementById(
-        "comboStatus"
-    ).value =
-        "Active";
+    const modalTitle =
+        document.getElementById(
+            "modalTitle"
+        );
+
+
+    if (modalTitle) {
+
+        modalTitle.textContent =
+            "Add Combo";
+
+    }
+
+
+    const comboStatus =
+        document.getElementById(
+            "comboStatus"
+        );
+
+
+    if (comboStatus) {
+
+        comboStatus.value =
+            "Active";
+
+    }
 
 
     openModal(
@@ -847,10 +1150,6 @@ if (comboForm) {
 
             try {
 
-                /* =====================
-                   EDIT
-                ===================== */
-
                 if (editId) {
 
                     await updateDoc(
@@ -861,9 +1160,11 @@ if (comboForm) {
                         ),
                         {
 
-                            name: name,
+                            name:
+                                name,
 
-                            category: category,
+                            category:
+                                category,
 
                             mainLink:
                                 mainLink,
@@ -871,9 +1172,11 @@ if (comboForm) {
                             affiliateLink:
                                 affiliateLink,
 
-                            notes: notes,
+                            notes:
+                                notes,
 
-                            status: status,
+                            status:
+                                status,
 
                             updatedAt:
                                 serverTimestamp()
@@ -881,14 +1184,7 @@ if (comboForm) {
                         }
                     );
 
-                }
-
-
-                /* =====================
-                   ADD
-                ===================== */
-
-                else {
+                } else {
 
                     await addDoc(
                         collection(
@@ -897,9 +1193,11 @@ if (comboForm) {
                         ),
                         {
 
-                            name: name,
+                            name:
+                                name,
 
-                            category: category,
+                            category:
+                                category,
 
                             mainLink:
                                 mainLink,
@@ -907,9 +1205,11 @@ if (comboForm) {
                             affiliateLink:
                                 affiliateLink,
 
-                            notes: notes,
+                            notes:
+                                notes,
 
-                            status: status,
+                            status:
+                                status,
 
                             createdAt:
                                 serverTimestamp(),
@@ -922,9 +1222,6 @@ if (comboForm) {
 
                 }
 
-
-                /* Automatically create
-                   category if missing */
 
                 if (
                     !categories.some(
@@ -953,13 +1250,13 @@ if (comboForm) {
 
                 await loadFirebaseData();
 
-
             } catch (error) {
 
                 console.error(
                     "Save Combo error:",
                     error
                 );
+
 
                 alert(
                     "Could not save Combo to Firebase."
@@ -1100,13 +1397,13 @@ async function deleteCombo(id) {
 
         await loadFirebaseData();
 
-
     } catch (error) {
 
         console.error(
             "Delete error:",
             error
         );
+
 
         alert(
             "Could not delete Combo."
@@ -1168,13 +1465,13 @@ async function archiveCombo(id) {
 
         await loadFirebaseData();
 
-
     } catch (error) {
 
         console.error(
             "Archive error:",
             error
         );
+
 
         alert(
             "Could not update Combo."
@@ -1201,9 +1498,18 @@ if (pasteBtn) {
         "click",
         function () {
 
-            document.getElementById(
-                "pasteBox"
-            ).value = "";
+            const pasteBox =
+                document.getElementById(
+                    "pasteBox"
+                );
+
+
+            if (pasteBox) {
+
+                pasteBox.value = "";
+
+            }
+
 
             openModal(
                 pasteModal
@@ -1323,7 +1629,8 @@ if (importPasteBtn) {
                         ),
                         {
 
-                            name: name,
+                            name:
+                                name,
 
                             category:
                                 category,
@@ -1409,13 +1716,13 @@ if (importPasteBtn) {
                     `${imported} Combo(s) imported successfully.`
                 );
 
-
             } catch (error) {
 
                 console.error(
                     "Import error:",
                     error
                 );
+
 
                 alert(
                     "Some Combo data could not be imported."
@@ -1609,13 +1916,13 @@ if (addCategoryBtn) {
 
                 render();
 
-
             } catch (error) {
 
                 console.error(
                     "Category error:",
                     error
                 );
+
 
                 alert(
                     "Could not create category."
@@ -1723,13 +2030,13 @@ async function removeCategory(index) {
 
         render();
 
-
     } catch (error) {
 
         console.error(
             "Delete category error:",
             error
         );
+
 
         alert(
             "Could not delete category."
