@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -21,11 +22,12 @@
     <section
         id="loginScreen"
         class="login-screen"
+        aria-hidden="false"
     >
 
         <div class="login-card">
 
-            <!-- Logo -->
+            <!-- LOGO -->
 
             <div class="login-logo-wrap">
 
@@ -36,7 +38,7 @@
             </div>
 
 
-            <!-- Heading -->
+            <!-- LOGIN HEADER -->
 
             <div class="login-header">
 
@@ -60,7 +62,7 @@
             </div>
 
 
-            <!-- Login Form -->
+            <!-- LOGIN FORM -->
 
             <form id="loginForm">
 
@@ -114,11 +116,16 @@
                 </div>
 
 
+                <!-- LOGIN MESSAGE -->
+
                 <p
                     id="loginMessage"
                     class="login-message"
+                    aria-live="polite"
                 ></p>
 
+
+                <!-- SIGN IN -->
 
                 <button
                     type="submit"
@@ -143,13 +150,13 @@
 
     <!-- =====================================================
          MAIN APPLICATION
-         IMPORTANT:
-         Hidden until Firebase Admin authentication succeeds.
+         Hidden until Firebase confirms Admin access.
          ===================================================== -->
 
     <div
         id="appShell"
         class="app-shell-hidden"
+        aria-hidden="true"
     >
 
         <!-- =================================================
@@ -186,16 +193,20 @@
                     class="muted"
                 ></span>
 
+
                 <button
                     id="logoutBtn"
                     class="ghost-btn"
+                    type="button"
                 >
                     Logout
                 </button>
 
+
                 <button
                     id="helpBtn"
                     class="ghost-btn"
+                    type="button"
                 >
                     Help Center
                 </button>
@@ -206,12 +217,14 @@
 
 
         <!-- =================================================
-             MAIN
+             MAIN CONTENT
              ================================================= -->
 
         <main class="container">
 
-            <!-- HERO -->
+            <!-- =================================================
+                 HERO
+                 ================================================= -->
 
             <section class="hero">
 
@@ -221,10 +234,12 @@
                         ONE SYSTEM • MANY COMBOS
                     </span>
 
+
                     <h2>
                         Manage Everything
                         in One Place
                     </h2>
+
 
                     <p>
                         Manage affiliate programs, products,
@@ -241,13 +256,16 @@
                     <button
                         id="addBtn"
                         class="primary-btn"
+                        type="button"
                     >
                         + Add Combo
                     </button>
 
+
                     <button
                         id="pasteBtn"
                         class="secondary-btn"
+                        type="button"
                     >
                         Paste Combo
                     </button>
@@ -363,6 +381,7 @@
                 <button
                     id="categoryBtn"
                     class="secondary-btn"
+                    type="button"
                 >
                     Manage Categories
                 </button>
@@ -387,6 +406,7 @@
                     </p>
 
                 </div>
+
 
                 <span id="resultCount">
                     0 records
@@ -418,18 +438,22 @@
                     +
                 </div>
 
+
                 <h3>
                     No Combos Yet
                 </h3>
+
 
                 <p>
                     Add your first Combo to start building
                     your Janjua Hub database.
                 </p>
 
+
                 <button
                     id="emptyAddBtn"
                     class="primary-btn"
+                    type="button"
                 >
                     + Add First Combo
                 </button>
@@ -458,15 +482,19 @@
                             Add Combo
                         </h3>
 
+
                         <p>
                             Add information about this Combo.
                         </p>
 
                     </div>
 
+
                     <button
                         id="closeModal"
                         class="close-btn"
+                        type="button"
+                        aria-label="Close"
                     >
                         ×
                     </button>
@@ -580,6 +608,7 @@
                             Cancel
                         </button>
 
+
                         <button
                             type="submit"
                             class="primary-btn"
@@ -597,7 +626,7 @@
 
 
         <!-- =================================================
-             PASTE COMBO
+             PASTE COMBO MODAL
              ================================================= -->
 
         <div
@@ -615,15 +644,19 @@
                             Paste Combo
                         </h3>
 
+
                         <p>
                             Paste Combo data here.
                         </p>
 
                     </div>
 
+
                     <button
                         id="closePasteModal"
                         class="close-btn"
+                        type="button"
+                        aria-label="Close"
                     >
                         ×
                     </button>
@@ -644,13 +677,16 @@
                     <button
                         id="cancelPasteBtn"
                         class="secondary-btn"
+                        type="button"
                     >
                         Cancel
                     </button>
 
+
                     <button
                         id="importPasteBtn"
                         class="primary-btn"
+                        type="button"
                     >
                         Import Combo
                     </button>
@@ -663,7 +699,7 @@
 
 
         <!-- =================================================
-             CATEGORY MANAGEMENT
+             CATEGORY MANAGEMENT MODAL
              ================================================= -->
 
         <div
@@ -681,15 +717,19 @@
                             Category Management
                         </h3>
 
+
                         <p>
                             Add or remove categories.
                         </p>
 
                     </div>
 
+
                     <button
                         id="closeCategoryModal"
                         class="close-btn"
+                        type="button"
+                        aria-label="Close"
                     >
                         ×
                     </button>
@@ -705,9 +745,11 @@
                         placeholder="New Category"
                     >
 
+
                     <button
                         id="addCategoryBtn"
                         class="primary-btn"
+                        type="button"
                     >
                         Add
                     </button>
@@ -726,7 +768,7 @@
 
 
         <!-- =================================================
-             HELP CENTER
+             HELP CENTER MODAL
              ================================================= -->
 
         <div
@@ -744,15 +786,19 @@
                             Janjua Hub Help Center
                         </h3>
 
+
                         <p>
                             Need help with your Combo system?
                         </p>
 
                     </div>
 
+
                     <button
                         id="closeHelpModal"
                         class="close-btn"
+                        type="button"
+                        aria-label="Close"
                     >
                         ×
                     </button>
@@ -766,6 +812,7 @@
                         How Janjua Hub Works
                     </h4>
 
+
                     <p>
                         Janjua Hub is a universal system.
                         Every company, product, service or
@@ -778,6 +825,7 @@
                         Add a Combo
                     </h4>
 
+
                     <p>
                         Use Add Combo to create a new record
                         with its name, category, links,
@@ -789,6 +837,7 @@
                         Paste a Combo
                     </h4>
 
+
                     <p>
                         Use Paste Combo when you already have
                         structured Combo information that
@@ -799,6 +848,7 @@
                     <h4>
                         Help Desk
                     </h4>
+
 
                     <p>
                         The existing Gmail/Form based Help Desk
@@ -817,7 +867,7 @@
 
 
     <!-- =====================================================
-         FIREBASE + JANJUA HUB
+         FIREBASE + JANJUA HUB APPLICATION
          ===================================================== -->
 
     <script
