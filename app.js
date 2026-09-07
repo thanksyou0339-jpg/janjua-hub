@@ -1,9 +1,3 @@
-/* =========================================================
-   JANJUA HUB — APP.JS
-   Firebase Authentication + Firestore
-   Universal Combo Manager
-   ========================================================= */
-
 import { initializeApp }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
@@ -25,57 +19,36 @@ import {
     doc,
     getDoc,
     setDoc,
-    serverTimestamp
+    serverTimestamp,
+    increment
 }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 /* =========================================================
-   FIREBASE CONFIG
-   ========================================================= */
+   FIREBASE
+========================================================= */
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
-
-    authDomain:
-        "all-in-one-marketing.firebaseapp.com",
-
-    projectId:
-        "all-in-one-marketing",
-
-    storageBucket:
-        "all-in-one-marketing.firebasestorage.app",
-
-    messagingSenderId:
-        "701353417673",
-
-    appId:
-        "1:701353417673:web:84b5cce6029f98b89fa618"
+    apiKey: "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
+    authDomain: "all-in-one-marketing.firebaseapp.com",
+    projectId: "all-in-one-marketing",
+    storageBucket: "all-in-one-marketing.firebasestorage.app",
+    messagingSenderId: "701353417673",
+    appId: "1:701353417673:web:84b5cce6029f98b89fa618"
 };
 
+const app = initializeApp(firebaseConfig);
 
-/* =========================================================
-   INITIALIZE FIREBASE
-   ========================================================= */
-
-const firebaseApp =
-    initializeApp(firebaseConfig);
-
-const auth =
-    getAuth(firebaseApp);
-
-const db =
-    getFirestore(firebaseApp);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
 /* =========================================================
    SETTINGS
-   ========================================================= */
+========================================================= */
 
-const ADMIN_EMAIL =
-    "thanksyou0339@gmail.com";
+const ADMIN_EMAIL = "thanksyou0339@gmail.com";
 
 const DEFAULT_CATEGORIES = [
     "Finance",
@@ -89,754 +62,576 @@ const DEFAULT_CATEGORIES = [
 
 
 /* =========================================================
-   DATA
-   ========================================================= */
+   STATE
+========================================================= */
 
 let combos = [];
 let categories = [];
+let marketingLinks = {};
+
+let currentUser = null;
 
 
 /* =========================================================
    DOM
-   ========================================================= */
+========================================================= */
 
-const loginScreen =
-    document.getElementById("loginScreen");
+const loginScreen = document.getElementById("loginScreen");
+const loginForm = document.getElementById("loginForm");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginMessage = document.getElementById("loginMessage");
 
-const appShell =
-    document.getElementById("appShell");
+const appShell = document.getElementById("appShell");
 
-const loginForm =
-    document.getElementById("loginForm");
+const adminEmailDisplay = document.getElementById("adminEmailDisplay");
+const logoutBtn = document.getElementById("logoutBtn");
+const helpBtn = document.getElementById("helpBtn");
 
-const loginEmail =
-    document.getElementById("loginEmail");
+const addBtn = document.getElementById("addBtn");
+const pasteBtn = document.getElementById("pasteBtn");
 
-const loginPassword =
-    document.getElementById("loginPassword");
+const totalCount = document.getElementById("totalCount");
+const activeCount = document.getElementById("activeCount");
+const pendingCount = document.getElementById("pendingCount");
+const archivedCount = document.getElementById("archivedCount");
 
-const loginMessage =
-    document.getElementById("loginMessage");
+const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+const statusFilter = document.getElementById("statusFilter");
 
-const logoutBtn =
-    document.getElementById("logoutBtn");
+const categoryBtn = document.getElementById("categoryBtn");
 
-const adminEmailDisplay =
-    document.getElementById("adminEmailDisplay");
-
-const comboList =
-    document.getElementById("comboList");
-
-const emptyState =
-    document.getElementById("emptyState");
-
-const totalCount =
-    document.getElementById("totalCount");
-
-const activeCount =
-    document.getElementById("activeCount");
-
-const pendingCount =
-    document.getElementById("pendingCount");
-
-const archivedCount =
-    document.getElementById("archivedCount");
-
-const resultCount =
-    document.getElementById("resultCount");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const categoryFilter =
-    document.getElementById("categoryFilter");
-
-const statusFilter =
-    document.getElementById("statusFilter");
-
-const comboModal =
-    document.getElementById("comboModal");
-
-const pasteModal =
-    document.getElementById("pasteModal");
-
-const categoryModal =
-    document.getElementById("categoryModal");
-
-const helpModal =
-    document.getElementById("helpModal");
+const resultCount = document.getElementById("resultCount");
+const comboList = document.getElementById("comboList");
+const emptyState = document.getElementById("emptyState");
+const emptyAddBtn = document.getElementById("emptyAddBtn");
 
 
 /* =========================================================
-   ACCESS CONTROL
-   ========================================================= */
+   COMBO MODAL
+========================================================= */
 
-/*
-   IMPORTANT:
+const comboModal = document.getElementById("comboModal");
+const closeModal = document.getElementById("closeModal");
 
-   Page load ہوتے ہی Login screen دکھانا غلط ہے۔
+const comboForm = document.getElementById("comboForm");
 
-   Firebase کو پہلے یہ معلوم کرنے دیں کہ user پہلے سے
-   logged-in ہے یا نہیں۔
+const editId = document.getElementById("editId");
+const modalTitle = document.getElementById("modalTitle");
 
-   اس لیے ابتدا میں:
+const comboName = document.getElementById("comboName");
+const comboCategory = document.getElementById("comboCategory");
+const categoryList = document.getElementById("categoryList");
 
-   Login    = HIDDEN
-   Dashboard = HIDDEN
+const mainLink = document.getElementById("mainLink");
+const affiliateLink = document.getElementById("affiliateLink");
 
-   Firebase authentication state resolve ہونے کے بعد
-   صرف صحیح screen دکھائی جائے گی۔
-*/
+const comboNotes = document.getElementById("comboNotes");
+const comboStatus = document.getElementById("comboStatus");
 
+const cancelBtn = document.getElementById("cancelBtn");
+
+
+/* =========================================================
+   PASTE MODAL
+========================================================= */
+
+const pasteModal = document.getElementById("pasteModal");
+const closePasteModal = document.getElementById("closePasteModal");
+
+const pasteBox = document.getElementById("pasteBox");
+const cancelPasteBtn = document.getElementById("cancelPasteBtn");
+const importPasteBtn = document.getElementById("importPasteBtn");
+
+
+/* =========================================================
+   CATEGORY MODAL
+========================================================= */
+
+const categoryModal = document.getElementById("categoryModal");
+const closeCategoryModal = document.getElementById("closeCategoryModal");
+
+const newCategory = document.getElementById("newCategory");
+const addCategoryBtn = document.getElementById("addCategoryBtn");
+const categoryListView = document.getElementById("categoryListView");
+
+
+/* =========================================================
+   HELP MODAL
+========================================================= */
+
+const helpModal = document.getElementById("helpModal");
+const closeHelpModal = document.getElementById("closeHelpModal");
+
+
+/* =========================================================
+   AUTH SCREEN CONTROL
+========================================================= */
 
 function bootApp() {
 
-    /* Dashboard hide */
-    if (appShell) {
+    document.body.classList.add("auth-booting");
 
-        appShell.classList.add(
-            "app-shell-hidden"
-        );
-
-        appShell.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        appShell.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-
-    /* Login hide */
     if (loginScreen) {
-
-        loginScreen.classList.add(
-            "hidden"
-        );
-
-        loginScreen.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        loginScreen.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+        loginScreen.classList.add("hidden");
     }
 
+    if (appShell) {
+        appShell.classList.add("app-shell-hidden");
+    }
 }
 
-
-/* =========================================================
-   SHOW LOGIN
-   ========================================================= */
 
 function showLogin() {
 
-    /* Dashboard OFF */
-
-    if (appShell) {
-
-        appShell.classList.add(
-            "app-shell-hidden"
-        );
-
-        appShell.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        appShell.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-
-    /* Login ON */
+    document.body.classList.remove("auth-booting");
 
     if (loginScreen) {
-
-        loginScreen.classList.remove(
-            "hidden"
-        );
-
-        loginScreen.style.setProperty(
-            "display",
-            "flex",
-            "important"
-        );
-
-        loginScreen.setAttribute(
-            "aria-hidden",
-            "false"
-        );
+        loginScreen.classList.remove("hidden");
     }
 
+    if (appShell) {
+        appShell.classList.add("app-shell-hidden");
+    }
+
+    if (loginMessage) {
+        loginMessage.textContent = "";
+        loginMessage.className = "login-message";
+    }
 }
 
-
-/* =========================================================
-   SHOW DASHBOARD
-   ========================================================= */
 
 function showDashboard() {
 
-    /* Login OFF */
+    document.body.classList.remove("auth-booting");
 
     if (loginScreen) {
-
-        loginScreen.classList.add(
-            "hidden"
-        );
-
-        loginScreen.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        loginScreen.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+        loginScreen.classList.add("hidden");
     }
-
-
-    /* Dashboard ON */
 
     if (appShell) {
-
-        appShell.classList.remove(
-            "app-shell-hidden"
-        );
-
-        appShell.style.setProperty(
-            "display",
-            "block",
-            "important"
-        );
-
-        appShell.setAttribute(
-            "aria-hidden",
-            "false"
-        );
+        appShell.classList.remove("app-shell-hidden");
     }
 
+    if (adminEmailDisplay && currentUser) {
+        adminEmailDisplay.textContent = currentUser.email || ADMIN_EMAIL;
+    }
 }
 
 
-/*
-   VERY IMPORTANT:
-
-   یہاں showLogin() نہیں چلانا۔
-
-   صرف دونوں screens کو hide کریں۔
-
-   Firebase state resolve ہونے کے بعد فیصلہ ہوگا۔
-*/
-
-bootApp();
-
-
 /* =========================================================
-   HTML SECURITY
-   ========================================================= */
+   HTML ESCAPE
+========================================================= */
 
 function escapeHTML(value) {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
+
+/* =========================================================
+   URL VALIDATION
+========================================================= */
+
+function isValidHttpUrl(value) {
+
+    try {
+
+        const url = new URL(value);
+
+        return (
+            url.protocol === "http:" ||
+            url.protocol === "https:"
+        );
+
+    } catch (error) {
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   MARKETING LINK HELPERS
+========================================================= */
+
+function getMarketingTarget(combo) {
+
+    if (!combo) {
         return "";
-
     }
 
+    const affiliate = String(combo.affiliateLink || "").trim();
+    const main = String(combo.mainLink || "").trim();
 
-    return String(value).replace(
-        /[&<>"']/g,
-        function (character) {
+    if (affiliate && isValidHttpUrl(affiliate)) {
+        return affiliate;
+    }
 
-            const map = {
+    if (main && isValidHttpUrl(main)) {
+        return main;
+    }
 
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
+    return "";
+}
 
-            };
 
-            return map[character];
+function buildMarketingUrl(id, targetUrl) {
 
-        }
+    const goUrl = new URL(
+        "go.html",
+        window.location.href
     );
 
+    goUrl.searchParams.set("id", id);
+    goUrl.searchParams.set("url", targetUrl);
+
+    return goUrl.toString();
 }
 
 
 /* =========================================================
    MODALS
-   ========================================================= */
+========================================================= */
 
-function openModal(modal) {
+function openComboModal(combo = null) {
 
-    if (modal) {
-
-        modal.classList.remove(
-            "hidden"
-        );
-
+    if (!comboModal) {
+        return;
     }
 
+    if (combo) {
+
+        modalTitle.textContent = "Edit Combo";
+
+        editId.value = combo.id || "";
+
+        comboName.value = combo.name || "";
+        comboCategory.value = combo.category || "";
+
+        mainLink.value = combo.mainLink || "";
+        affiliateLink.value = combo.affiliateLink || "";
+
+        comboNotes.value = combo.notes || "";
+
+        comboStatus.value = combo.status || "Active";
+
+    } else {
+
+        modalTitle.textContent = "Add Combo";
+
+        editId.value = "";
+
+        comboForm.reset();
+
+        comboStatus.value = "Active";
+    }
+
+    renderCategoryOptions();
+
+    comboModal.classList.remove("hidden");
 }
 
 
-function closeModal(modal) {
+function closeComboModal() {
 
-    if (modal) {
+    if (comboModal) {
+        comboModal.classList.add("hidden");
+    }
+}
 
-        modal.classList.add(
-            "hidden"
-        );
 
+function openPasteModal() {
+
+    if (!pasteModal) {
+        return;
     }
 
+    pasteBox.value = "";
+
+    pasteModal.classList.remove("hidden");
+}
+
+
+function closePaste() {
+
+    if (pasteModal) {
+        pasteModal.classList.add("hidden");
+    }
+}
+
+
+function openCategoryModal() {
+
+    if (!categoryModal) {
+        return;
+    }
+
+    renderCategoryList();
+
+    categoryModal.classList.remove("hidden");
+}
+
+
+function closeCategory() {
+
+    if (categoryModal) {
+        categoryModal.classList.add("hidden");
+    }
+}
+
+
+function openHelpModal() {
+
+    if (helpModal) {
+        helpModal.classList.remove("hidden");
+    }
+}
+
+
+function closeHelp() {
+
+    if (helpModal) {
+        helpModal.classList.add("hidden");
+    }
 }
 
 
 /* =========================================================
    LOGIN
-   ========================================================= */
+========================================================= */
 
 if (loginForm) {
 
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
+    loginForm.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value;
 
-            const email =
-                loginEmail
-                    ? loginEmail.value.trim()
-                    : "";
+        if (!email || !password) {
 
-            const password =
-                loginPassword
-                    ? loginPassword.value
-                    : "";
+            loginMessage.textContent =
+                "Email اور Password دونوں درج کریں۔";
 
+            loginMessage.className =
+                "login-message error";
 
-            if (!email || !password) {
+            return;
+        }
 
-                if (loginMessage) {
+        loginMessage.textContent = "Login ہو رہا ہے...";
 
-                    loginMessage.textContent =
-                        "Please enter email and password.";
+        loginMessage.className =
+            "login-message loading";
 
-                    loginMessage.classList.remove(
-                        "success"
-                    );
+        const submitButton =
+            loginForm.querySelector("button[type='submit']");
 
-                    loginMessage.classList.add(
-                        "error"
-                    );
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
 
-                }
+        try {
 
-                return;
-
-            }
-
-
-            /*
-               Login processing کے دوران dashboard کبھی
-               ظاہر نہیں ہوگا۔
-            */
-
-            if (loginMessage) {
-
-                loginMessage.textContent =
-                    "Signing in...";
-
-                loginMessage.classList.remove(
-                    "error"
-                );
-
-                loginMessage.classList.add(
-                    "loading"
-                );
-
-            }
-
-
-            try {
-
+            const credential =
                 await signInWithEmailAndPassword(
                     auth,
                     email,
                     password
                 );
 
+            const isAdmin =
+                await checkAdmin(credential.user);
 
-                if (loginPassword) {
+            if (!isAdmin) {
 
-                    loginPassword.value = "";
+                await signOut(auth);
 
-                }
+                loginMessage.textContent =
+                    "یہ اکاؤنٹ Admin نہیں ہے۔";
 
+                loginMessage.className =
+                    "login-message error";
 
-                /*
-                   یہاں Dashboard manually show نہیں کرنا۔
-
-                   onAuthStateChanged()
-                   پہلے admin verification کرے گا۔
-                */
-
-            } catch (error) {
-
-                console.error(
-                    "Login error:",
-                    error
-                );
-
-
-                let message =
-                    "Login failed. Please check your email and password.";
-
-
-                if (
-                    error &&
-                    error.code
-                ) {
-
-                    switch (error.code) {
-
-                        case "auth/invalid-credential":
-                        case "auth/wrong-password":
-                        case "auth/user-not-found":
-                        case "auth/invalid-email":
-
-                            message =
-                                "Invalid email or password.";
-
-                            break;
-
-
-                        case "auth/too-many-requests":
-
-                            message =
-                                "Too many login attempts. Please try again later.";
-
-                            break;
-
-
-                        case "auth/network-request-failed":
-
-                            message =
-                                "Network error. Please check your internet connection.";
-
-                            break;
-
-
-                        case "auth/user-disabled":
-
-                            message =
-                                "This account has been disabled.";
-
-                            break;
-
-                    }
-
-                }
-
-
-                if (loginMessage) {
-
-                    loginMessage.textContent =
-                        message;
-
-                    loginMessage.classList.remove(
-                        "loading",
-                        "success"
-                    );
-
-                    loginMessage.classList.add(
-                        "error"
-                    );
-
-                }
-
-
-                /*
-                   Login fail ہونے پر Login screen ہی رہے گی۔
-                */
-
-                showLogin();
-
+                return;
             }
 
-        }
-    );
+            loginMessage.textContent =
+                "Login کامیاب۔";
 
+            loginMessage.className =
+                "login-message success";
+
+        } catch (error) {
+
+            console.error("Login Error:", error);
+
+            let message =
+                "Login ناکام ہوا۔ Email یا Password چیک کریں۔";
+
+            if (
+                error.code === "auth/invalid-credential" ||
+                error.code === "auth/wrong-password" ||
+                error.code === "auth/user-not-found"
+            ) {
+
+                message =
+                    "Email یا Password غلط ہے۔";
+            }
+
+            if (error.code === "auth/too-many-requests") {
+
+                message =
+                    "کئی کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
+            }
+
+            loginMessage.textContent = message;
+
+            loginMessage.className =
+                "login-message error";
+
+        } finally {
+
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+        }
+    });
 }
 
 
 /* =========================================================
    LOGOUT
-   ========================================================= */
+========================================================= */
 
 if (logoutBtn) {
 
-    logoutBtn.addEventListener(
-        "click",
-        async function () {
+    logoutBtn.addEventListener("click", async function () {
 
-            /*
-               Dashboard فوراً hide کریں۔
-            */
+        try {
 
-            if (appShell) {
+            await signOut(auth);
 
-                appShell.classList.add(
-                    "app-shell-hidden"
-                );
+        } catch (error) {
 
-                appShell.style.setProperty(
-                    "display",
-                    "none",
-                    "important"
-                );
-
-                appShell.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
-
-            }
-
-
-            try {
-
-                await signOut(auth);
-
-                /*
-                   signOut کے بعد Firebase
-                   onAuthStateChanged() چلائے گا۔
-
-                   وہاں showLogin() ہوگا۔
-                */
-
-            } catch (error) {
-
-                console.error(
-                    "Logout error:",
-                    error
-                );
-
-
-                showLogin();
-
-            }
+            console.error("Logout Error:", error);
 
         }
-    );
-
+    });
 }
 
 
 /* =========================================================
    ADMIN CHECK
-   ========================================================= */
+========================================================= */
 
 async function checkAdmin(user) {
 
     if (!user) {
-
         return false;
-
     }
 
+    if (
+        user.email &&
+        user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+    ) {
 
-    try {
+        const adminRef =
+            doc(db, "users", user.uid);
 
-        const userRef =
-            doc(
-                db,
-                "users",
-                user.uid
-            );
+        const adminSnap =
+            await getDoc(adminRef);
 
+        if (adminSnap.exists()) {
 
-        const userSnap =
-            await getDoc(userRef);
+            const data = adminSnap.data();
 
-
-        if (!userSnap.exists()) {
-
-            return false;
-
+            return data.role === "admin";
         }
-
-
-        const data =
-            userSnap.data();
-
-
-        return (
-            data.role === "admin"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Admin check error:",
-            error
-        );
-
-        return false;
-
     }
 
+    const userRef =
+        doc(db, "users", user.uid);
+
+    const userSnap =
+        await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+        return false;
+    }
+
+    const data = userSnap.data();
+
+    return data.role === "admin";
 }
 
 
 /* =========================================================
    AUTH STATE
-   ========================================================= */
+========================================================= */
 
-onAuthStateChanged(
-    auth,
-    async function (user) {
+bootApp();
 
-        /*
-           Firebase نے اب authentication state resolve کر دی ہے۔
+onAuthStateChanged(auth, async function (user) {
 
-           اب فیصلہ ہوگا:
-           User نہیں ہے  -> Login
-           Admin ہے       -> Dashboard
-           Admin نہیں ہے  -> Logout + Login
-        */
+    if (!user) {
 
+        currentUser = null;
 
-        /* =====================================================
-           NOT LOGGED IN
-           ===================================================== */
+        showLogin();
 
-        if (!user) {
+        return;
+    }
 
-            if (loginMessage) {
+    try {
 
-                loginMessage.textContent =
-                    "";
-
-                loginMessage.classList.remove(
-                    "error",
-                    "success",
-                    "loading"
-                );
-
-            }
-
-
-            if (loginPassword) {
-
-                loginPassword.value =
-                    "";
-
-            }
-
-
-            showLogin();
-
-            return;
-
-        }
-
-
-        /* =====================================================
-           VERIFY ADMIN
-           ===================================================== */
-
-        const admin =
+        const isAdmin =
             await checkAdmin(user);
 
+        if (!isAdmin) {
 
-        /* =====================================================
-           NOT ADMIN
-           ===================================================== */
+            await signOut(auth);
 
-        if (!admin) {
-
-            alert(
-                "This account does not have Janjua Hub admin access."
-            );
-
-
-            try {
-
-                await signOut(auth);
-
-            } catch (error) {
-
-                console.error(
-                    "Unauthorized logout error:",
-                    error
-                );
-
-            }
-
+            currentUser = null;
 
             showLogin();
 
             return;
-
         }
 
-
-        /* =====================================================
-           VERIFIED ADMIN
-           ===================================================== */
-
-        if (adminEmailDisplay) {
-
-            adminEmailDisplay.textContent =
-                user.email || ADMIN_EMAIL;
-
-        }
-
-
-        /*
-           اب صرف verified admin کو Dashboard دکھائیں۔
-        */
+        currentUser = user;
 
         showDashboard();
 
-
-        /*
-           Firestore صرف admin verification کے بعد load ہوگا۔
-        */
-
         await loadFirebaseData();
 
+    } catch (error) {
+
+        console.error(
+            "Authentication verification error:",
+            error
+        );
+
+        await signOut(auth);
+
+        currentUser = null;
+
+        showLogin();
     }
-);
+});
 
 
 /* =========================================================
-   LOAD COMBOS
-   ========================================================= */
+   FIRESTORE - LOAD COMBOS
+========================================================= */
 
 async function loadCombos() {
 
@@ -844,96 +639,35 @@ async function loadCombos() {
 
         const snapshot =
             await getDocs(
-                collection(
-                    db,
-                    "combos"
-                )
+                collection(db, "combos")
             );
 
+        combos = snapshot.docs.map(function (item) {
 
-        combos =
-            snapshot.docs.map(
-                function (item) {
+            const data = item.data();
 
-                    const data =
-                        item.data();
+            return {
+                id: item.id,
+                ...data
+            };
 
-
-                    return {
-
-                        id:
-                            item.id,
-
-                        name:
-                            data.name || "",
-
-                        category:
-                            data.category || "Other",
-
-                        mainLink:
-                            data.mainLink || "",
-
-                        affiliateLink:
-                            data.affiliateLink || "",
-
-                        notes:
-                            data.notes || "",
-
-                        status:
-                            data.status || "Active",
-
-                        createdAt:
-                            data.createdAt || null,
-
-                        updatedAt:
-                            data.updatedAt || null
-
-                    };
-
-                }
-            );
-
-
-        combos.sort(
-            function (a, b) {
-
-                const aTime =
-                    getTimeValue(
-                        a.createdAt
-                    );
-
-
-                const bTime =
-                    getTimeValue(
-                        b.createdAt
-                    );
-
-
-                return bTime - aTime;
-
-            }
-        );
+        });
 
     } catch (error) {
 
         console.error(
-            "Could not load combos:",
+            "Load Combos Error:",
             error
         );
 
-
-        alert(
-            "Could not load Combos from Firebase."
-        );
-
+        combos = [];
     }
-
 }
 
 
 /* =========================================================
-   LOAD CATEGORIES
-   ========================================================= */
+   FIRESTORE - LOAD CATEGORIES
+========================================================= */
 
 async function loadCategories() {
 
@@ -941,740 +675,386 @@ async function loadCategories() {
 
         const snapshot =
             await getDocs(
-                collection(
-                    db,
-                    "categories"
-                )
+                collection(db, "categories")
             );
 
+        categories = snapshot.docs.map(function (item) {
 
-        categories =
-            snapshot.docs.map(
-                function (item) {
+            const data = item.data();
 
-                    const data =
-                        item.data();
+            return {
+                id: item.id,
+                ...data
+            };
 
+        });
 
-                    return (
-                        data.name ||
-                        item.id
-                    );
-
-                }
-            );
-
-
-        if (
-            categories.length === 0
-        ) {
+        if (!categories.length) {
 
             categories =
-                [
-                    ...DEFAULT_CATEGORIES
-                ];
+                DEFAULT_CATEGORIES.map(function (name) {
 
+                    return {
+                        id: name.toLowerCase(),
+                        name: name
+                    };
 
-            for (
-                const category
-                of categories
-            ) {
-
-                const categoryId =
-                    category
-                        .toLowerCase()
-                        .replace(
-                            /[^a-z0-9]+/g,
-                            "-"
-                        )
-                        .replace(
-                            /^-|-$/g,
-                            ""
-                        );
-
-
-                await setDoc(
-                    doc(
-                        db,
-                        "categories",
-                        categoryId
-                    ),
-                    {
-
-                        name:
-                            category,
-
-                        createdAt:
-                            serverTimestamp()
-
-                    }
-                );
-
-            }
-
+                });
         }
-
-
-        categories =
-            [
-                ...new Set(
-                    categories
-                )
-            ];
-
-
-        categories.sort(
-            function (a, b) {
-
-                return a.localeCompare(b);
-
-            }
-        );
 
     } catch (error) {
 
         console.error(
-            "Could not load categories:",
+            "Load Categories Error:",
             error
         );
 
-
         categories =
-            [
-                ...DEFAULT_CATEGORIES
-            ];
+            DEFAULT_CATEGORIES.map(function (name) {
 
+                return {
+                    id: name.toLowerCase(),
+                    name: name
+                };
+
+            });
     }
+}
 
+
+/* =========================================================
+   FIRESTORE - LOAD MARKETING LINKS
+========================================================= */
+
+async function loadMarketingLinks() {
+
+    marketingLinks = {};
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "marketingLinks")
+            );
+
+        snapshot.docs.forEach(function (item) {
+
+            marketingLinks[item.id] = {
+                id: item.id,
+                ...item.data()
+            };
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Load Marketing Links Error:",
+            error
+        );
+
+        marketingLinks = {};
+    }
 }
 
 
 /* =========================================================
    LOAD ALL FIREBASE DATA
-   ========================================================= */
+========================================================= */
 
 async function loadFirebaseData() {
 
-    await loadCategories();
+    await Promise.all([
+        loadCombos(),
+        loadCategories(),
+        loadMarketingLinks()
+    ]);
 
-    await loadCombos();
-
+    renderCategoryOptions();
+    renderCategoryFilter();
+    renderCategoryList();
     render();
-
 }
 
 
 /* =========================================================
-   TIME HELPER
-   ========================================================= */
+   TIME
+========================================================= */
 
 function getTimeValue(value) {
 
     if (!value) {
-
-        return 0;
-
+        return "";
     }
-
 
     if (
-        typeof value.toMillis ===
-        "function"
+        typeof value === "object" &&
+        typeof value.toDate === "function"
     ) {
 
-        return value.toMillis();
-
+        return value.toDate().getTime();
     }
 
+    if (value instanceof Date) {
 
-    if (
-        value.seconds !==
-        undefined
-    ) {
-
-        return value.seconds * 1000;
-
+        return value.getTime();
     }
-
 
     const parsed =
         new Date(value).getTime();
 
-
-    return isNaN(parsed)
+    return Number.isNaN(parsed)
         ? 0
         : parsed;
-
 }
 
 
 /* =========================================================
-   ADD BUTTON
-   ========================================================= */
-
-const addBtn =
-    document.getElementById(
-        "addBtn"
-    );
-
-const emptyAddBtn =
-    document.getElementById(
-        "emptyAddBtn"
-    );
-
-
-if (addBtn) {
-
-    addBtn.addEventListener(
-        "click",
-        openAddComboModal
-    );
-
-}
-
-
-if (emptyAddBtn) {
-
-    emptyAddBtn.addEventListener(
-        "click",
-        openAddComboModal
-    );
-
-}
-
-
-/* =========================================================
-   ADD MODAL
-   ========================================================= */
-
-function openAddComboModal() {
-
-    const form =
-        document.getElementById(
-            "comboForm"
-        );
-
-
-    if (form) {
-
-        form.reset();
-
-    }
-
-
-    const editId =
-        document.getElementById(
-            "editId"
-        );
-
-
-    if (editId) {
-
-        editId.value = "";
-
-    }
-
-
-    const modalTitle =
-        document.getElementById(
-            "modalTitle"
-        );
-
-
-    if (modalTitle) {
-
-        modalTitle.textContent =
-            "Add Combo";
-
-    }
-
-
-    const comboStatus =
-        document.getElementById(
-            "comboStatus"
-        );
-
-
-    if (comboStatus) {
-
-        comboStatus.value =
-            "Active";
-
-    }
-
-
-    openModal(
-        comboModal
-    );
-
-}
-
-
-/* =========================================================
-   SAVE COMBO
-   ========================================================= */
-
-const comboForm =
-    document.getElementById(
-        "comboForm"
-    );
-
+   ADD / SAVE COMBO
+========================================================= */
 
 if (comboForm) {
 
-    comboForm.addEventListener(
-        "submit",
-        async function (event) {
+    comboForm.addEventListener("submit", async function (event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
+        const name =
+            comboName.value.trim();
 
-            const editId =
-                document.getElementById(
-                    "editId"
-                ).value;
+        const category =
+            comboCategory.value.trim();
 
+        const main =
+            mainLink.value.trim();
 
-            const name =
-                document.getElementById(
-                    "comboName"
-                ).value.trim();
+        const affiliate =
+            affiliateLink.value.trim();
 
+        const notes =
+            comboNotes.value.trim();
 
-            const category =
-                document.getElementById(
-                    "comboCategory"
-                ).value.trim();
+        const status =
+            comboStatus.value || "Active";
 
+        if (!name) {
 
-            const mainLink =
-                document.getElementById(
-                    "mainLink"
-                ).value.trim();
+            alert("Combo Name ضروری ہے۔");
 
-
-            const affiliateLink =
-                document.getElementById(
-                    "affiliateLink"
-                ).value.trim();
-
-
-            const notes =
-                document.getElementById(
-                    "comboNotes"
-                ).value.trim();
-
-
-            const status =
-                document.getElementById(
-                    "comboStatus"
-                ).value;
-
-
-            if (!name) {
-
-                alert(
-                    "Please enter a Combo name."
-                );
-
-                return;
-
-            }
-
-
-            if (!category) {
-
-                alert(
-                    "Please enter a Category."
-                );
-
-                return;
-
-            }
-
-
-            try {
-
-                if (editId) {
-
-                    await updateDoc(
-                        doc(
-                            db,
-                            "combos",
-                            editId
-                        ),
-                        {
-
-                            name:
-                                name,
-
-                            category:
-                                category,
-
-                            mainLink:
-                                mainLink,
-
-                            affiliateLink:
-                                affiliateLink,
-
-                            notes:
-                                notes,
-
-                            status:
-                                status,
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-                } else {
-
-                    await addDoc(
-                        collection(
-                            db,
-                            "combos"
-                        ),
-                        {
-
-                            name:
-                                name,
-
-                            category:
-                                category,
-
-                            mainLink:
-                                mainLink,
-
-                            affiliateLink:
-                                affiliateLink,
-
-                            notes:
-                                notes,
-
-                            status:
-                                status,
-
-                            createdAt:
-                                serverTimestamp(),
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-                }
-
-
-                if (
-                    !categories.some(
-                        function (item) {
-
-                            return (
-                                item.toLowerCase() ===
-                                category.toLowerCase()
-                            );
-
-                        }
-                    )
-                ) {
-
-                    await createCategory(
-                        category
-                    );
-
-                }
-
-
-                closeModal(
-                    comboModal
-                );
-
-
-                await loadFirebaseData();
-
-            } catch (error) {
-
-                console.error(
-                    "Save Combo error:",
-                    error
-                );
-
-
-                alert(
-                    "Could not save Combo to Firebase."
-                );
-
-            }
-
+            return;
         }
-    );
 
+        const existingId =
+            editId.value.trim();
+
+        try {
+
+            if (existingId) {
+
+                const comboRef =
+                    doc(db, "combos", existingId);
+
+                await updateDoc(
+                    comboRef,
+                    {
+                        name: name,
+                        category: category,
+                        mainLink: main,
+                        affiliateLink: affiliate,
+                        notes: notes,
+                        status: status,
+                        updatedAt: serverTimestamp()
+                    }
+                );
+
+                const index =
+                    combos.findIndex(
+                        item => item.id === existingId
+                    );
+
+                if (index !== -1) {
+
+                    combos[index] = {
+                        ...combos[index],
+                        name: name,
+                        category: category,
+                        mainLink: main,
+                        affiliateLink: affiliate,
+                        notes: notes,
+                        status: status
+                    };
+                }
+
+            } else {
+
+                const newCombo = {
+
+                    name: name,
+                    category: category,
+                    mainLink: main,
+                    affiliateLink: affiliate,
+                    notes: notes,
+                    status: status,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+
+                const created =
+                    await addDoc(
+                        collection(db, "combos"),
+                        newCombo
+                    );
+
+                combos.push({
+                    id: created.id,
+                    ...newCombo,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                });
+            }
+
+            closeComboModal();
+
+            render();
+
+        } catch (error) {
+
+            console.error(
+                "Save Combo Error:",
+                error
+            );
+
+            alert(
+                "Combo save نہیں ہو سکا۔"
+            );
+        }
+    });
 }
 
 
 /* =========================================================
    EDIT COMBO
-   ========================================================= */
+========================================================= */
 
 function editCombo(id) {
 
     const combo =
         combos.find(
-            function (item) {
-
-                return item.id === id;
-
-            }
+            item => item.id === id
         );
 
-
     if (!combo) {
-
         return;
-
     }
 
-
-    document.getElementById(
-        "editId"
-    ).value =
-        combo.id;
-
-
-    document.getElementById(
-        "comboName"
-    ).value =
-        combo.name || "";
-
-
-    document.getElementById(
-        "comboCategory"
-    ).value =
-        combo.category || "";
-
-
-    document.getElementById(
-        "mainLink"
-    ).value =
-        combo.mainLink || "";
-
-
-    document.getElementById(
-        "affiliateLink"
-    ).value =
-        combo.affiliateLink || "";
-
-
-    document.getElementById(
-        "comboNotes"
-    ).value =
-        combo.notes || "";
-
-
-    document.getElementById(
-        "comboStatus"
-    ).value =
-        combo.status || "Active";
-
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Edit Combo";
-
-
-    openModal(
-        comboModal
-    );
-
+    openComboModal(combo);
 }
 
 
 /* =========================================================
    DELETE COMBO
-   ========================================================= */
+========================================================= */
 
 async function deleteCombo(id) {
 
     const combo =
         combos.find(
-            function (item) {
-
-                return item.id === id;
-
-            }
+            item => item.id === id
         );
 
-
     if (!combo) {
-
         return;
-
     }
-
 
     const confirmed =
         confirm(
-            `Delete "${combo.name}" permanently?`
+            `"${combo.name}" کو delete کرنا ہے؟`
         );
 
-
     if (!confirmed) {
-
         return;
-
     }
-
 
     try {
 
         await deleteDoc(
-            doc(
-                db,
-                "combos",
-                id
-            )
+            doc(db, "combos", id)
         );
 
+        combos =
+            combos.filter(
+                item => item.id !== id
+            );
 
-        await loadFirebaseData();
+        delete marketingLinks[id];
+
+        render();
 
     } catch (error) {
 
         console.error(
-            "Delete error:",
+            "Delete Combo Error:",
             error
         );
 
-
         alert(
-            "Could not delete Combo."
+            "Combo delete نہیں ہو سکا۔"
         );
-
     }
-
 }
 
 
 /* =========================================================
    ARCHIVE / RESTORE
-   ========================================================= */
+========================================================= */
 
 async function archiveCombo(id) {
 
     const combo =
         combos.find(
-            function (item) {
-
-                return item.id === id;
-
-            }
+            item => item.id === id
         );
 
-
     if (!combo) {
-
         return;
-
     }
-
 
     const newStatus =
         combo.status === "Archived"
             ? "Active"
             : "Archived";
 
-
     try {
 
         await updateDoc(
-            doc(
-                db,
-                "combos",
-                id
-            ),
+            doc(db, "combos", id),
             {
-
-                status:
-                    newStatus,
-
-                updatedAt:
-                    serverTimestamp()
-
+                status: newStatus,
+                updatedAt: serverTimestamp()
             }
         );
 
+        combo.status = newStatus;
 
-        await loadFirebaseData();
+        render();
 
     } catch (error) {
 
         console.error(
-            "Archive error:",
+            "Archive Error:",
             error
         );
 
-
         alert(
-            "Could not update Combo."
+            "Status update نہیں ہو سکا۔"
         );
-
     }
-
 }
 
 
 /* =========================================================
-   PASTE COMBO
-   ========================================================= */
-
-const pasteBtn =
-    document.getElementById(
-        "pasteBtn"
-    );
-
-
-if (pasteBtn) {
-
-    pasteBtn.addEventListener(
-        "click",
-        function () {
-
-            const pasteBox =
-                document.getElementById(
-                    "pasteBox"
-                );
-
-
-            if (pasteBox) {
-
-                pasteBox.value = "";
-
-            }
-
-
-            openModal(
-                pasteModal
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   IMPORT PASTE
-   ========================================================= */
-
-const importPasteBtn =
-    document.getElementById(
-        "importPasteBtn"
-    );
-
+   PASTE / IMPORT COMBOS
+========================================================= */
 
 if (importPasteBtn) {
 
@@ -1682,319 +1062,308 @@ if (importPasteBtn) {
         "click",
         async function () {
 
-            const box =
-                document.getElementById(
-                    "pasteBox"
-                );
+            const raw =
+                pasteBox.value.trim();
 
-
-            const text =
-                box.value.trim();
-
-
-            if (!text) {
+            if (!raw) {
 
                 alert(
-                    "Please paste Combo data first."
+                    "Paste box خالی ہے۔"
                 );
 
                 return;
-
             }
-
 
             let data;
 
-
             try {
 
-                data =
-                    JSON.parse(text);
+                data = JSON.parse(raw);
 
             } catch (error) {
 
                 alert(
-                    "Invalid JSON. Please check the pasted data."
+                    "JSON format درست نہیں ہے۔"
                 );
 
                 return;
-
             }
 
+            let items = data;
 
-            if (
-                !Array.isArray(data)
-            ) {
+            if (!Array.isArray(items)) {
 
-                data = [data];
+                if (
+                    data &&
+                    Array.isArray(data.combos)
+                ) {
 
+                    items = data.combos;
+
+                } else {
+
+                    items = [data];
+                }
             }
-
 
             let imported = 0;
 
-
             try {
 
-                for (
-                    const item
-                    of data
-                ) {
+                for (const item of items) {
 
-                    if (
-                        !item ||
-                        typeof item !==
-                        "object"
-                    ) {
-
+                    if (!item || typeof item !== "object") {
                         continue;
-
                     }
 
+                    const newCombo = {
 
-                    const name =
-                        String(
-                            item.name ||
-                            item.title ||
-                            "Untitled Combo"
-                        ).trim();
+                        name: String(
+                            item.name || ""
+                        ).trim(),
 
+                        category: String(
+                            item.category || "Other"
+                        ).trim(),
 
-                    const category =
-                        String(
-                            item.category ||
-                            "Other"
-                        ).trim();
+                        mainLink: String(
+                            item.mainLink ||
+                            item.main_link ||
+                            ""
+                        ).trim(),
 
+                        affiliateLink: String(
+                            item.affiliateLink ||
+                            item.affiliate_link ||
+                            ""
+                        ).trim(),
 
-                    await addDoc(
-                        collection(
-                            db,
-                            "combos"
-                        ),
-                        {
+                        notes: String(
+                            item.notes ||
+                            item.description ||
+                            ""
+                        ).trim(),
 
-                            name:
-                                name,
+                        status: String(
+                            item.status ||
+                            "Active"
+                        ).trim(),
 
-                            category:
-                                category,
+                        createdAt: serverTimestamp(),
 
-                            mainLink:
-                                item.mainLink ||
-                                item.main_link ||
-                                item.website ||
-                                "",
+                        updatedAt: serverTimestamp()
+                    };
 
-                            affiliateLink:
-                                item.affiliateLink ||
-                                item.affiliate_link ||
-                                item.affiliate ||
-                                "",
+                    if (!newCombo.name) {
+                        continue;
+                    }
 
-                            notes:
-                                item.notes ||
-                                item.description ||
-                                "",
-
-                            status:
-                                item.status ||
-                                "Active",
-
-                            createdAt:
-                                serverTimestamp(),
-
-                            updatedAt:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    if (
-                        !categories.some(
-                            function (item) {
-
-                                return (
-                                    item.toLowerCase() ===
-                                    category.toLowerCase()
-                                );
-
-                            }
-                        )
-                    ) {
-
-                        await createCategory(
-                            category
+                    const created =
+                        await addDoc(
+                            collection(db, "combos"),
+                            newCombo
                         );
 
-                    }
-
+                    combos.push({
+                        id: created.id,
+                        ...newCombo,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    });
 
                     imported++;
-
                 }
 
+                closePaste();
 
-                if (
-                    imported === 0
-                ) {
-
-                    alert(
-                        "No valid Combo records were found."
-                    );
-
-                    return;
-
-                }
-
-
-                closeModal(
-                    pasteModal
-                );
-
-
-                await loadFirebaseData();
-
+                render();
 
                 alert(
-                    `${imported} Combo(s) imported successfully.`
+                    `${imported} Combo import ہو گئے۔`
                 );
 
             } catch (error) {
 
                 console.error(
-                    "Import error:",
+                    "Import Error:",
                     error
                 );
 
-
                 alert(
-                    "Some Combo data could not be imported."
+                    "Import کے دوران مسئلہ آیا۔"
                 );
-
             }
-
         }
     );
-
 }
 
 
 /* =========================================================
-   CATEGORY MANAGEMENT
-   ========================================================= */
+   CATEGORY OPTIONS
+========================================================= */
 
-const categoryBtn =
-    document.getElementById(
-        "categoryBtn"
-    );
+function renderCategoryOptions() {
 
-
-if (categoryBtn) {
-
-    categoryBtn.addEventListener(
-        "click",
-        function () {
-
-            renderCategories();
-
-            openModal(
-                categoryModal
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CREATE CATEGORY
-   ========================================================= */
-
-async function createCategory(category) {
-
-    const cleanName =
-        String(
-            category
-        ).trim();
-
-
-    if (!cleanName) {
-
+    if (!comboCategory || !categoryList) {
         return;
-
     }
 
+    const current =
+        comboCategory.value;
 
-    const exists =
-        categories.some(
-            function (item) {
+    comboCategory.innerHTML = "";
 
-                return (
-                    item.toLowerCase() ===
-                    cleanName.toLowerCase()
-                );
+    const emptyOption =
+        document.createElement("option");
 
-            }
-        );
+    emptyOption.value = "";
+    emptyOption.textContent = "Select Category";
 
+    comboCategory.appendChild(
+        emptyOption
+    );
 
-    if (exists) {
-
-        return;
-
-    }
-
-
-    const categoryId =
-        cleanName
-            .toLowerCase()
-            .replace(
-                /[^a-z0-9]+/g,
-                "-"
+    categories
+        .slice()
+        .sort((a, b) =>
+            String(a.name).localeCompare(
+                String(b.name)
             )
-            .replace(
-                /^-|-$/g,
-                ""
+        )
+        .forEach(function (category) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                category.name;
+
+            option.textContent =
+                category.name;
+
+            comboCategory.appendChild(
+                option
             );
+        });
 
+    if (current) {
+        comboCategory.value = current;
+    }
 
-    await setDoc(
-        doc(
-            db,
-            "categories",
-            categoryId
-        ),
-        {
+    categoryList.innerHTML =
+        categories
+            .map(function (category) {
 
-            name:
-                cleanName,
+                return `
+                    <option value="${escapeHTML(
+                        category.name
+                    )}">
+                    `;
 
-            createdAt:
-                serverTimestamp()
-
-        }
-    );
-
-
-    categories.push(
-        cleanName
-    );
-
+            })
+            .join("");
 }
 
 
 /* =========================================================
-   ADD CATEGORY BUTTON
-   ========================================================= */
+   CATEGORY FILTER
+========================================================= */
 
-const addCategoryBtn =
-    document.getElementById(
-        "addCategoryBtn"
-    );
+function renderCategoryFilter() {
 
+    if (!categoryFilter) {
+        return;
+    }
+
+    const current =
+        categoryFilter.value;
+
+    categoryFilter.innerHTML =
+        `<option value="">All Categories</option>`;
+
+    categories
+        .slice()
+        .sort((a, b) =>
+            String(a.name).localeCompare(
+                String(b.name)
+            )
+        )
+        .forEach(function (category) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                category.name;
+
+            option.textContent =
+                category.name;
+
+            categoryFilter.appendChild(
+                option
+            );
+        });
+
+    if (current) {
+        categoryFilter.value = current;
+    }
+}
+
+
+/* =========================================================
+   CATEGORY LIST
+========================================================= */
+
+function renderCategoryList() {
+
+    if (!categoryListView) {
+        return;
+    }
+
+    if (!categories.length) {
+
+        categoryListView.innerHTML =
+            `<div class="empty-state">No categories.</div>`;
+
+        return;
+    }
+
+    categoryListView.innerHTML =
+        categories
+            .slice()
+            .sort((a, b) =>
+                String(a.name).localeCompare(
+                    String(b.name)
+                )
+            )
+            .map(function (category) {
+
+                return `
+                    <div class="category-item">
+                        <span>${escapeHTML(
+                            category.name
+                        )}</span>
+
+                        <button
+                            type="button"
+                            class="btn danger"
+                            onclick="removeCategory('${escapeHTML(
+                                category.id
+                            )}')"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                `;
+
+            })
+            .join("");
+}
+
+
+/* =========================================================
+   ADD CATEGORY
+========================================================= */
 
 if (addCategoryBtn) {
 
@@ -2002,358 +1371,841 @@ if (addCategoryBtn) {
         "click",
         async function () {
 
-            const input =
-                document.getElementById(
-                    "newCategory"
-                );
+            const name =
+                newCategory.value.trim();
 
-
-            const category =
-                input.value.trim();
-
-
-            if (!category) {
+            if (!name) {
 
                 alert(
-                    "Please enter a category name."
+                    "Category name درج کریں۔"
                 );
 
                 return;
-
             }
-
 
             const exists =
                 categories.some(
-                    function (item) {
-
-                        return (
-                            item.toLowerCase() ===
-                            category.toLowerCase()
-                        );
-
-                    }
+                    item =>
+                        String(item.name).toLowerCase() ===
+                        name.toLowerCase()
                 );
-
 
             if (exists) {
 
                 alert(
-                    "This category already exists."
+                    "یہ category پہلے سے موجود ہے۔"
                 );
 
                 return;
-
             }
-
 
             try {
 
-                await createCategory(
-                    category
+                const categoryId =
+                    name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-+|-+$/g, "")
+                        .slice(0, 100) ||
+                    `category-${Date.now()}`;
+
+                const categoryRef =
+                    doc(
+                        db,
+                        "categories",
+                        categoryId
+                    );
+
+                await setDoc(
+                    categoryRef,
+                    {
+                        name: name,
+                        createdAt: serverTimestamp()
+                    }
                 );
 
+                categories.push({
+                    id: categoryId,
+                    name: name
+                });
 
-                input.value = "";
+                newCategory.value = "";
 
-
-                renderCategories();
-
+                renderCategoryOptions();
+                renderCategoryFilter();
+                renderCategoryList();
                 render();
 
             } catch (error) {
 
                 console.error(
-                    "Category error:",
+                    "Add Category Error:",
                     error
                 );
 
-
                 alert(
-                    "Could not create category."
+                    "Category add نہیں ہو سکی۔"
                 );
-
             }
-
         }
     );
-
 }
 
 
 /* =========================================================
    DELETE CATEGORY
-   ========================================================= */
+========================================================= */
 
-async function removeCategory(index) {
-
-    if (
-        index < 0 ||
-        index >= categories.length
-    ) {
-
-        return;
-
-    }
-
+async function removeCategory(id) {
 
     const category =
-        categories[index];
+        categories.find(
+            item => item.id === id
+        );
 
+    if (!category) {
+        return;
+    }
 
     const used =
         combos.some(
-            function (combo) {
-
-                return (
-                    combo.category ===
-                    category
-                );
-
-            }
+            combo =>
+                String(combo.category || "")
+                    .toLowerCase() ===
+                String(category.name || "")
+                    .toLowerCase()
         );
-
-
-    let message =
-        `Delete category "${category}"?`;
-
 
     if (used) {
 
-        message +=
-            "\n\nExisting Combos will NOT be deleted. Their category text will remain.";
-
-    }
-
-
-    if (
-        !confirm(message)
-    ) {
+        alert(
+            "یہ category ایک یا زیادہ Combos میں استعمال ہو رہی ہے، پہلے Combo کی category تبدیل کریں۔"
+        );
 
         return;
-
     }
 
+    const confirmed =
+        confirm(
+            `"${category.name}" category delete کرنی ہے؟`
+        );
+
+    if (!confirmed) {
+        return;
+    }
 
     try {
-
-        const categoryId =
-            category
-                .toLowerCase()
-                .replace(
-                    /[^a-z0-9]+/g,
-                    "-"
-                )
-                .replace(
-                    /^-|-$/g,
-                    ""
-                );
-
 
         await deleteDoc(
             doc(
                 db,
                 "categories",
-                categoryId
+                id
             )
         );
 
-
         categories =
             categories.filter(
-                function (item) {
-
-                    return (
-                        item !== category
-                    );
-
-                }
+                item => item.id !== id
             );
 
+        renderCategoryOptions();
+        renderCategoryFilter();
+        renderCategoryList();
+        render();
 
-        renderCategories();
+    } catch (error) {
+
+        console.error(
+            "Delete Category Error:",
+            error
+        );
+
+        alert(
+            "Category delete نہیں ہو سکی۔"
+        );
+    }
+}
+
+
+/* =========================================================
+   MARKETING LINK - CREATE / UPDATE
+========================================================= */
+
+async function createMarketingLink(id) {
+
+    const combo =
+        combos.find(
+            item => item.id === id
+        );
+
+    if (!combo) {
+
+        alert(
+            "Combo نہیں ملا۔"
+        );
+
+        return;
+    }
+
+    const target =
+        getMarketingTarget(combo);
+
+    if (!target) {
+
+        alert(
+            "Marketing Link بنانے کے لیے پہلے Affiliate Link یا Main Link درج کریں۔"
+        );
+
+        return;
+    }
+
+    try {
+
+        const linkRef =
+            doc(
+                db,
+                "marketingLinks",
+                id
+            );
+
+        const existing =
+            await getDoc(linkRef);
+
+        const existingData =
+            existing.exists()
+                ? existing.data()
+                : {};
+
+        const oldClicks =
+            typeof existingData.clicks === "number"
+                ? existingData.clicks
+                : 0;
+
+        await setDoc(
+            linkRef,
+            {
+                comboId: id,
+
+                comboName:
+                    combo.name || "",
+
+                targetUrl:
+                    target,
+
+                clicks:
+                    oldClicks,
+
+                status:
+                    combo.status || "Active",
+
+                createdAt:
+                    existingData.createdAt ||
+                    serverTimestamp(),
+
+                updatedAt:
+                    serverTimestamp()
+            },
+            {
+                merge: true
+            }
+        );
+
+        marketingLinks[id] = {
+
+            id: id,
+
+            comboId: id,
+
+            comboName:
+                combo.name || "",
+
+            targetUrl:
+                target,
+
+            clicks:
+                oldClicks,
+
+            status:
+                combo.status || "Active",
+
+            createdAt:
+                existingData.createdAt,
+
+            updatedAt:
+                new Date()
+        };
+
+        const publicUrl =
+            buildMarketingUrl(
+                id,
+                target
+            );
+
+        try {
+
+            await navigator.clipboard.writeText(
+                publicUrl
+            );
+
+            alert(
+                "Marketing Link تیار ہو گیا اور Clipboard میں Copy ہو گیا۔"
+            );
+
+        } catch (clipboardError) {
+
+            window.prompt(
+                "Marketing Link:",
+                publicUrl
+            );
+        }
 
         render();
 
     } catch (error) {
 
         console.error(
-            "Delete category error:",
+            "Create Marketing Link Error:",
             error
         );
 
+        alert(
+            "Marketing Link create نہیں ہو سکا۔"
+        );
+    }
+}
+
+
+/* =========================================================
+   COPY MARKETING LINK
+========================================================= */
+
+async function copyMarketingLink(id) {
+
+    const combo =
+        combos.find(
+            item => item.id === id
+        );
+
+    const link =
+        marketingLinks[id];
+
+    if (!combo || !link) {
 
         alert(
-            "Could not delete category."
+            "Marketing Link موجود نہیں ہے۔"
         );
 
+        return;
     }
 
+    const target =
+        link.targetUrl ||
+        getMarketingTarget(combo);
+
+    if (!target) {
+
+        alert(
+            "Target URL موجود نہیں ہے۔"
+        );
+
+        return;
+    }
+
+    const publicUrl =
+        buildMarketingUrl(
+            id,
+            target
+        );
+
+    try {
+
+        await navigator.clipboard.writeText(
+            publicUrl
+        );
+
+        alert(
+            "Marketing Link Copy ہو گیا۔"
+        );
+
+    } catch (error) {
+
+        window.prompt(
+            "Marketing Link:",
+            publicUrl
+        );
+    }
 }
 
 
 /* =========================================================
-   RENDER CATEGORIES
-   ========================================================= */
+   OPEN MARKETING LINK
+========================================================= */
 
-function renderCategories() {
+function openMarketingLink(id) {
 
-    const list =
-        document.getElementById(
-            "categoryListView"
+    const combo =
+        combos.find(
+            item => item.id === id
         );
 
+    const link =
+        marketingLinks[id];
 
-    if (!list) {
+    if (!combo || !link) {
 
-        return;
-
-    }
-
-
-    if (
-        categories.length === 0
-    ) {
-
-        list.innerHTML = `
-            <p class="muted">
-                No categories yet.
-            </p>
-        `;
+        alert(
+            "Marketing Link پہلے Create کریں۔"
+        );
 
         return;
-
     }
 
+    const target =
+        link.targetUrl ||
+        getMarketingTarget(combo);
 
-    list.innerHTML =
-        categories
-            .map(
-                function (
-                    category,
-                    index
+    if (!target) {
+
+        alert(
+            "Target URL موجود نہیں ہے۔"
+        );
+
+        return;
+    }
+
+    const publicUrl =
+        buildMarketingUrl(
+            id,
+            target
+        );
+
+    window.open(
+        publicUrl,
+        "_blank"
+    );
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render() {
+
+    const search =
+        String(
+            searchInput?.value || ""
+        )
+            .trim()
+            .toLowerCase();
+
+    const category =
+        String(
+            categoryFilter?.value || ""
+        );
+
+    const status =
+        String(
+            statusFilter?.value || ""
+        );
+
+    const filtered =
+        combos
+            .filter(function (combo) {
+
+                if (search) {
+
+                    const text =
+                        [
+                            combo.name,
+                            combo.category,
+                            combo.mainLink,
+                            combo.affiliateLink,
+                            combo.notes,
+                            combo.status
+                        ]
+                            .join(" ")
+                            .toLowerCase();
+
+                    if (!text.includes(search)) {
+                        return false;
+                    }
+                }
+
+                if (
+                    category &&
+                    combo.category !== category
                 ) {
 
-                    return `
-
-                        <div class="cat-row">
-
-                            <span>
-                                ${escapeHTML(category)}
-                            </span>
-
-                            <button
-                                type="button"
-                                onclick="removeCategory(${index})"
-                            >
-                                Delete
-                            </button>
-
-                        </div>
-
-                    `;
-
+                    return false;
                 }
-            )
-            .join("");
 
+                if (
+                    status &&
+                    combo.status !== status
+                ) {
+
+                    return false;
+                }
+
+                return true;
+            })
+            .sort(function (a, b) {
+
+                return (
+                    getTimeValue(b.updatedAt) -
+                    getTimeValue(a.updatedAt)
+                );
+            });
+
+
+    /* =====================================================
+       COUNTS
+    ===================================================== */
+
+    const total =
+        combos.length;
+
+    const active =
+        combos.filter(
+            item =>
+                item.status === "Active"
+        ).length;
+
+    const pending =
+        combos.filter(
+            item =>
+                item.status === "Pending"
+        ).length;
+
+    const archived =
+        combos.filter(
+            item =>
+                item.status === "Archived"
+        ).length;
+
+
+    if (totalCount) {
+        totalCount.textContent = total;
+    }
+
+    if (activeCount) {
+        activeCount.textContent = active;
+    }
+
+    if (pendingCount) {
+        pendingCount.textContent = pending;
+    }
+
+    if (archivedCount) {
+        archivedCount.textContent = archived;
+    }
+
+
+    if (resultCount) {
+
+        resultCount.textContent =
+            `${filtered.length} result${
+                filtered.length === 1 ? "" : "s"
+            }`;
+    }
+
+
+    /* =====================================================
+       EMPTY / LIST
+    ===================================================== */
+
+    if (!comboList) {
+        return;
+    }
+
+    if (!filtered.length) {
+
+        comboList.innerHTML = "";
+
+        if (emptyState) {
+            emptyState.classList.remove("hidden");
+        }
+
+        return;
+    }
+
+    if (emptyState) {
+        emptyState.classList.add("hidden");
+    }
+
+    comboList.innerHTML =
+        filtered
+            .map(createComboHTML)
+            .join("");
 }
 
 
 /* =========================================================
-   CATEGORY FILTER
-   ========================================================= */
+   CREATE COMBO HTML
+========================================================= */
 
-function renderCategoryFilters() {
+function createComboHTML(combo) {
 
-    if (!categoryFilter) {
+    const marketing =
+        marketingLinks[combo.id];
 
-        return;
+    const clicks =
+        marketing &&
+        typeof marketing.clicks === "number"
+            ? marketing.clicks
+            : 0;
 
-    }
+    const marketingTarget =
+        marketing?.targetUrl ||
+        getMarketingTarget(combo);
 
+    const hasMarketing =
+        Boolean(marketing);
 
-    const currentValue =
-        categoryFilter.value;
-
-
-    categoryFilter.innerHTML =
-        `
-        <option value="">
-            All Categories
-        </option>
-        ` +
-        categories
-            .map(
-                function (category) {
-
-                    return `
-                        <option
-                            value="${escapeHTML(category)}"
-                        >
-                            ${escapeHTML(category)}
-                        </option>
-                    `;
-
-                }
+    const marketingUrl =
+        hasMarketing && marketingTarget
+            ? buildMarketingUrl(
+                combo.id,
+                marketingTarget
             )
-            .join("");
+            : "";
 
 
-    if (
-        categories.includes(
-            currentValue
+    const statusClass =
+        String(
+            combo.status || "Active"
         )
-    ) {
-
-        categoryFilter.value =
-            currentValue;
-
-    }
-
-}
+            .toLowerCase()
+            .replace(/\s+/g, "-");
 
 
-/* =========================================================
-   CATEGORY DATALIST
-   ========================================================= */
+    return `
+        <article class="combo-card">
 
-function renderCategoryDatalist() {
+            <div class="combo-card-header">
 
-    const datalist =
-        document.getElementById(
-            "categoryList"
-        );
+                <div>
+                    <h3>
+                        ${escapeHTML(
+                            combo.name || "Untitled Combo"
+                        )}
+                    </h3>
+
+                    <div class="tags">
+
+                        <span class="tag">
+                            ${escapeHTML(
+                                combo.category || "Other"
+                            )}
+                        </span>
+
+                        <span class="tag ${escapeHTML(
+                            statusClass
+                        )}">
+                            ${escapeHTML(
+                                combo.status || "Active"
+                            )}
+                        </span>
+
+                    </div>
+                </div>
+
+            </div>
 
 
-    if (!datalist) {
+            ${
+                combo.notes
+                    ? `
+                        <div class="combo-notes">
+                            ${escapeHTML(
+                                combo.notes
+                            )}
+                        </div>
+                    `
+                    : ""
+            }
 
-        return;
 
-    }
+            <div class="combo-links">
 
-
-    datalist.innerHTML =
-        categories
-            .map(
-                function (category) {
-
-                    return `
-                        <option
-                            value="${escapeHTML(category)}"
-                        >
-                    `;
-
+                ${
+                    combo.mainLink
+                        ? `
+                            <a
+                                href="${escapeHTML(
+                                    combo.mainLink
+                                )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Main Link
+                            </a>
+                        `
+                        : ""
                 }
-            )
-            .join("");
 
+
+                ${
+                    combo.affiliateLink
+                        ? `
+                            <a
+                                href="${escapeHTML(
+                                    combo.affiliateLink
+                                )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Affiliate Link
+                            </a>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="marketing-box">
+
+                <div class="section-heading">
+
+                    <strong>
+                        Marketing Link
+                    </strong>
+
+                    ${
+                        hasMarketing
+                            ? `
+                                <span class="tag">
+                                    Clicks: ${clicks}
+                                </span>
+                            `
+                            : `
+                                <span class="tag">
+                                    Not Created
+                                </span>
+                            `
+                    }
+
+                </div>
+
+
+                <div class="actions">
+
+                    ${
+                        hasMarketing
+                            ? `
+                                <button
+                                    type="button"
+                                    class="btn"
+                                    onclick="copyMarketingLink('${escapeHTML(
+                                        combo.id
+                                    )}')"
+                                >
+                                    Copy Link
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn"
+                                    onclick="openMarketingLink('${escapeHTML(
+                                        combo.id
+                                    )}')"
+                                >
+                                    Open Link
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn"
+                                    onclick="createMarketingLink('${escapeHTML(
+                                        combo.id
+                                    )}')"
+                                >
+                                    Update Link
+                                </button>
+                            `
+                            : `
+                                <button
+                                    type="button"
+                                    class="btn"
+                                    onclick="createMarketingLink('${escapeHTML(
+                                        combo.id
+                                    )}')"
+                                >
+                                    Create Marketing Link
+                                </button>
+                            `
+
+                    }
+
+                </div>
+
+
+                ${
+                    hasMarketing && marketingUrl
+                        ? `
+                            <div class="combo-notes">
+                                ${escapeHTML(
+                                    marketingUrl
+                                )}
+                            </div>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="editCombo('${escapeHTML(
+                        combo.id
+                    )}')"
+                >
+                    Edit
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="archiveCombo('${escapeHTML(
+                        combo.id
+                    )}')"
+                >
+                    ${
+                        combo.status === "Archived"
+                            ? "Restore"
+                            : "Archive"
+                    }
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn danger"
+                    onclick="deleteCombo('${escapeHTML(
+                        combo.id
+                    )}')"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        </article>
+    `;
 }
 
 
 /* =========================================================
-   SEARCH
-   ========================================================= */
+   SEARCH / FILTER EVENTS
+========================================================= */
 
 if (searchInput) {
 
@@ -2361,7 +2213,6 @@ if (searchInput) {
         "input",
         render
     );
-
 }
 
 
@@ -2371,7 +2222,6 @@ if (categoryFilter) {
         "change",
         render
     );
-
 }
 
 
@@ -2381,396 +2231,70 @@ if (statusFilter) {
         "change",
         render
     );
-
 }
 
 
 /* =========================================================
-   FILTER
-   ========================================================= */
+   BUTTON EVENTS
+========================================================= */
 
-function getFilteredCombos() {
+if (addBtn) {
 
-    const search =
-        searchInput
-            ? searchInput.value
-                .trim()
-                .toLowerCase()
-            : "";
+    addBtn.addEventListener(
+        "click",
+        function () {
 
-
-    const category =
-        categoryFilter
-            ? categoryFilter.value
-            : "";
-
-
-    const status =
-        statusFilter
-            ? statusFilter.value
-            : "";
-
-
-    return combos.filter(
-        function (combo) {
-
-            const searchableText =
-                [
-
-                    combo.name,
-
-                    combo.category,
-
-                    combo.mainLink,
-
-                    combo.affiliateLink,
-
-                    combo.notes,
-
-                    combo.status
-
-                ]
-                    .join(" ")
-                    .toLowerCase();
-
-
-            const matchesSearch =
-                !search ||
-                searchableText.includes(
-                    search
-                );
-
-
-            const matchesCategory =
-                !category ||
-                combo.category ===
-                category;
-
-
-            const matchesStatus =
-                !status ||
-                combo.status ===
-                status;
-
-
-            return (
-                matchesSearch &&
-                matchesCategory &&
-                matchesStatus
-            );
-
+            openComboModal();
         }
     );
-
 }
 
 
-/* =========================================================
-   RENDER
-   ========================================================= */
+if (emptyAddBtn) {
 
-function render() {
+    emptyAddBtn.addEventListener(
+        "click",
+        function () {
 
-    renderCategoryFilters();
-
-    renderCategoryDatalist();
-
-
-    const filtered =
-        getFilteredCombos();
-
-
-    if (totalCount) {
-
-        totalCount.textContent =
-            combos.length;
-
-    }
-
-
-    if (activeCount) {
-
-        activeCount.textContent =
-            combos.filter(
-                function (combo) {
-
-                    return (
-                        combo.status ===
-                        "Active"
-                    );
-
-                }
-            ).length;
-
-    }
-
-
-    if (pendingCount) {
-
-        pendingCount.textContent =
-            combos.filter(
-                function (combo) {
-
-                    return (
-                        combo.status ===
-                        "Pending"
-                    );
-
-                }
-            ).length;
-
-    }
-
-
-    if (archivedCount) {
-
-        archivedCount.textContent =
-            combos.filter(
-                function (combo) {
-
-                    return (
-                        combo.status ===
-                        "Archived"
-                    );
-
-                }
-            ).length;
-
-    }
-
-
-    if (resultCount) {
-
-        resultCount.textContent =
-            `${filtered.length} record${
-                filtered.length === 1
-                    ? ""
-                    : "s"
-            }`;
-
-    }
-
-
-    if (emptyState) {
-
-        emptyState.style.display =
-            filtered.length === 0
-                ? "block"
-                : "none";
-
-    }
-
-
-    if (!comboList) {
-
-        return;
-
-    }
-
-
-    comboList.innerHTML =
-        filtered
-            .map(
-                createComboHTML
-            )
-            .join("");
-
-}
-
-
-/* =========================================================
-   COMBO HTML
-   ========================================================= */
-
-function createComboHTML(combo) {
-
-    const mainLink =
-        combo.mainLink
-            ? `
-                <a
-                    href="${escapeHTML(combo.mainLink)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Main Link ↗
-                </a>
-            `
-            : "";
-
-
-    const affiliateLink =
-        combo.affiliateLink
-            ? `
-                <a
-                    href="${escapeHTML(combo.affiliateLink)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Affiliate Link ↗
-                </a>
-            `
-            : "";
-
-
-    const notes =
-        combo.notes
-            ? escapeHTML(
-                combo.notes
-            )
-            : "No notes added.";
-
-
-    const archiveButton =
-        combo.status ===
-        "Archived"
-
-            ? `
-                <button
-                    type="button"
-                    onclick="archiveCombo('${escapeHTML(combo.id)}')"
-                >
-                    Restore
-                </button>
-            `
-
-            : `
-                <button
-                    type="button"
-                    onclick="archiveCombo('${escapeHTML(combo.id)}')"
-                >
-                    Archive
-                </button>
-            `;
-
-
-    return `
-
-        <article class="combo">
-
-            <div>
-
-                <h4>
-                    ${escapeHTML(combo.name)}
-                </h4>
-
-
-                <div class="meta">
-
-                    <span class="tag">
-                        ${escapeHTML(
-                            combo.category
-                        )}
-                    </span>
-
-
-                    <span class="tag">
-                        ${escapeHTML(
-                            combo.status
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="notes">
-                    ${notes}
-                </div>
-
-
-                <div class="links">
-
-                    ${mainLink}
-
-                    ${affiliateLink}
-
-                </div>
-
-            </div>
-
-
-            <div class="actions">
-
-                <button
-                    type="button"
-                    onclick="editCombo('${escapeHTML(combo.id)}')"
-                >
-                    Edit
-                </button>
-
-
-                ${archiveButton}
-
-
-                <button
-                    type="button"
-                    onclick="deleteCombo('${escapeHTML(combo.id)}')"
-                >
-                    Delete
-                </button>
-
-            </div>
-
-        </article>
-
-    `;
-
-}
-
-
-/* =========================================================
-   HELP
-   ========================================================= */
-
-const helpBtn =
-    document.getElementById(
-        "helpBtn"
+            openComboModal();
+        }
     );
+}
+
+
+if (pasteBtn) {
+
+    pasteBtn.addEventListener(
+        "click",
+        openPasteModal
+    );
+}
+
+
+if (categoryBtn) {
+
+    categoryBtn.addEventListener(
+        "click",
+        openCategoryModal
+    );
+}
 
 
 if (helpBtn) {
 
     helpBtn.addEventListener(
         "click",
-        function () {
-
-            openModal(
-                helpModal
-            );
-
-        }
+        openHelpModal
     );
-
 }
 
 
-/* =========================================================
-   CLOSE BUTTONS
-   ========================================================= */
+if (closeModal) {
 
-const closeModalBtn =
-    document.getElementById(
-        "closeModal"
-    );
-
-const cancelBtn =
-    document.getElementById(
-        "cancelBtn"
-    );
-
-
-if (closeModalBtn) {
-
-    closeModalBtn.addEventListener(
+    closeModal.addEventListener(
         "click",
-        function () {
-
-            closeModal(
-                comboModal
-            );
-
-        }
+        closeComboModal
     );
-
 }
 
 
@@ -2778,42 +2302,17 @@ if (cancelBtn) {
 
     cancelBtn.addEventListener(
         "click",
-        function () {
-
-            closeModal(
-                comboModal
-            );
-
-        }
+        closeComboModal
     );
-
 }
-
-
-const closePasteModal =
-    document.getElementById(
-        "closePasteModal"
-    );
-
-const cancelPasteBtn =
-    document.getElementById(
-        "cancelPasteBtn"
-    );
 
 
 if (closePasteModal) {
 
     closePasteModal.addEventListener(
         "click",
-        function () {
-
-            closeModal(
-                pasteModal
-            );
-
-        }
+        closePaste
     );
-
 }
 
 
@@ -2821,147 +2320,112 @@ if (cancelPasteBtn) {
 
     cancelPasteBtn.addEventListener(
         "click",
-        function (event) {
-
-            event.preventDefault();
-
-            closeModal(
-                pasteModal
-            );
-
-        }
+        closePaste
     );
-
 }
-
-
-const closeCategoryModal =
-    document.getElementById(
-        "closeCategoryModal"
-    );
 
 
 if (closeCategoryModal) {
 
     closeCategoryModal.addEventListener(
         "click",
-        function () {
-
-            closeModal(
-                categoryModal
-            );
-
-        }
+        closeCategory
     );
-
 }
-
-
-const closeHelpModal =
-    document.getElementById(
-        "closeHelpModal"
-    );
 
 
 if (closeHelpModal) {
 
     closeHelpModal.addEventListener(
         "click",
-        function () {
-
-            closeModal(
-                helpModal
-            );
-
-        }
+        closeHelp
     );
-
 }
 
 
 /* =========================================================
    CLICK OUTSIDE MODALS
-   ========================================================= */
+========================================================= */
 
-[
-    comboModal,
-    pasteModal,
-    categoryModal,
-    helpModal
+if (comboModal) {
 
-].forEach(
-    function (modal) {
+    comboModal.addEventListener(
+        "click",
+        function (event) {
 
-        if (!modal) {
-
-            return;
-
-        }
-
-
-        modal.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    modal
-                ) {
-
-                    closeModal(
-                        modal
-                    );
-
-                }
-
+            if (event.target === comboModal) {
+                closeComboModal();
             }
-        );
+        }
+    );
+}
 
-    }
-);
+
+if (pasteModal) {
+
+    pasteModal.addEventListener(
+        "click",
+        function (event) {
+
+            if (event.target === pasteModal) {
+                closePaste();
+            }
+        }
+    );
+}
+
+
+if (categoryModal) {
+
+    categoryModal.addEventListener(
+        "click",
+        function (event) {
+
+            if (event.target === categoryModal) {
+                closeCategory();
+            }
+        }
+    );
+}
+
+
+if (helpModal) {
+
+    helpModal.addEventListener(
+        "click",
+        function (event) {
+
+            if (event.target === helpModal) {
+                closeHelp();
+            }
+        }
+    );
+}
 
 
 /* =========================================================
    ESC KEY
-   ========================================================= */
+========================================================= */
 
 document.addEventListener(
     "keydown",
     function (event) {
 
-        if (
-            event.key !==
-            "Escape"
-        ) {
-
+        if (event.key !== "Escape") {
             return;
-
         }
 
-
-        [
-            comboModal,
-            pasteModal,
-            categoryModal,
-            helpModal
-
-        ].forEach(
-            function (modal) {
-
-                closeModal(
-                    modal
-                );
-
-            }
-        );
-
+        closeComboModal();
+        closePaste();
+        closeCategory();
+        closeHelp();
     }
 );
 
 
 /* =========================================================
    GLOBAL FUNCTIONS
-   ========================================================= */
+========================================================= */
 
 window.editCombo =
     editCombo;
@@ -2975,7 +2439,11 @@ window.archiveCombo =
 window.removeCategory =
     removeCategory;
 
+window.createMarketingLink =
+    createMarketingLink;
 
-/* =========================================================
-   END
-   ========================================================= */
+window.copyMarketingLink =
+    copyMarketingLink;
+
+window.openMarketingLink =
+    openMarketingLink;
