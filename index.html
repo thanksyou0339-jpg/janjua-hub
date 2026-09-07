@@ -6,661 +6,648 @@
 
     <title>Janjua Hub</title>
 
-    <!-- Janjua Hub Website Style -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <!-- =========================
-         HEADER
-    ========================== -->
-    <header class="topbar">
-
-        <div class="brand">
-
-            <div class="brand-orb">
-                <span>J</span>
-            </div>
-
-            <div class="brand-text">
-                <h1>Janjua Hub</h1>
-                <p>Universal Combo Manager</p>
-            </div>
-
-        </div>
-
-        <button id="helpBtn" class="ghost-btn">
-            Help Center
-        </button>
-
-    </header>
-
-
-    <!-- =========================
-         MAIN WEBSITE
-    ========================== -->
-    <main class="container">
-
-
-        <!-- =========================
-             HERO SECTION
-        ========================== -->
-        <section class="hero">
-
-            <div class="hero-content">
-
-                <span class="eyebrow">
-                    ONE SYSTEM • MANY COMBOS
-                </span>
-
-                <h2>
-                    Manage Everything
-                    in One Place
-                </h2>
-
-                <p>
-                    Manage affiliate programs, products, services,
-                    software and business opportunities using one
-                    universal Combo system.
-                </p>
-
-            </div>
-
-
-            <div class="hero-buttons">
-
-                <button id="addBtn" class="primary-btn">
-                    + Add Combo
-                </button>
-
-                <button id="pasteBtn" class="secondary-btn">
-                    Paste Combo
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================
-             DASHBOARD STATS
-        ========================== -->
-        <section class="stats">
-
-            <div class="stat-card">
-
-                <strong id="totalCount">
-                    0
-                </strong>
-
-                <span>
-                    Total Combos
-                </span>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <strong id="activeCount">
-                    0
-                </strong>
-
-                <span>
-                    Active
-                </span>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <strong id="pendingCount">
-                    0
-                </strong>
-
-                <span>
-                    Pending
-                </span>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <strong id="archivedCount">
-                    0
-                </strong>
-
-                <span>
-                    Archived
-                </span>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =========================
-             SEARCH & FILTER
-        ========================== -->
-        <section class="toolbar">
-
-            <input
-                type="search"
-                id="searchInput"
-                placeholder="Search combos..."
-            >
-
-
-            <select id="categoryFilter">
-
-                <option value="">
-                    All Categories
-                </option>
-
-            </select>
-
-
-            <select id="statusFilter">
-
-                <option value="">
-                    All Status
-                </option>
-
-                <option value="Active">
-                    Active
-                </option>
-
-                <option value="Pending">
-                    Pending
-                </option>
-
-                <option value="Archived">
-                    Archived
-                </option>
-
-            </select>
-
-
-            <button
-                id="categoryBtn"
-                class="secondary-btn"
-            >
-                Manage Categories
-            </button>
-
-        </section>
-
-
-
-        <!-- =========================
-             COMBO LIST HEADER
-        ========================== -->
-        <section class="section-heading">
-
-            <div>
-
-                <h3>
-                    Combo List
-                </h3>
-
-                <p>
-                    Manage all your records from one place.
-                </p>
-
-            </div>
-
-            <span id="resultCount">
-                0 records
-            </span>
-
-        </section>
-
-
-
-        <!-- =========================
-             COMBO LIST
-        ========================== -->
-        <section
-            id="comboList"
-            class="combo-list"
-        >
-        </section>
-
-
-        <!-- EMPTY MESSAGE -->
-
-        <div
-            id="emptyState"
-            class="empty-state"
-        >
-
-            <div class="empty-icon">
-                +
-            </div>
-
-            <h3>
-                No Combos Yet
-            </h3>
-
-            <p>
-                Add your first Combo to start building
-                your Janjua Hub database.
-            </p>
-
-            <button
-                id="emptyAddBtn"
-                class="primary-btn"
-            >
-                + Add First Combo
-            </button>
-
-        </div>
-
-    </main>
-
-
-
-    <!-- =========================
-         ADD / EDIT COMBO MODAL
+         LOGIN SCREEN
     ========================== -->
 
-    <div
-        id="comboModal"
-        class="modal hidden"
-    >
+    <section id="loginScreen" class="modal">
 
         <div class="modal-card">
 
             <div class="modal-header">
 
                 <div>
-
-                    <h3 id="modalTitle">
-                        Add Combo
-                    </h3>
-
-                    <p>
-                        Add information about this Combo.
-                    </p>
-
+                    <h3>Janjua Hub Admin</h3>
+                    <p>Sign in to manage your Combo database.</p>
                 </div>
-
-                <button
-                    id="closeModal"
-                    class="close-btn"
-                >
-                    ×
-                </button>
 
             </div>
 
+            <form id="loginForm">
 
-            <form id="comboForm">
+                <label>
+                    Email
 
-                <input
-                    type="hidden"
-                    id="editId"
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Admin email"
+                        autocomplete="email"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Password
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </label>
+
+                <p id="loginMessage" class="muted"></p>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    style="width:100%;"
                 >
-
-
-                <!-- NAME -->
-
-                <label>
-                    Combo Name
-
-                    <input
-                        type="text"
-                        id="comboName"
-                        placeholder="e.g. TradingView"
-                        required
-                    >
-
-                </label>
-
-
-
-                <!-- CATEGORY -->
-
-                <label>
-                    Category
-
-                    <input
-                        type="text"
-                        id="comboCategory"
-                        list="categoryList"
-                        placeholder="e.g. Finance"
-                        required
-                    >
-
-                </label>
-
-
-                <datalist id="categoryList">
-                </datalist>
-
-
-
-                <!-- MAIN LINK -->
-
-                <label>
-                    Main Link
-
-                    <input
-                        type="url"
-                        id="mainLink"
-                        placeholder="https://example.com"
-                    >
-
-                </label>
-
-
-
-                <!-- AFFILIATE LINK -->
-
-                <label>
-                    Affiliate Link
-
-                    <input
-                        type="url"
-                        id="affiliateLink"
-                        placeholder="https://example.com/affiliate"
-                    >
-
-                </label>
-
-
-
-                <!-- NOTES -->
-
-                <label>
-                    Description / Notes
-
-                    <textarea
-                        id="comboNotes"
-                        rows="5"
-                        placeholder="Commission, terms, important notes..."
-                    ></textarea>
-
-                </label>
-
-
-
-                <!-- STATUS -->
-
-                <label>
-                    Status
-
-                    <select id="comboStatus">
-
-                        <option value="Active">
-                            Active
-                        </option>
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                        <option value="Archived">
-                            Archived
-                        </option>
-
-                    </select>
-
-                </label>
-
-
-
-                <!-- FORM BUTTONS -->
-
-                <div class="form-buttons">
-
-                    <button
-                        type="button"
-                        id="cancelBtn"
-                        class="secondary-btn"
-                    >
-                        Cancel
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="primary-btn"
-                    >
-                        Save Combo
-                    </button>
-
-                </div>
+                    Sign In
+                </button>
 
             </form>
 
         </div>
 
-    </div>
-
+    </section>
 
 
     <!-- =========================
-         PASTE COMBO MODAL
+         MAIN APP
     ========================== -->
 
-    <div
-        id="pasteModal"
-        class="modal hidden"
-    >
+    <div id="appShell" style="display:none;">
 
-        <div class="modal-card">
+        <!-- HEADER -->
 
-            <div class="modal-header">
+        <header class="topbar">
 
-                <div>
+            <div class="brand">
 
-                    <h3>
+                <div class="brand-orb">
+                    <span>J</span>
+                </div>
+
+                <div class="brand-text">
+                    <h1>Janjua Hub</h1>
+                    <p>Universal Combo Manager</p>
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;">
+
+                <span
+                    id="adminEmailDisplay"
+                    class="muted"
+                ></span>
+
+                <button
+                    id="logoutBtn"
+                    class="ghost-btn"
+                >
+                    Logout
+                </button>
+
+                <button
+                    id="helpBtn"
+                    class="ghost-btn"
+                >
+                    Help Center
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- MAIN -->
+
+        <main class="container">
+
+            <!-- HERO -->
+
+            <section class="hero">
+
+                <div class="hero-content">
+
+                    <span class="eyebrow">
+                        ONE SYSTEM • MANY COMBOS
+                    </span>
+
+                    <h2>
+                        Manage Everything
+                        in One Place
+                    </h2>
+
+                    <p>
+                        Manage affiliate programs, products, services,
+                        software and business opportunities using one
+                        universal Combo system.
+                    </p>
+
+                </div>
+
+                <div class="hero-buttons">
+
+                    <button id="addBtn" class="primary-btn">
+                        + Add Combo
+                    </button>
+
+                    <button id="pasteBtn" class="secondary-btn">
                         Paste Combo
-                    </h3>
-
-                    <p>
-                        Paste Combo data here.
-                    </p>
+                    </button>
 
                 </div>
 
-                <button
-                    id="closePasteModal"
-                    class="close-btn"
-                >
-                    ×
-                </button>
-
-            </div>
+            </section>
 
 
-            <textarea
-                id="pasteBox"
-                class="paste-box"
-                rows="12"
-                placeholder='Paste Combo JSON here...'
-            ></textarea>
+            <!-- STATS -->
 
+            <section class="stats">
 
-            <div class="form-buttons">
-
-                <button
-                    id="cancelPasteBtn"
-                    class="secondary-btn"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    id="importPasteBtn"
-                    class="primary-btn"
-                >
-                    Import Combo
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================
-         CATEGORY MANAGEMENT
-    ========================== -->
-
-    <div
-        id="categoryModal"
-        class="modal hidden"
-    >
-
-        <div class="modal-card">
-
-            <div class="modal-header">
-
-                <div>
-
-                    <h3>
-                        Category Management
-                    </h3>
-
-                    <p>
-                        Add or remove categories.
-                    </p>
-
+                <div class="stat-card">
+                    <strong id="totalCount">0</strong>
+                    <span>Total Combos</span>
                 </div>
 
-                <button
-                    id="closeCategoryModal"
-                    class="close-btn"
-                >
-                    ×
-                </button>
+                <div class="stat-card">
+                    <strong id="activeCount">0</strong>
+                    <span>Active</span>
+                </div>
 
-            </div>
+                <div class="stat-card">
+                    <strong id="pendingCount">0</strong>
+                    <span>Pending</span>
+                </div>
+
+                <div class="stat-card">
+                    <strong id="archivedCount">0</strong>
+                    <span>Archived</span>
+                </div>
+
+            </section>
 
 
-            <div class="category-add">
+            <!-- SEARCH -->
+
+            <section class="toolbar">
 
                 <input
-                    type="text"
-                    id="newCategory"
-                    placeholder="New Category"
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search combos..."
                 >
 
+                <select id="categoryFilter">
+                    <option value="">
+                        All Categories
+                    </option>
+                </select>
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Archived">
+                        Archived
+                    </option>
+
+                </select>
 
                 <button
-                    id="addCategoryBtn"
+                    id="categoryBtn"
+                    class="secondary-btn"
+                >
+                    Manage Categories
+                </button>
+
+            </section>
+
+
+            <!-- LIST HEADER -->
+
+            <section class="section-heading">
+
+                <div>
+                    <h3>Combo List</h3>
+
+                    <p>
+                        Manage all your records from one place.
+                    </p>
+                </div>
+
+                <span id="resultCount">
+                    0 records
+                </span>
+
+            </section>
+
+
+            <!-- COMBOS -->
+
+            <section
+                id="comboList"
+                class="combo-list"
+            ></section>
+
+
+            <!-- EMPTY -->
+
+            <div
+                id="emptyState"
+                class="empty-state"
+            >
+
+                <div class="empty-icon">
+                    +
+                </div>
+
+                <h3>
+                    No Combos Yet
+                </h3>
+
+                <p>
+                    Add your first Combo to start building
+                    your Janjua Hub database.
+                </p>
+
+                <button
+                    id="emptyAddBtn"
                     class="primary-btn"
                 >
-                    Add
+                    + Add First Combo
                 </button>
 
             </div>
 
+        </main>
 
-            <div
-                id="categoryListView"
-                class="category-list"
-            >
+
+        <!-- =========================
+             ADD / EDIT COMBO
+        ========================== -->
+
+        <div
+            id="comboModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-card">
+
+                <div class="modal-header">
+
+                    <div>
+                        <h3 id="modalTitle">
+                            Add Combo
+                        </h3>
+
+                        <p>
+                            Add information about this Combo.
+                        </p>
+                    </div>
+
+                    <button
+                        id="closeModal"
+                        class="close-btn"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="comboForm">
+
+                    <input
+                        type="hidden"
+                        id="editId"
+                    >
+
+                    <label>
+                        Combo Name
+
+                        <input
+                            type="text"
+                            id="comboName"
+                            placeholder="e.g. TradingView"
+                            required
+                        >
+                    </label>
+
+
+                    <label>
+                        Category
+
+                        <input
+                            type="text"
+                            id="comboCategory"
+                            list="categoryList"
+                            placeholder="e.g. Finance"
+                            required
+                        >
+                    </label>
+
+                    <datalist id="categoryList"></datalist>
+
+
+                    <label>
+                        Main Link
+
+                        <input
+                            type="url"
+                            id="mainLink"
+                            placeholder="https://example.com"
+                        >
+                    </label>
+
+
+                    <label>
+                        Affiliate Link
+
+                        <input
+                            type="url"
+                            id="affiliateLink"
+                            placeholder="https://example.com/affiliate"
+                        >
+                    </label>
+
+
+                    <label>
+                        Description / Notes
+
+                        <textarea
+                            id="comboNotes"
+                            rows="5"
+                            placeholder="Commission, terms, important notes..."
+                        ></textarea>
+                    </label>
+
+
+                    <label>
+                        Status
+
+                        <select id="comboStatus">
+
+                            <option value="Active">
+                                Active
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Archived">
+                                Archived
+                            </option>
+
+                        </select>
+                    </label>
+
+
+                    <div class="form-buttons">
+
+                        <button
+                            type="button"
+                            id="cancelBtn"
+                            class="secondary-btn"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="primary-btn"
+                        >
+                            Save Combo
+                        </button>
+
+                    </div>
+
+                </form>
+
             </div>
 
         </div>
 
-    </div>
+
+        <!-- =========================
+             PASTE COMBO
+        ========================== -->
+
+        <div
+            id="pasteModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-card">
+
+                <div class="modal-header">
+
+                    <div>
+                        <h3>Paste Combo</h3>
+
+                        <p>
+                            Paste Combo data here.
+                        </p>
+                    </div>
+
+                    <button
+                        id="closePasteModal"
+                        class="close-btn"
+                    >
+                        ×
+                    </button>
+
+                </div>
 
 
+                <textarea
+                    id="pasteBox"
+                    class="paste-box"
+                    rows="12"
+                    placeholder='Paste Combo JSON here...'
+                ></textarea>
 
-    <!-- =========================
-         HELP CENTER
-    ========================== -->
 
-    <div
-        id="helpModal"
-        class="modal hidden"
-    >
+                <div class="form-buttons">
 
-        <div class="modal-card">
+                    <button
+                        id="cancelPasteBtn"
+                        class="secondary-btn"
+                    >
+                        Cancel
+                    </button>
 
-            <div class="modal-header">
+                    <button
+                        id="importPasteBtn"
+                        class="primary-btn"
+                    >
+                        Import Combo
+                    </button>
 
-                <div>
+                </div>
 
-                    <h3>
-                        Janjua Hub Help Center
-                    </h3>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================== -->
+
+        <div
+            id="categoryModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-card">
+
+                <div class="modal-header">
+
+                    <div>
+                        <h3>
+                            Category Management
+                        </h3>
+
+                        <p>
+                            Add or remove categories.
+                        </p>
+                    </div>
+
+                    <button
+                        id="closeCategoryModal"
+                        class="close-btn"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="category-add">
+
+                    <input
+                        type="text"
+                        id="newCategory"
+                        placeholder="New Category"
+                    >
+
+                    <button
+                        id="addCategoryBtn"
+                        class="primary-btn"
+                    >
+                        Add
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="categoryListView"
+                    class="category-list"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             HELP
+        ========================== -->
+
+        <div
+            id="helpModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-card">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <h3>
+                            Janjua Hub Help Center
+                        </h3>
+
+                        <p>
+                            Need help with your Combo system?
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="closeHelpModal"
+                        class="close-btn"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="help-content">
+
+                    <h4>
+                        How Janjua Hub Works
+                    </h4>
 
                     <p>
-                        Need help with your Combo system?
+                        Janjua Hub is a universal system.
+                        Every company, product, service or
+                        affiliate opportunity can be stored
+                        as a Combo.
+                    </p>
+
+
+                    <h4>
+                        Add a Combo
+                    </h4>
+
+                    <p>
+                        Use Add Combo to create a new record
+                        with its name, category, links,
+                        description and status.
+                    </p>
+
+
+                    <h4>
+                        Paste a Combo
+                    </h4>
+
+                    <p>
+                        Use Paste Combo when you already have
+                        structured Combo information that
+                        you want to import.
+                    </p>
+
+
+                    <h4>
+                        Help Desk
+                    </h4>
+
+                    <p>
+                        The existing Gmail/Form based Help Desk
+                        workflow will be connected in the next
+                        stage without rebuilding the existing
+                        workflow.
                     </p>
 
                 </div>
 
-                <button
-                    id="closeHelpModal"
-                    class="close-btn"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div class="help-content">
-
-                <h4>
-                    How Janjua Hub Works
-                </h4>
-
-                <p>
-                    Janjua Hub is a universal system.
-                    Every company, product, service or
-                    affiliate opportunity can be stored
-                    as a Combo.
-                </p>
-
-
-                <h4>
-                    Add a Combo
-                </h4>
-
-                <p>
-                    Use Add Combo to create a new record
-                    with its name, category, links,
-                    description and status.
-                </p>
-
-
-                <h4>
-                    Paste a Combo
-                </h4>
-
-                <p>
-                    Use Paste Combo when you already have
-                    structured Combo information that you
-                    want to import.
-                </p>
-
-
-                <h4>
-                    Help Desk
-                </h4>
-
-                <p>
-                    The existing Gmail/Form based Help Desk
-                    workflow will be connected in the next
-                    stage without rebuilding the existing
-                    workflow.
-                </p>
-
             </div>
 
         </div>
@@ -668,12 +655,9 @@
     </div>
 
 
+    <!-- Firebase + Janjua Hub -->
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================== -->
-
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 
 </body>
 </html>
