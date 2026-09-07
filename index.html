@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Janjua Hub</title>
 
@@ -11,73 +14,147 @@
 
 <body>
 
-    <!-- =========================
+    <!-- =====================================================
          LOGIN SCREEN
-    ========================== -->
+         ===================================================== -->
 
-    <section id="loginScreen" class="modal">
+    <section
+        id="loginScreen"
+        class="login-screen"
+    >
 
-        <div class="modal-card">
+        <div class="login-card">
 
-            <div class="modal-header">
+            <!-- Logo -->
 
-                <div>
-                    <h3>Janjua Hub Admin</h3>
-                    <p>Sign in to manage your Combo database.</p>
+            <div class="login-logo-wrap">
+
+                <div class="login-orb">
+                    <span>J</span>
                 </div>
 
             </div>
 
+
+            <!-- Heading -->
+
+            <div class="login-header">
+
+                <div class="login-badge">
+                    ADMIN ACCESS
+                </div>
+
+                <h1>
+                    Janjua Hub
+                </h1>
+
+                <h2>
+                    Admin Panel
+                </h2>
+
+                <p>
+                    Sign in to securely manage your
+                    Combo database.
+                </p>
+
+            </div>
+
+
+            <!-- Login Form -->
+
             <form id="loginForm">
 
-                <label>
-                    Email
+                <div class="login-field">
 
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="Admin email"
-                        autocomplete="email"
-                        required
-                    >
-                </label>
+                    <label for="loginEmail">
+                        Email Address
+                    </label>
 
-                <label>
-                    Password
+                    <div class="input-wrap">
 
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        placeholder="Password"
-                        autocomplete="current-password"
-                        required
-                    >
-                </label>
+                        <span class="input-icon">
+                            @
+                        </span>
 
-                <p id="loginMessage" class="muted"></p>
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            placeholder="Enter admin email"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="login-field">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <div class="input-wrap">
+
+                        <span class="input-icon">
+                            •
+                        </span>
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    id="loginMessage"
+                    class="login-message"
+                ></p>
+
 
                 <button
                     type="submit"
-                    class="primary-btn"
-                    style="width:100%;"
+                    class="login-submit"
                 >
-                    Sign In
+                    <span>
+                        Sign In to Janjua Hub
+                    </span>
                 </button>
 
             </form>
+
+
+            <div class="login-footer">
+                Secure Admin Access
+            </div>
 
         </div>
 
     </section>
 
 
-    <!-- =========================
-         MAIN APP
-    ========================== -->
+    <!-- =====================================================
+         MAIN APPLICATION
+         IMPORTANT:
+         Hidden until Firebase Admin authentication succeeds.
+         ===================================================== -->
 
-    <div id="appShell" style="display:none;">
+    <div
+        id="appShell"
+        class="app-shell-hidden"
+    >
 
-        <!-- HEADER -->
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
         <header class="topbar">
 
@@ -88,13 +165,21 @@
                 </div>
 
                 <div class="brand-text">
-                    <h1>Janjua Hub</h1>
-                    <p>Universal Combo Manager</p>
+
+                    <h1>
+                        Janjua Hub
+                    </h1>
+
+                    <p>
+                        Universal Combo Manager
+                    </p>
+
                 </div>
 
             </div>
 
-            <div style="display:flex;gap:8px;align-items:center;">
+
+            <div class="header-actions">
 
                 <span
                     id="adminEmailDisplay"
@@ -120,7 +205,9 @@
         </header>
 
 
-        <!-- MAIN -->
+        <!-- =================================================
+             MAIN
+             ================================================= -->
 
         <main class="container">
 
@@ -140,20 +227,28 @@
                     </h2>
 
                     <p>
-                        Manage affiliate programs, products, services,
-                        software and business opportunities using one
-                        universal Combo system.
+                        Manage affiliate programs, products,
+                        services, software and business
+                        opportunities using one universal
+                        Combo system.
                     </p>
 
                 </div>
 
+
                 <div class="hero-buttons">
 
-                    <button id="addBtn" class="primary-btn">
+                    <button
+                        id="addBtn"
+                        class="primary-btn"
+                    >
                         + Add Combo
                     </button>
 
-                    <button id="pasteBtn" class="secondary-btn">
+                    <button
+                        id="pasteBtn"
+                        class="secondary-btn"
+                    >
                         Paste Combo
                     </button>
 
@@ -162,34 +257,69 @@
             </section>
 
 
-            <!-- STATS -->
+            <!-- =================================================
+                 STATS
+                 ================================================= -->
 
             <section class="stats">
 
                 <div class="stat-card">
-                    <strong id="totalCount">0</strong>
-                    <span>Total Combos</span>
+
+                    <strong id="totalCount">
+                        0
+                    </strong>
+
+                    <span>
+                        Total Combos
+                    </span>
+
                 </div>
 
-                <div class="stat-card">
-                    <strong id="activeCount">0</strong>
-                    <span>Active</span>
-                </div>
 
                 <div class="stat-card">
-                    <strong id="pendingCount">0</strong>
-                    <span>Pending</span>
+
+                    <strong id="activeCount">
+                        0
+                    </strong>
+
+                    <span>
+                        Active
+                    </span>
+
                 </div>
 
+
                 <div class="stat-card">
-                    <strong id="archivedCount">0</strong>
-                    <span>Archived</span>
+
+                    <strong id="pendingCount">
+                        0
+                    </strong>
+
+                    <span>
+                        Pending
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <strong id="archivedCount">
+                        0
+                    </strong>
+
+                    <span>
+                        Archived
+                    </span>
+
                 </div>
 
             </section>
 
 
-            <!-- SEARCH -->
+            <!-- =================================================
+                 SEARCH / FILTER
+                 ================================================= -->
 
             <section class="toolbar">
 
@@ -199,11 +329,15 @@
                     placeholder="Search combos..."
                 >
 
+
                 <select id="categoryFilter">
+
                     <option value="">
                         All Categories
                     </option>
+
                 </select>
+
 
                 <select id="statusFilter">
 
@@ -225,6 +359,7 @@
 
                 </select>
 
+
                 <button
                     id="categoryBtn"
                     class="secondary-btn"
@@ -235,16 +370,22 @@
             </section>
 
 
-            <!-- LIST HEADER -->
+            <!-- =================================================
+                 SECTION HEADING
+                 ================================================= -->
 
             <section class="section-heading">
 
                 <div>
-                    <h3>Combo List</h3>
+
+                    <h3>
+                        Combo List
+                    </h3>
 
                     <p>
                         Manage all your records from one place.
                     </p>
+
                 </div>
 
                 <span id="resultCount">
@@ -254,7 +395,9 @@
             </section>
 
 
-            <!-- COMBOS -->
+            <!-- =================================================
+                 COMBO LIST
+                 ================================================= -->
 
             <section
                 id="comboList"
@@ -262,7 +405,9 @@
             ></section>
 
 
-            <!-- EMPTY -->
+            <!-- =================================================
+                 EMPTY STATE
+                 ================================================= -->
 
             <div
                 id="emptyState"
@@ -294,9 +439,9 @@
         </main>
 
 
-        <!-- =========================
-             ADD / EDIT COMBO
-        ========================== -->
+        <!-- =================================================
+             ADD / EDIT COMBO MODAL
+             ================================================= -->
 
         <div
             id="comboModal"
@@ -308,6 +453,7 @@
                 <div class="modal-header">
 
                     <div>
+
                         <h3 id="modalTitle">
                             Add Combo
                         </h3>
@@ -315,6 +461,7 @@
                         <p>
                             Add information about this Combo.
                         </p>
+
                     </div>
 
                     <button
@@ -334,6 +481,7 @@
                         id="editId"
                     >
 
+
                     <label>
                         Combo Name
 
@@ -343,6 +491,7 @@
                             placeholder="e.g. TradingView"
                             required
                         >
+
                     </label>
 
 
@@ -356,7 +505,9 @@
                             placeholder="e.g. Finance"
                             required
                         >
+
                     </label>
+
 
                     <datalist id="categoryList"></datalist>
 
@@ -369,6 +520,7 @@
                             id="mainLink"
                             placeholder="https://example.com"
                         >
+
                     </label>
 
 
@@ -380,6 +532,7 @@
                             id="affiliateLink"
                             placeholder="https://example.com/affiliate"
                         >
+
                     </label>
 
 
@@ -391,6 +544,7 @@
                             rows="5"
                             placeholder="Commission, terms, important notes..."
                         ></textarea>
+
                     </label>
 
 
@@ -412,6 +566,7 @@
                             </option>
 
                         </select>
+
                     </label>
 
 
@@ -441,9 +596,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              PASTE COMBO
-        ========================== -->
+             ================================================= -->
 
         <div
             id="pasteModal"
@@ -455,11 +610,15 @@
                 <div class="modal-header">
 
                     <div>
-                        <h3>Paste Combo</h3>
+
+                        <h3>
+                            Paste Combo
+                        </h3>
 
                         <p>
                             Paste Combo data here.
                         </p>
+
                     </div>
 
                     <button
@@ -476,7 +635,7 @@
                     id="pasteBox"
                     class="paste-box"
                     rows="12"
-                    placeholder='Paste Combo JSON here...'
+                    placeholder="Paste Combo JSON here..."
                 ></textarea>
 
 
@@ -503,9 +662,9 @@
         </div>
 
 
-        <!-- =========================
-             CATEGORIES
-        ========================== -->
+        <!-- =================================================
+             CATEGORY MANAGEMENT
+             ================================================= -->
 
         <div
             id="categoryModal"
@@ -517,6 +676,7 @@
                 <div class="modal-header">
 
                     <div>
+
                         <h3>
                             Category Management
                         </h3>
@@ -524,6 +684,7 @@
                         <p>
                             Add or remove categories.
                         </p>
+
                     </div>
 
                     <button
@@ -564,9 +725,9 @@
         </div>
 
 
-        <!-- =========================
-             HELP
-        ========================== -->
+        <!-- =================================================
+             HELP CENTER
+             ================================================= -->
 
         <div
             id="helpModal"
@@ -655,9 +816,14 @@
     </div>
 
 
-    <!-- Firebase + Janjua Hub -->
+    <!-- =====================================================
+         FIREBASE + JANJUA HUB
+         ===================================================== -->
 
-    <script type="module" src="app.js"></script>
+    <script
+        type="module"
+        src="app.js"
+    ></script>
 
 </body>
 </html>
