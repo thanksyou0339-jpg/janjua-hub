@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Janjua Hub - Redirecting</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+            background:
+                radial-gradient(
+                    circle at top,
+                    #18233b 0%,
+                    #090d17 45%,
+                    #05070d 100%
+                );
+            color: #ffffff;
+        }
+
+        .redirect-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 28px;
+            text-align: center;
+            border-radius: 24px;
+            background:
+                rgba(18, 25, 42, 0.88);
+            border: 1px solid
+                rgba(255,255,255,0.10);
+            box-shadow:
+                0 30px 80px
+                rgba(0,0,0,0.45);
+        }
+
+        .orb {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            background:
+                radial-gradient(
+                    circle at 30% 30%,
+                    #ffffff,
+                    #72a7ff 18%,
+                    #3867ff 42%,
+                    #161d55 72%,
+                    #080b1c 100%
+                );
+            box-shadow:
+                0 0 35px
+                rgba(80,120,255,0.55);
+            animation: pulse 1.8s ease-in-out infinite;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 26px;
+        }
+
+        p {
+            margin: 0;
+            color: #aeb9cf;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #ff8f8f;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: 0.78;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="redirect-card">
+
+        <div class="orb"></div>
+
+        <h1 id="title">
+            Janjua Hub
+        </h1>
+
+        <p id="message">
+            Redirecting...
+        </p>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+        import {
+            getFirestore,
+            doc,
+            updateDoc,
+            increment
+        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+        /* ================================================
+           FIREBASE
+        ================================================ */
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
+
+            authDomain:
+                "all-in-one-marketing.firebaseapp.com",
+
+            projectId:
+                "all-in-one-marketing",
+
+            storageBucket:
+                "all-in-one-marketing.firebasestorage.app",
+
+            messagingSenderId:
+                "701353417673",
+
+            appId:
+                "1:701353417673:web:84b5cce6029f98b89fa618"
+        };
+
+
+        const app =
+            initializeApp(firebaseConfig);
+
+        const db =
+            getFirestore(app);
+
+
+        /* ================================================
+           ELEMENTS
+        ================================================ */
+
+        const title =
+            document.getElementById("title");
+
+        const message =
+            document.getElementById("message");
+
+
+        /* ================================================
+           URL VALIDATION
+        ================================================ */
+
+        function isValidHttpUrl(value) {
+
+            try {
+
+                const url =
+                    new URL(value);
+
+                return (
+                    url.protocol === "http:" ||
+                    url.protocol === "https:"
+                );
+
+            } catch (error) {
+
+                return false;
+            }
+        }
+
+
+        /* ================================================
+           REDIRECT
+        ================================================ */
+
+        async function redirectUser() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const id =
+                params.get("id");
+
+            const targetUrl =
+                params.get("url");
+
+
+            if (!id || !targetUrl) {
+
+                title.textContent =
+                    "Invalid Link";
+
+                message.textContent =
+                    "Marketing link درست نہیں ہے۔";
+
+                message.classList.add(
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                !/^[A-Za-z0-9_-]+$/.test(id)
+            ) {
+
+                title.textContent =
+                    "Invalid Link";
+
+                message.textContent =
+                    "Marketing link ID درست نہیں ہے۔";
+
+                message.classList.add(
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!isValidHttpUrl(targetUrl)) {
+
+                title.textContent =
+                    "Invalid Destination";
+
+                message.textContent =
+                    "Destination URL درست نہیں ہے۔";
+
+                message.classList.add(
+                    "error"
+                );
+
+                return;
+            }
+
+
+            message.textContent =
+                "Redirecting you now...";
+
+
+            try {
+
+                const linkRef =
+                    doc(
+                        db,
+                        "marketingLinks",
+                        id
+                    );
+
+
+                await updateDoc(
+                    linkRef,
+                    {
+                        clicks:
+                            increment(1)
+                    }
+                );
+
+
+            } catch (error) {
+
+                /*
+                    Click tracking fail ہو بھی جائے
+                    تو user کو اصل destination
+                    پر جانا چاہیے۔
+                */
+
+                console.error(
+                    "Click tracking error:",
+                    error
+                );
+            }
+
+
+            window.location.replace(
+                targetUrl
+            );
+        }
+
+
+        redirectUser();
+
+    </script>
+
+</body>
+
+</html>
