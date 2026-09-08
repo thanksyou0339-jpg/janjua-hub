@@ -62,7 +62,7 @@ const db =
 ========================================================= */
 
 const ADMIN_UID =
-    "Va1ERyp4TJR8OVOf0MVjDYPC8hk2";
+    "CIBDAEAysWajofKyAKa1Mzf70rB2";
 
 const ADMIN_EMAIL =
     "thanksyou0339@gmail.com";
@@ -274,10 +274,19 @@ function addPasswordToggle() {
     wrapper.style.width =
         "100%";
 
-    adminPassword.parentNode.insertBefore(
-        wrapper,
-        adminPassword
-    );
+    if (
+        adminPassword.parentNode
+    ) {
+
+        adminPassword.parentNode.insertBefore(
+            wrapper,
+            adminPassword
+        );
+
+    } else {
+
+        return;
+    }
 
     wrapper.appendChild(
         adminPassword
@@ -303,6 +312,11 @@ function addPasswordToggle() {
 
     button.setAttribute(
         "aria-label",
+        "Show password"
+    );
+
+    button.setAttribute(
+        "title",
         "Show password"
     );
 
@@ -362,6 +376,11 @@ function addPasswordToggle() {
                     "Hide password"
                 );
 
+                button.setAttribute(
+                    "title",
+                    "Hide password"
+                );
+
             } else {
 
                 adminPassword.type =
@@ -372,6 +391,11 @@ function addPasswordToggle() {
 
                 button.setAttribute(
                     "aria-label",
+                    "Show password"
+                );
+
+                button.setAttribute(
+                    "title",
                     "Show password"
                 );
             }
