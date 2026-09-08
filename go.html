@@ -132,6 +132,10 @@
                     246,
                     0.35
                 );
+
+            animation:
+                pulse 2.2s
+                ease-in-out infinite;
         }
 
         h1 {
@@ -233,6 +237,46 @@
             }
         }
 
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform:
+                    scale(1);
+            }
+
+            50% {
+                transform:
+                    scale(1.04);
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 16px;
+            }
+
+            .card {
+                padding:
+                    34px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .logo,
+            .spinner {
+                animation: none;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -257,11 +301,13 @@
         <div
             id="spinner"
             class="spinner"
+            aria-label="Loading"
         ></div>
 
         <div
             id="errorBox"
             class="error hidden"
+            role="alert"
         ></div>
 
     </main>
@@ -286,7 +332,7 @@
 
 
         /* =====================================================
-           FIREBASE
+           FIREBASE CONFIGURATION
         ===================================================== */
 
         const firebaseConfig = {
@@ -324,7 +370,7 @@
 
 
         /* =====================================================
-           DOM
+           DOM ELEMENTS
         ===================================================== */
 
         const message =
@@ -344,7 +390,7 @@
 
 
         /* =====================================================
-           ERROR HANDLER
+           SHOW ERROR
         ===================================================== */
 
         function showError(text) {
@@ -375,7 +421,7 @@
 
 
         /* =====================================================
-           READ CLEAN MARKETING LINK
+           GET MARKETING LINK ID
         ===================================================== */
 
         const params =
@@ -385,11 +431,13 @@
 
 
         const id =
-            params.get("id");
+            String(
+                params.get("id") || ""
+            ).trim();
 
 
         /* =====================================================
-           VALIDATE ID
+           VALIDATE MARKETING LINK ID
         ===================================================== */
 
         if (
@@ -404,11 +452,12 @@
         } else {
 
             redirectToTarget();
+
         }
 
 
         /* =====================================================
-           REDIRECT
+           LOAD PUBLIC REDIRECT
         ===================================================== */
 
         async function redirectToTarget() {
@@ -419,16 +468,17 @@
 
                     message.textContent =
                         "Preparing your destination...";
+
                 }
 
 
                 /* =================================================
-                   PUBLIC REDIRECT DOCUMENT
-                   
+                   PUBLIC REDIRECT
+
                    publicRedirects/{id}
-                   
-                   This is the public-safe mapping used by
-                   the clean go.html?id=... URL.
+
+                   This document contains only the information
+                   required by the public redirect page.
                 ================================================= */
 
                 const publicRef =
@@ -446,7 +496,7 @@
 
 
                 /* =================================================
-                   LINK NOT FOUND
+                   LINK DOES NOT EXIST
                 ================================================= */
 
                 if (
@@ -458,6 +508,7 @@
                     );
 
                     return;
+
                 }
 
 
@@ -467,20 +518,18 @@
 
                 const targetUrl =
                     String(
-                        data.targetUrl ||
-                        ""
+                        data.targetUrl || ""
                     ).trim();
 
 
                 const status =
                     String(
-                        data.status ||
-                        "Active"
-                    );
+                        data.status || "Active"
+                    ).trim();
 
 
                 /* =================================================
-                   DESTINATION CHECK
+                   DESTINATION REQUIRED
                 ================================================= */
 
                 if (!targetUrl) {
@@ -490,16 +539,16 @@
                     );
 
                     return;
+
                 }
 
 
                 /* =================================================
-                   STATUS CHECK
+                   LINK STATUS
                 ================================================= */
 
                 if (
-                    status !==
-                    "Active"
+                    status !== "Active"
                 ) {
 
                     showError(
@@ -507,11 +556,12 @@
                     );
 
                     return;
+
                 }
 
 
                 /* =================================================
-                   URL VALIDATION
+                   VALIDATE DESTINATION URL
                 ================================================= */
 
                 let destination;
@@ -535,14 +585,17 @@
                     );
 
                     return;
+
                 }
 
 
+                /* =================================================
+                   ALLOW ONLY HTTP / HTTPS
+                ================================================= */
+
                 if (
-                    destination.protocol !==
-                        "http:" &&
-                    destination.protocol !==
-                        "https:"
+                    destination.protocol !== "http:" &&
+                    destination.protocol !== "https:"
                 ) {
 
                     showError(
@@ -550,17 +603,19 @@
                     );
 
                     return;
+
                 }
 
 
                 /* =================================================
                    CLICK TRACKING
-                   
-                   Click count is stored in:
+
                    marketingLinks/{id}
-                   
-                   The public redirect itself is read from:
-                   publicRedirects/{id}
+
+                   Tracking is intentionally non-blocking.
+
+                   If tracking fails, the visitor will still
+                   be redirected to the destination.
                 ================================================= */
 
                 try {
@@ -581,7 +636,6 @@
                         }
                     );
 
-
                 } catch (trackingError) {
 
                     console.warn(
@@ -600,6 +654,7 @@
 
                     message.textContent =
                         "Redirecting...";
+
                 }
 
 
@@ -615,10 +670,13 @@
                     error
                 );
 
+
                 showError(
                     "Unable to open this marketing link right now."
                 );
+
             }
+
         }
 
     </script>
