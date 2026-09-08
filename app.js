@@ -125,6 +125,12 @@ const pendingCount =
 const archivedCount =
     document.getElementById("archivedCount");
 
+const totalMarketingCount =
+    document.getElementById("totalMarketingCount");
+
+const totalClicksCount =
+    document.getElementById("totalClicksCount");
+
 
 /* =========================================================
    FILTERS
@@ -355,26 +361,11 @@ function showDashboard() {
 function escapeHTML(value) {
 
     return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -439,18 +430,6 @@ function getMarketingTarget(combo) {
 }
 
 
-/*
-   IMPORTANT
-
-   Public URL میں اب targetUrl شامل نہیں ہوگا۔
-
-   پہلے:
-   go.html?id=XXXX&url=https://...
-
-   اب:
-   go.html?id=XXXX
-*/
-
 function buildMarketingUrl(id) {
 
     const goUrl =
@@ -485,18 +464,13 @@ function getMarketingStatus(link) {
 }
 
 
-function getMarketingStatusClass(
-    status
-) {
+function getMarketingStatusClass(status) {
 
     return String(
         status || "Active"
     )
         .toLowerCase()
-        .replace(
-            /\s+/g,
-            "-"
-        );
+        .replace(/\s+/g, "-");
 }
 
 
@@ -587,12 +561,54 @@ function getTimeValue(value) {
 
 
 /* =========================================================
+   DASHBOARD MARKETING STATS
+========================================================= */
+
+function updateMarketingStats() {
+
+    const links =
+        Object.values(
+            marketingLinks
+        );
+
+    const totalLinks =
+        links.length;
+
+    const totalClicks =
+        links.reduce(
+            function(total, link) {
+
+                return (
+                    total +
+                    (
+                        Number(
+                            link?.clicks
+                        ) || 0
+                    )
+                );
+            },
+            0
+        );
+
+    if (totalMarketingCount) {
+
+        totalMarketingCount.textContent =
+            totalLinks;
+    }
+
+    if (totalClicksCount) {
+
+        totalClicksCount.textContent =
+            totalClicks;
+    }
+}
+
+
+/* =========================================================
    MODALS
 ========================================================= */
 
-function openComboModal(
-    combo = null
-) {
+function openComboModal(combo = null) {
 
     if (!comboModal) {
         return;
@@ -793,9 +809,7 @@ if (loginForm) {
 
                 if (!isAdmin) {
 
-                    await signOut(
-                        auth
-                    );
+                    await signOut(auth);
 
                     loginMessage.textContent =
                         "یہ اکاؤنٹ Admin نہیں ہے۔";
@@ -875,9 +889,7 @@ if (logoutBtn) {
 
             try {
 
-                await signOut(
-                    auth
-                );
+                await signOut(auth);
 
             } catch (error) {
 
@@ -899,38 +911,6 @@ async function checkAdmin(user) {
 
     if (!user) {
         return false;
-    }
-
-    if (
-        user.email &&
-        user.email.toLowerCase() ===
-        ADMIN_EMAIL.toLowerCase()
-    ) {
-
-        const adminRef =
-            doc(
-                db,
-                "users",
-                user.uid
-            );
-
-        const adminSnap =
-            await getDoc(
-                adminRef
-            );
-
-        if (
-            adminSnap.exists()
-        ) {
-
-            const data =
-                adminSnap.data();
-
-            return (
-                data.role ===
-                "admin"
-            );
-        }
     }
 
     const userRef =
@@ -989,9 +969,7 @@ onAuthStateChanged(
 
             if (!isAdmin) {
 
-                await signOut(
-                    auth
-                );
+                await signOut(auth);
 
                 currentUser = null;
 
@@ -1014,9 +992,7 @@ onAuthStateChanged(
                 error
             );
 
-            await signOut(
-                auth
-            );
+            await signOut(auth);
 
             currentUser = null;
 
@@ -1046,13 +1022,11 @@ async function loadCombos() {
             snapshot.docs.map(
                 function(item) {
 
-                    const data =
-                        item.data();
-
                     return {
                         id:
                             item.id,
-                        ...data
+
+                        ...item.data()
                     };
                 }
             );
@@ -1089,13 +1063,11 @@ async function loadCategories() {
             snapshot.docs.map(
                 function(item) {
 
-                    const data =
-                        item.data();
-
                     return {
                         id:
                             item.id,
-                        ...data
+
+                        ...item.data()
                     };
                 }
             );
@@ -1333,33 +1305,28 @@ if (comboForm) {
                         ]
                     ) {
 
-                        const updatedCombo =
-                            {
-                                ...(index !== -1
-                                    ? combos[index]
-                                    : {}),
+                        const updatedCombo = {
+                            id:
+                                existingId,
 
-                                id:
-                                    existingId,
+                            name:
+                                name,
 
-                                name:
-                                    name,
+                            category:
+                                category,
 
-                                category:
-                                    category,
+                            mainLink:
+                                main,
 
-                                mainLink:
-                                    main,
+                            affiliateLink:
+                                affiliate,
 
-                                affiliateLink:
-                                    affiliate,
+                            notes:
+                                notes,
 
-                                notes:
-                                    notes,
-
-                                status:
-                                    status
-                            };
+                            status:
+                                status
+                        };
 
                         const newTarget =
                             getMarketingTarget(
@@ -1380,6 +1347,10 @@ if (comboForm) {
                                 existingId
                             );
 
+                        const existingLink =
+                            marketingLinks[
+                                existingId
+                            ];
 
                         await updateDoc(
                             linkRef,
@@ -1389,9 +1360,7 @@ if (comboForm) {
 
                                 targetUrl:
                                     newTarget ||
-                                    marketingLinks[
-                                        existingId
-                                    ].targetUrl ||
+                                    existingLink.targetUrl ||
                                     "",
 
                                 updatedAt:
@@ -1401,64 +1370,47 @@ if (comboForm) {
 
 
                         /*
-                           Public redirect میں صرف
-                           ضروری redirect information رکھیں۔
+                           Always make sure the public
+                           redirect exists and is synced.
                         */
 
-                        if (newTarget) {
+                        await setDoc(
+                            publicRef,
+                            {
+                                targetUrl:
+                                    newTarget ||
+                                    existingLink.targetUrl ||
+                                    "",
 
-                            await setDoc(
-                                publicRef,
-                                {
-                                    targetUrl:
-                                        newTarget,
+                                status:
+                                    existingLink.status ||
+                                    "Active",
 
-                                    status:
-                                        marketingLinks[
-                                            existingId
-                                        ].status ||
-                                        "Active",
-
-                                    updatedAt:
-                                        serverTimestamp()
-                                },
-                                {
-                                    merge:
-                                        true
-                                }
-                            );
-
-                        } else {
-
-                            await updateDoc(
-                                publicRef,
-                                {
-                                    targetUrl:
-                                        "",
-
-                                    updatedAt:
-                                        serverTimestamp()
-                                }
-                            );
-                        }
+                                updatedAt:
+                                    serverTimestamp()
+                            },
+                            {
+                                merge:
+                                    true
+                            }
+                        );
 
 
                         marketingLinks[
                             existingId
                         ] = {
-                            ...marketingLinks[
-                                existingId
-                            ],
+                            ...existingLink,
 
                             comboName:
                                 name,
 
                             targetUrl:
                                 newTarget ||
-                                marketingLinks[
-                                    existingId
-                                ].targetUrl ||
-                                ""
+                                existingLink.targetUrl ||
+                                "",
+
+                            updatedAt:
+                                new Date()
                         };
                     }
 
@@ -1552,9 +1504,7 @@ function editCombo(id) {
         return;
     }
 
-    openComboModal(
-        combo
-    );
+    openComboModal(combo);
 }
 
 
@@ -1594,14 +1544,6 @@ async function deleteCombo(id) {
         );
 
 
-        /*
-           Combo delete ہونے پر public redirect
-           بھی delete کر دیا جائے گا۔
-
-           Marketing history/click document
-           marketingLinks میں محفوظ رہے گا۔
-        */
-
         try {
 
             await deleteDoc(
@@ -1612,9 +1554,7 @@ async function deleteCombo(id) {
                 )
             );
 
-        } catch (
-            publicDeleteError
-        ) {
+        } catch (publicDeleteError) {
 
             console.warn(
                 "Public Redirect Delete Warning:",
@@ -1628,6 +1568,11 @@ async function deleteCombo(id) {
                 item =>
                     item.id !== id
             );
+
+        /*
+           Local marketing link remove کریں۔
+           Firestore marketingLinks history محفوظ رہ سکتی ہے۔
+        */
 
         delete marketingLinks[id];
 
@@ -1689,11 +1634,6 @@ async function archiveCombo(id) {
         combo.status =
             newStatus;
 
-
-        /*
-           Marketing Link اور public redirect
-           دونوں کا status sync کریں۔
-        */
 
         if (
             marketingLinks[id]
@@ -1783,9 +1723,7 @@ if (importPasteBtn) {
             try {
 
                 data =
-                    JSON.parse(
-                        raw
-                    );
+                    JSON.parse(raw);
 
             } catch (error) {
 
@@ -2396,12 +2334,6 @@ async function createMarketingLink(id) {
                 ? existingData.clicks
                 : 0;
 
-
-        /*
-           Existing Marketing Link کا status
-           برقرار رکھا جائے گا۔
-        */
-
         const oldStatus =
             existingData.status ||
             combo.status ||
@@ -2446,9 +2378,6 @@ async function createMarketingLink(id) {
 
         /* ==============================================
            PUBLIC REDIRECT MAP
-
-           یہاں صرف وہ data ہے جس کی go.html
-           کو redirect کے لیے ضرورت ہے۔
         ============================================== */
 
         await setDoc(
@@ -2498,10 +2427,6 @@ async function createMarketingLink(id) {
         };
 
 
-        /*
-           Clean public URL
-        */
-
         const publicUrl =
             buildMarketingUrl(
                 id
@@ -2518,9 +2443,7 @@ async function createMarketingLink(id) {
                 "Marketing Link تیار ہو گیا اور Clipboard میں Copy ہو گیا۔"
             );
 
-        } catch (
-            clipboardError
-        ) {
+        } catch (clipboardError) {
 
             window.prompt(
                 "Marketing Link:",
@@ -2554,9 +2477,7 @@ async function copyMarketingLink(id) {
     const link =
         marketingLinks[id];
 
-    if (
-        !link
-    ) {
+    if (!link) {
 
         alert(
             "Marketing Link موجود نہیں ہے۔"
@@ -2566,9 +2487,7 @@ async function copyMarketingLink(id) {
     }
 
     const publicUrl =
-        buildMarketingUrl(
-            id
-        );
+        buildMarketingUrl(id);
 
     try {
 
@@ -2609,9 +2528,7 @@ function openMarketingLink(id) {
     }
 
     const publicUrl =
-        buildMarketingUrl(
-            id
-        );
+        buildMarketingUrl(id);
 
     window.open(
         publicUrl,
@@ -2672,11 +2589,6 @@ async function updateMarketingLinkStatus(
             }
         );
 
-
-        /*
-           Public redirect کا status بھی
-           اسی وقت sync کریں۔
-        */
 
         await setDoc(
             doc(
@@ -2759,16 +2671,28 @@ async function deleteMarketingLink(id) {
 
 
         /*
-           Public redirect mapping بھی ختم کریں۔
+           اگر public redirect پہلے ہی موجود نہ ہو
+           تو private link delete پھر بھی successful
+           سمجھا جائے گا۔
         */
 
-        await deleteDoc(
-            doc(
-                db,
-                "publicRedirects",
-                id
-            )
-        );
+        try {
+
+            await deleteDoc(
+                doc(
+                    db,
+                    "publicRedirects",
+                    id
+                )
+            );
+
+        } catch (publicDeleteError) {
+
+            console.warn(
+                "Public Redirect Delete Warning:",
+                publicDeleteError
+            );
+        }
 
 
         delete marketingLinks[id];
@@ -2795,6 +2719,8 @@ async function deleteMarketingLink(id) {
 ========================================================= */
 
 function renderMarketingLinks() {
+
+    updateMarketingStats();
 
     if (!marketingLinksList) {
         return;
@@ -2857,9 +2783,7 @@ function renderMarketingLinks() {
    MARKETING LINK CONTROL HTML
 ========================================================= */
 
-function createMarketingLinkHTML(
-    link
-) {
+function createMarketingLinkHTML(link) {
 
     const id =
         link.id;
@@ -2882,25 +2806,17 @@ function createMarketingLinkHTML(
             : 0;
 
     const status =
-        getMarketingStatus(
-            link
-        );
+        getMarketingStatus(link);
 
     const statusClass =
-        getMarketingStatusClass(
-            status
-        );
+        getMarketingStatusClass(status);
 
     const target =
         link.targetUrl ||
-        getMarketingTarget(
-            combo
-        );
+        getMarketingTarget(combo);
 
     const publicUrl =
-        buildMarketingUrl(
-            id
-        );
+        buildMarketingUrl(id);
 
     let statusAction = "";
 
@@ -3161,8 +3077,6 @@ if (
 
 function render() {
 
-    renderMarketingLinks();
-
     const search =
         String(
             searchInput?.value ||
@@ -3301,6 +3215,9 @@ function render() {
     }
 
 
+    updateMarketingStats();
+
+
     if (resultCount) {
 
         resultCount.textContent =
@@ -3357,9 +3274,7 @@ function render() {
    CREATE COMBO HTML
 ========================================================= */
 
-function createComboHTML(
-    combo
-) {
+function createComboHTML(combo) {
 
     const marketing =
         marketingLinks[
@@ -3372,12 +3287,6 @@ function createComboHTML(
         "number"
             ? marketing.clicks
             : 0;
-
-    const marketingTarget =
-        marketing?.targetUrl ||
-        getMarketingTarget(
-            combo
-        );
 
     const hasMarketing =
         Boolean(
