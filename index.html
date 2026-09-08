@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -10,10 +12,16 @@
 
     <title>Janjua Hub</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
+
 <body>
+
 
     <!-- =====================================================
          LOGIN SCREEN
@@ -27,8 +35,6 @@
 
         <div class="login-card">
 
-            <!-- LOGO -->
-
             <div class="login-logo-wrap">
 
                 <div class="login-orb">
@@ -37,8 +43,6 @@
 
             </div>
 
-
-            <!-- LOGIN HEADER -->
 
             <div class="login-header">
 
@@ -61,8 +65,6 @@
 
             </div>
 
-
-            <!-- LOGIN FORM -->
 
             <form id="loginForm">
 
@@ -116,16 +118,12 @@
                 </div>
 
 
-                <!-- LOGIN MESSAGE -->
-
                 <p
                     id="loginMessage"
                     class="login-message"
                     aria-live="polite"
                 ></p>
 
-
-                <!-- SIGN IN -->
 
                 <button
                     type="submit"
@@ -148,9 +146,9 @@
     </section>
 
 
+
     <!-- =====================================================
          MAIN APPLICATION
-         Hidden until Firebase confirms Admin access.
          ===================================================== -->
 
     <div
@@ -158,6 +156,7 @@
         class="app-shell-hidden"
         aria-hidden="true"
     >
+
 
         <!-- =================================================
              HEADER
@@ -216,11 +215,13 @@
         </header>
 
 
+
         <!-- =================================================
-             MAIN CONTENT
+             MAIN
              ================================================= -->
 
         <main class="container">
+
 
             <!-- =================================================
                  HERO
@@ -273,6 +274,7 @@
                 </div>
 
             </section>
+
 
 
             <!-- =================================================
@@ -335,6 +337,68 @@
             </section>
 
 
+
+            <!-- =================================================
+                 MARKETING LINK CONTROL
+                 ================================================= -->
+
+            <section class="section-heading">
+
+                <div>
+
+                    <h3>
+                        Marketing Links
+                    </h3>
+
+                    <p>
+                        Control your generated links and
+                        monitor their click activity.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="refreshMarketingBtn"
+                    class="secondary-btn"
+                    type="button"
+                >
+                    Refresh Links
+                </button>
+
+            </section>
+
+
+            <section
+                id="marketingLinksList"
+                class="combo-list"
+            ></section>
+
+
+            <div
+                id="marketingEmptyState"
+                class="empty-state hidden"
+            >
+
+                <div class="empty-icon">
+                    🔗
+                </div>
+
+
+                <h3>
+                    No Marketing Links Yet
+                </h3>
+
+
+                <p>
+                    Create a Marketing Link from any
+                    Combo below to start tracking clicks.
+                </p>
+
+            </div>
+
+
+
             <!-- =================================================
                  SEARCH / FILTER
                  ================================================= -->
@@ -389,8 +453,9 @@
             </section>
 
 
+
             <!-- =================================================
-                 SECTION HEADING
+                 COMBO HEADING
                  ================================================= -->
 
             <section class="section-heading">
@@ -415,6 +480,7 @@
             </section>
 
 
+
             <!-- =================================================
                  COMBO LIST
                  ================================================= -->
@@ -423,6 +489,7 @@
                 id="comboList"
                 class="combo-list"
             ></section>
+
 
 
             <!-- =================================================
@@ -463,6 +530,7 @@
         </main>
 
 
+
         <!-- =================================================
              ADD / EDIT COMBO MODAL
              ================================================= -->
@@ -481,7 +549,6 @@
                         <h3 id="modalTitle">
                             Add Combo
                         </h3>
-
 
                         <p>
                             Add information about this Combo.
@@ -537,7 +604,9 @@
                     </label>
 
 
-                    <datalist id="categoryList"></datalist>
+                    <datalist
+                        id="categoryList"
+                    ></datalist>
 
 
                     <label>
@@ -625,6 +694,7 @@
         </div>
 
 
+
         <!-- =================================================
              PASTE COMBO MODAL
              ================================================= -->
@@ -643,7 +713,6 @@
                         <h3>
                             Paste Combo
                         </h3>
-
 
                         <p>
                             Paste Combo data here.
@@ -698,8 +767,9 @@
         </div>
 
 
+
         <!-- =================================================
-             CATEGORY MANAGEMENT MODAL
+             CATEGORY MANAGEMENT
              ================================================= -->
 
         <div
@@ -716,7 +786,6 @@
                         <h3>
                             Category Management
                         </h3>
-
 
                         <p>
                             Add or remove categories.
@@ -767,8 +836,9 @@
         </div>
 
 
+
         <!-- =================================================
-             HELP CENTER MODAL
+             HELP CENTER
              ================================================= -->
 
         <div
@@ -785,7 +855,6 @@
                         <h3>
                             Janjua Hub Help Center
                         </h3>
-
 
                         <p>
                             Need help with your Combo system?
@@ -822,6 +891,18 @@
 
 
                     <h4>
+                        Marketing Links
+                    </h4>
+
+
+                    <p>
+                        Marketing Links provide a controlled
+                        redirect URL and track clicks for each
+                        Combo.
+                    </p>
+
+
+                    <h4>
                         Add a Combo
                     </h4>
 
@@ -852,9 +933,8 @@
 
                     <p>
                         The existing Gmail/Form based Help Desk
-                        workflow will be connected in the next
-                        stage without rebuilding the existing
-                        workflow.
+                        workflow will be connected without
+                        rebuilding the existing workflow.
                     </p>
 
                 </div>
@@ -863,11 +943,13 @@
 
         </div>
 
+
     </div>
 
 
+
     <!-- =====================================================
-         FIREBASE + JANJUA HUB APPLICATION
+         FIREBASE + JANJUA HUB
          ===================================================== -->
 
     <script
@@ -875,5 +957,7 @@
         src="app.js"
     ></script>
 
+
 </body>
+
 </html>
