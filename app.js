@@ -28,7 +28,6 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-
     apiKey:
         "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
 
@@ -48,27 +47,18 @@ const firebaseConfig = {
         "1:701353417673:web:84b5cce6029f98b89fa618"
 };
 
-
 const app =
-    initializeApp(
-        firebaseConfig
-    );
-
+    initializeApp(firebaseConfig);
 
 const auth =
-    getAuth(
-        app
-    );
-
+    getAuth(app);
 
 const db =
-    getFirestore(
-        app
-    );
+    getFirestore(app);
 
 
 /* =========================================================
-   SETTINGS
+   ADMIN SETTINGS
 ========================================================= */
 
 const ADMIN_UID =
@@ -76,7 +66,6 @@ const ADMIN_UID =
 
 
 const DEFAULT_CATEGORIES = [
-
     "Finance",
     "Software",
     "Products",
@@ -84,7 +73,6 @@ const DEFAULT_CATEGORIES = [
     "Marketing",
     "Business",
     "Other"
-
 ];
 
 
@@ -93,13 +81,9 @@ const DEFAULT_CATEGORIES = [
 ========================================================= */
 
 let combos = [];
-
 let categories = [];
-
 let marketingLinks = {};
-
 let currentUser = null;
-
 let authInitialized = false;
 
 
@@ -108,323 +92,307 @@ let authInitialized = false;
 ========================================================= */
 
 const loginScreen =
-    document.getElementById(
-        "loginScreen"
-    );
+    document.getElementById("loginScreen");
 
 const appShell =
-    document.getElementById(
-        "appShell"
-    );
+    document.getElementById("appShell");
 
 const loginForm =
-    document.getElementById(
-        "loginForm"
-    );
+    document.getElementById("loginForm");
 
 const adminEmail =
-    document.getElementById(
-        "adminEmail"
-    );
+    document.getElementById("adminEmail");
 
 const adminPassword =
-    document.getElementById(
-        "adminPassword"
-    );
+    document.getElementById("adminPassword");
 
 const loginMessage =
-    document.getElementById(
-        "loginMessage"
-    );
+    document.getElementById("loginMessage");
 
 const loginBtn =
-    document.getElementById(
-        "loginBtn"
-    );
+    document.getElementById("loginBtn");
 
 const logoutBtn =
-    document.getElementById(
-        "logoutBtn"
-    );
+    document.getElementById("logoutBtn");
 
-
-/* =========================================================
-   DASHBOARD STATS
-========================================================= */
 
 const totalCount =
-    document.getElementById(
-        "totalCount"
-    );
+    document.getElementById("totalCount");
 
 const activeCount =
-    document.getElementById(
-        "activeCount"
-    );
+    document.getElementById("activeCount");
 
 const pendingCount =
-    document.getElementById(
-        "pendingCount"
-    );
+    document.getElementById("pendingCount");
 
 const archivedCount =
-    document.getElementById(
-        "archivedCount"
-    );
+    document.getElementById("archivedCount");
 
 const totalMarketingCount =
-    document.getElementById(
-        "totalMarketingCount"
-    );
+    document.getElementById("totalMarketingCount");
 
 const totalClicksCount =
-    document.getElementById(
-        "totalClicksCount"
-    );
+    document.getElementById("totalClicksCount");
 
-
-/* =========================================================
-   SEARCH / FILTER
-========================================================= */
 
 const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
+    document.getElementById("searchInput");
 
 const categoryFilter =
-    document.getElementById(
-        "categoryFilter"
-    );
+    document.getElementById("categoryFilter");
 
 const statusFilter =
-    document.getElementById(
-        "statusFilter"
-    );
+    document.getElementById("statusFilter");
 
 const categoryBtn =
-    document.getElementById(
-        "categoryBtn"
-    );
+    document.getElementById("categoryBtn");
 
 const resultCount =
-    document.getElementById(
-        "resultCount"
-    );
+    document.getElementById("resultCount");
 
-
-/* =========================================================
-   COMBO LIST
-========================================================= */
 
 const comboList =
-    document.getElementById(
-        "comboList"
-    );
+    document.getElementById("comboList");
 
 const emptyState =
-    document.getElementById(
-        "emptyState"
-    );
+    document.getElementById("emptyState");
 
 const emptyAddBtn =
-    document.getElementById(
-        "emptyAddBtn"
-    );
+    document.getElementById("emptyAddBtn");
 
-
-/* =========================================================
-   MARKETING LINKS
-========================================================= */
 
 const marketingLinksList =
-    document.getElementById(
-        "marketingLinksList"
-    );
+    document.getElementById("marketingLinksList");
 
 const marketingEmptyState =
-    document.getElementById(
-        "marketingEmptyState"
-    );
+    document.getElementById("marketingEmptyState");
 
 const refreshMarketingBtn =
-    document.getElementById(
-        "refreshMarketingBtn"
-    );
+    document.getElementById("refreshMarketingBtn");
 
-
-/* =========================================================
-   COMBO MODAL
-========================================================= */
 
 const comboModal =
-    document.getElementById(
-        "comboModal"
-    );
+    document.getElementById("comboModal");
 
 const modalTitle =
-    document.getElementById(
-        "modalTitle"
-    );
+    document.getElementById("modalTitle");
 
 const closeModal =
-    document.getElementById(
-        "closeModal"
-    );
+    document.getElementById("closeModal");
 
 const comboForm =
-    document.getElementById(
-        "comboForm"
-    );
+    document.getElementById("comboForm");
 
 const editId =
-    document.getElementById(
-        "editId"
-    );
+    document.getElementById("editId");
 
 const comboName =
-    document.getElementById(
-        "comboName"
-    );
+    document.getElementById("comboName");
 
 const comboCategory =
-    document.getElementById(
-        "comboCategory"
-    );
+    document.getElementById("comboCategory");
 
 const mainLink =
-    document.getElementById(
-        "mainLink"
-    );
+    document.getElementById("mainLink");
 
 const affiliateLink =
-    document.getElementById(
-        "affiliateLink"
-    );
+    document.getElementById("affiliateLink");
 
 const comboNotes =
-    document.getElementById(
-        "comboNotes"
-    );
+    document.getElementById("comboNotes");
 
 const comboStatus =
-    document.getElementById(
-        "comboStatus"
-    );
+    document.getElementById("comboStatus");
 
 const cancelBtn =
-    document.getElementById(
-        "cancelBtn"
-    );
+    document.getElementById("cancelBtn");
 
-
-/* =========================================================
-   PASTE MODAL
-========================================================= */
 
 const pasteModal =
-    document.getElementById(
-        "pasteModal"
-    );
+    document.getElementById("pasteModal");
 
 const pasteBox =
-    document.getElementById(
-        "pasteBox"
-    );
+    document.getElementById("pasteBox");
 
 const cancelPasteBtn =
-    document.getElementById(
-        "cancelPasteBtn"
-    );
+    document.getElementById("cancelPasteBtn");
 
 const importPasteBtn =
-    document.getElementById(
-        "importPasteBtn"
-    );
+    document.getElementById("importPasteBtn");
 
-
-/* =========================================================
-   CATEGORY MODAL
-========================================================= */
 
 const categoryModal =
-    document.getElementById(
-        "categoryModal"
-    );
+    document.getElementById("categoryModal");
 
 const newCategory =
-    document.getElementById(
-        "newCategory"
-    );
+    document.getElementById("newCategory");
 
 const addCategoryBtn =
-    document.getElementById(
-        "addCategoryBtn"
-    );
+    document.getElementById("addCategoryBtn");
 
 const categoryListView =
-    document.getElementById(
-        "categoryListView"
-    );
+    document.getElementById("categoryListView");
 
-
-/* =========================================================
-   HELP CENTER
-========================================================= */
 
 const helpModal =
-    document.getElementById(
-        "helpModal"
-    );
+    document.getElementById("helpModal");
 
 const closeHelpModal =
-    document.getElementById(
-        "closeHelpModal"
-    );
+    document.getElementById("closeHelpModal");
 
 const helpCenterBtn =
-    document.getElementById(
-        "helpCenterBtn"
-    );
+    document.getElementById("helpCenterBtn");
 
 
 /* =========================================================
-   GENERIC HELPERS
+   PASSWORD SHOW / HIDE
+========================================================= */
+
+function addPasswordToggle() {
+
+    if (!adminPassword) {
+        return;
+    }
+
+    if (
+        document.getElementById(
+            "passwordToggleBtn"
+        )
+    ) {
+        return;
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.style.position =
+        "relative";
+
+    wrapper.style.width =
+        "100%";
+
+    adminPassword.parentNode.insertBefore(
+        wrapper,
+        adminPassword
+    );
+
+    wrapper.appendChild(
+        adminPassword
+    );
+
+    adminPassword.style.paddingRight =
+        "75px";
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.id =
+        "passwordToggleBtn";
+
+    button.textContent =
+        "Show";
+
+    button.setAttribute(
+        "aria-label",
+        "Show password"
+    );
+
+    button.style.position =
+        "absolute";
+
+    button.style.right =
+        "10px";
+
+    button.style.top =
+        "50%";
+
+    button.style.transform =
+        "translateY(-50%)";
+
+    button.style.border =
+        "0";
+
+    button.style.background =
+        "transparent";
+
+    button.style.color =
+        "inherit";
+
+    button.style.cursor =
+        "pointer";
+
+    button.style.fontWeight =
+        "700";
+
+    button.style.padding =
+        "6px 8px";
+
+    button.style.zIndex =
+        "5";
+
+    button.addEventListener(
+        "click",
+        function() {
+
+            if (
+                adminPassword.type ===
+                "password"
+            ) {
+
+                adminPassword.type =
+                    "text";
+
+                button.textContent =
+                    "Hide";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            } else {
+
+                adminPassword.type =
+                    "password";
+
+                button.textContent =
+                    "Show";
+
+                button.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+            }
+        }
+    );
+
+    wrapper.appendChild(button);
+}
+
+addPasswordToggle();
+
+
+/* =========================================================
+   HELPERS
 ========================================================= */
 
 function escapeHTML(value) {
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 function normalizeText(value) {
 
-    return String(
-        value ?? ""
-    ).trim();
+    return String(value ?? "").trim();
 }
 
 
@@ -461,28 +429,19 @@ function getMarketingTarget(combo) {
             combo.mainLink
         );
 
-
     if (
         affiliate &&
-        isValidUrl(
-            affiliate
-        )
+        isValidUrl(affiliate)
     ) {
-
         return affiliate;
     }
 
-
     if (
         main &&
-        isValidUrl(
-            main
-        )
+        isValidUrl(main)
     ) {
-
         return main;
     }
-
 
     return "";
 }
@@ -491,9 +450,7 @@ function getMarketingTarget(combo) {
 function getComboStatus(combo) {
 
     return (
-        normalizeText(
-            combo.status
-        ) ||
+        normalizeText(combo.status) ||
         "Active"
     );
 }
@@ -502,9 +459,7 @@ function getComboStatus(combo) {
 function getMarketingStatus(link) {
 
     return (
-        normalizeText(
-            link?.status
-        ) ||
+        normalizeText(link?.status) ||
         "Active"
     );
 }
@@ -515,7 +470,6 @@ function formatDate(value) {
     if (!value) {
         return "—";
     }
-
 
     try {
 
@@ -529,21 +483,15 @@ function formatDate(value) {
                 .toLocaleString();
         }
 
-
         if (
             value instanceof Date
         ) {
 
-            return value
-                .toLocaleString();
+            return value.toLocaleString();
         }
 
-
         const date =
-            new Date(
-                value
-            );
-
+            new Date(value);
 
         if (
             Number.isNaN(
@@ -553,7 +501,6 @@ function formatDate(value) {
 
             return "—";
         }
-
 
         return date.toLocaleString();
 
@@ -572,9 +519,7 @@ function buildMarketingUrl(id) {
 
     return new URL(
         "go.html?id=" +
-        encodeURIComponent(
-            id
-        ),
+        encodeURIComponent(id),
         window.location.href
     ).toString();
 }
@@ -593,14 +538,11 @@ function setLoginMessage(
         return;
     }
 
-
     loginMessage.textContent =
         text || "";
 
-
     loginMessage.className =
         "login-message";
-
 
     if (type) {
 
@@ -617,46 +559,30 @@ function setLoginMessage(
 
 function showLogin() {
 
-    if (loginScreen) {
+    loginScreen?.classList.remove(
+        "login-screen-hidden"
+    );
 
-        loginScreen.classList.remove(
-            "login-screen-hidden"
-        );
-    }
-
-
-    if (appShell) {
-
-        appShell.classList.add(
-            "app-shell-hidden"
-        );
-    }
+    appShell?.classList.add(
+        "app-shell-hidden"
+    );
 }
 
 
 function showDashboard() {
 
-    if (loginScreen) {
+    loginScreen?.classList.add(
+        "login-screen-hidden"
+    );
 
-        loginScreen.classList.add(
-            "login-screen-hidden"
-        );
-    }
-
-
-    if (appShell) {
-
-        appShell.classList.remove(
-            "app-shell-hidden"
-        );
-    }
-
+    appShell?.classList.remove(
+        "app-shell-hidden"
+    );
 
     if (adminEmail) {
 
         adminEmail.textContent =
-            currentUser?.email ||
-            "";
+            currentUser?.email || "";
     }
 }
 
@@ -671,24 +597,34 @@ async function checkAdmin(user) {
         return false;
     }
 
+    console.log(
+        "Firebase Auth User:",
+        {
+            email: user.email,
+            uid: user.uid
+        }
+    );
 
     /*
-     * The Firebase Auth UID is the primary admin identity.
-     * The Firestore users/{uid} document must also contain:
-     *
-     * role: "admin"
-     *
-     * This avoids depending on a hard-coded email address.
+     * Admin identity is based on the Firebase UID.
      */
 
     if (
-        user.uid !==
-        ADMIN_UID
+        user.uid !== ADMIN_UID
     ) {
+
+        console.error(
+            "ADMIN UID MISMATCH",
+            {
+                expected:
+                    ADMIN_UID,
+                actual:
+                    user.uid
+            }
+        );
 
         return false;
     }
-
 
     try {
 
@@ -699,24 +635,33 @@ async function checkAdmin(user) {
                 user.uid
             );
 
-
         const userSnap =
-            await getDoc(
-                userRef
-            );
-
+            await getDoc(userRef);
 
         if (
             !userSnap.exists()
         ) {
 
+            console.error(
+                "Admin Firestore document does not exist:",
+                user.uid
+            );
+
             return false;
         }
-
 
         const data =
             userSnap.data();
 
+        console.log(
+            "Admin Firestore Profile:",
+            {
+                email:
+                    data.email || "",
+                role:
+                    data.role || ""
+            }
+        );
 
         return (
             data.role ===
@@ -730,33 +675,99 @@ async function checkAdmin(user) {
             error
         );
 
-
         return false;
     }
 }
 
 
 /* =========================================================
-   AUTH
+   AUTH ERROR MESSAGE
+========================================================= */
+
+function getAuthErrorMessage(error) {
+
+    const code =
+        error?.code || "";
+
+    switch (code) {
+
+        case "auth/invalid-credential":
+            return (
+                "Firebase نے اس Email اور Password کو قبول نہیں کیا۔ " +
+                "Password دوبارہ چیک کریں۔"
+            );
+
+        case "auth/wrong-password":
+            return (
+                "Password غلط ہے۔"
+            );
+
+        case "auth/user-not-found":
+            return (
+                "اس Email کا Firebase Authentication account نہیں ملا۔"
+            );
+
+        case "auth/user-disabled":
+            return (
+                "یہ Firebase account disabled ہے۔"
+            );
+
+        case "auth/too-many-requests":
+            return (
+                "بہت زیادہ Login کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔"
+            );
+
+        case "auth/network-request-failed":
+            return (
+                "Internet یا network connection کا مسئلہ ہے۔"
+            );
+
+        case "auth/operation-not-allowed":
+            return (
+                "Firebase میں Email/Password Login enabled نہیں ہے۔"
+            );
+
+        case "auth/invalid-api-key":
+            return (
+                "Firebase API configuration میں مسئلہ ہے۔"
+            );
+
+        case "auth/app-not-authorized":
+            return (
+                "یہ website Firebase Authentication کے لیے authorized نہیں ہے۔"
+            );
+
+        case "auth/invalid-email":
+            return (
+                "Email address درست format میں نہیں ہے۔"
+            );
+
+        default:
+            return (
+                "Login failed۔ Firebase error: " +
+                (code || "unknown-error")
+            );
+    }
+}
+
+
+/* =========================================================
+   LOGIN
 ========================================================= */
 
 async function handleLogin(event) {
 
     event.preventDefault();
 
-
     const email =
         normalizeText(
             adminEmail?.value
         );
 
-
     const password =
         String(
-            adminPassword?.value ||
-            ""
+            adminPassword?.value || ""
         );
-
 
     if (
         !email ||
@@ -764,14 +775,12 @@ async function handleLogin(event) {
     ) {
 
         setLoginMessage(
-            "Please enter your email and password.",
+            "Email اور Password دونوں درج کریں۔",
             "error"
         );
 
-
         return;
     }
-
 
     if (loginBtn) {
 
@@ -782,11 +791,9 @@ async function handleLogin(event) {
             "Signing in...";
     }
 
-
     setLoginMessage(
-        "Checking your account..."
+        "Firebase account چیک ہو رہا ہے..."
     );
-
 
     try {
 
@@ -797,29 +804,39 @@ async function handleLogin(event) {
                 password
             );
 
+        console.log(
+            "Firebase Login Successful:",
+            {
+                email:
+                    credential.user.email,
+                uid:
+                    credential.user.uid
+            }
+        );
 
         const isAdmin =
             await checkAdmin(
                 credential.user
             );
 
-
         if (!isAdmin) {
 
-            await signOut(
-                auth
-            );
+            const actualUid =
+                credential.user.uid;
 
+            await signOut(auth);
 
             setLoginMessage(
-                "This account is not authorized as an admin.",
+                "Firebase Login کامیاب ہے، لیکن یہ account Janjua Hub Admin سے linked نہیں ہے۔ UID: " +
+                actualUid,
                 "error"
             );
-
 
             return;
         }
 
+        currentUser =
+            credential.user;
 
         setLoginMessage(
             "Login successful.",
@@ -833,55 +850,8 @@ async function handleLogin(event) {
             error
         );
 
-
-        let message =
-            "Login failed. Please check your email and password.";
-
-
-        if (
-            error.code ===
-            "auth/invalid-credential"
-        ) {
-
-            message =
-                "Incorrect email or password.";
-
-        } else if (
-            error.code ===
-            "auth/too-many-requests"
-        ) {
-
-            message =
-                "Too many attempts. Please try again later.";
-
-        } else if (
-            error.code ===
-            "auth/network-request-failed"
-        ) {
-
-            message =
-                "Network error. Please check your internet connection.";
-
-        } else if (
-            error.code ===
-            "auth/user-disabled"
-        ) {
-
-            message =
-                "This account has been disabled.";
-
-        } else if (
-            error.code ===
-            "auth/user-not-found"
-        ) {
-
-            message =
-                "No Firebase account was found for this email.";
-        }
-
-
         setLoginMessage(
-            message,
+            getAuthErrorMessage(error),
             "error"
         );
 
@@ -903,9 +873,7 @@ async function handleLogout() {
 
     try {
 
-        await signOut(
-            auth
-        );
+        await signOut(auth);
 
     } catch (error) {
 
@@ -933,21 +901,14 @@ async function loadCombos() {
                 )
             );
 
-
         combos =
             snapshot.docs.map(
                 item => ({
-
                     id:
                         item.id,
-
                     ...item.data()
-
                 })
             );
-
-
-        render();
 
     } catch (error) {
 
@@ -967,7 +928,7 @@ async function loadCategories() {
 
     try {
 
-        const snapshot =
+        let snapshot =
             await getDocs(
                 collection(
                     db,
@@ -975,19 +936,14 @@ async function loadCategories() {
                 )
             );
 
-
         categories =
             snapshot.docs.map(
                 item => ({
-
                     id:
                         item.id,
-
                     ...item.data()
-
                 })
             );
-
 
         if (
             categories.length === 0
@@ -1010,7 +966,6 @@ async function loadCategories() {
                             ""
                         );
 
-
                 try {
 
                     await setDoc(
@@ -1020,12 +975,9 @@ async function loadCategories() {
                             categoryId
                         ),
                         {
-
                             name,
-
                             createdAt:
                                 serverTimestamp()
-
                         }
                     );
 
@@ -1038,8 +990,7 @@ async function loadCategories() {
                 }
             }
 
-
-            const refreshed =
+            snapshot =
                 await getDocs(
                     collection(
                         db,
@@ -1047,24 +998,15 @@ async function loadCategories() {
                     )
                 );
 
-
             categories =
-                refreshed.docs.map(
+                snapshot.docs.map(
                     item => ({
-
                         id:
                             item.id,
-
                         ...item.data()
-
                     })
                 );
         }
-
-
-        renderCategoryOptions();
-
-        renderCategoryList();
 
     } catch (error) {
 
@@ -1092,27 +1034,18 @@ async function loadMarketingLinks() {
                 )
             );
 
-
         marketingLinks = {};
-
 
         snapshot.docs.forEach(
             item => {
 
-                marketingLinks[item.id] =
-                    {
-
-                        id:
-                            item.id,
-
-                        ...item.data()
-
-                    };
+                marketingLinks[item.id] = {
+                    id:
+                        item.id,
+                    ...item.data()
+                };
             }
         );
-
-
-        render();
 
     } catch (error) {
 
@@ -1131,22 +1064,17 @@ async function loadMarketingLinks() {
 async function loadFirebaseData() {
 
     await Promise.all([
-
         loadCombos(),
-
         loadCategories(),
-
         loadMarketingLinks()
-
     ]);
-
 
     render();
 }
 
 
 /* =========================================================
-   MARKETING STATS
+   STATS
 ========================================================= */
 
 function updateMarketingStats() {
@@ -1156,17 +1084,15 @@ function updateMarketingStats() {
             marketingLinks
         );
 
-
     const totalLinks =
         links.length;
 
-
     const totalClicks =
         links.reduce(
-            function(
+            (
                 total,
                 link
-            ) {
+            ) => {
 
                 return (
                     total +
@@ -1181,13 +1107,11 @@ function updateMarketingStats() {
             0
         );
 
-
     if (totalMarketingCount) {
 
         totalMarketingCount.textContent =
             totalLinks;
     }
-
 
     if (totalClicksCount) {
 
@@ -1197,77 +1121,58 @@ function updateMarketingStats() {
 }
 
 
-/* =========================================================
-   GENERAL STATS
-========================================================= */
-
 function updateStats() {
 
     const total =
         combos.length;
 
-
     const active =
         combos.filter(
             combo =>
-                getComboStatus(
-                    combo
-                ) === "Active"
+                getComboStatus(combo) ===
+                "Active"
         ).length;
-
 
     const pending =
         combos.filter(
             combo =>
-                getComboStatus(
-                    combo
-                ) === "Pending"
+                getComboStatus(combo) ===
+                "Pending"
         ).length;
-
 
     const archived =
         combos.filter(
             combo =>
-                getComboStatus(
-                    combo
-                ) === "Archived"
+                getComboStatus(combo) ===
+                "Archived"
         ).length;
 
-
     if (totalCount) {
-
         totalCount.textContent =
             total;
     }
 
-
     if (activeCount) {
-
         activeCount.textContent =
             active;
     }
 
-
     if (pendingCount) {
-
         pendingCount.textContent =
             pending;
     }
 
-
     if (archivedCount) {
-
         archivedCount.textContent =
             archived;
     }
-
 
     updateMarketingStats();
 }
 
 
 /* =========================================================
-   RENDER CATEGORY OPTIONS
+   CATEGORY RENDERING
 ========================================================= */
 
 function renderCategoryOptions() {
@@ -1276,30 +1181,24 @@ function renderCategoryOptions() {
         return;
     }
 
-
     const current =
         comboCategory.value;
-
 
     const datalist =
         document.getElementById(
             "categoryOptions"
         );
 
-
     if (datalist) {
 
         datalist.innerHTML =
-            categories
+            [...categories]
                 .sort(
                     (a, b) =>
-                        String(
-                            a.name
-                        ).localeCompare(
-                            String(
-                                b.name
+                        String(a.name)
+                            .localeCompare(
+                                String(b.name)
                             )
-                        )
                 )
                 .map(
                     category =>
@@ -1307,19 +1206,13 @@ function renderCategoryOptions() {
                             category.name
                         )}"></option>`
                 )
-                )
                 .join("");
     }
-
 
     comboCategory.value =
         current;
 }
 
-
-/* =========================================================
-   RENDER CATEGORY FILTER
-========================================================= */
 
 function renderCategoryFilter() {
 
@@ -1327,41 +1220,34 @@ function renderCategoryFilter() {
         return;
     }
 
-
     const current =
         categoryFilter.value;
 
-
-    const options = [
-
-        `<option value="">All Categories</option>`,
-
-        ...categories
+    categoryFilter.innerHTML =
+        `
+        <option value="">
+            All Categories
+        </option>
+        ` +
+        [...categories]
             .sort(
                 (a, b) =>
-                    String(
-                        a.name
-                    ).localeCompare(
-                        String(
-                            b.name
+                    String(a.name)
+                        .localeCompare(
+                            String(b.name)
                         )
-                    )
             )
             .map(
                 category =>
                     `<option value="${escapeHTML(
                         category.name
-                    )}">${escapeHTML(
-                        category.name
-                    )}</option>`
+                    )}">
+                        ${escapeHTML(
+                            category.name
+                        )}
+                    </option>`
             )
-
-    ];
-
-
-    categoryFilter.innerHTML =
-        options.join("");
-
+            .join("");
 
     if (
         [...categoryFilter.options]
@@ -1378,41 +1264,34 @@ function renderCategoryFilter() {
 }
 
 
-/* =========================================================
-   RENDER CATEGORIES
-========================================================= */
-
 function renderCategoryList() {
 
     if (!categoryListView) {
         return;
     }
 
-
     if (
         categories.length === 0
     ) {
 
         categoryListView.innerHTML =
-            `<div class="empty-state">
+            `
+            <div class="empty-state">
                 No categories yet.
-            </div>`;
+            </div>
+            `;
 
         return;
     }
 
-
     categoryListView.innerHTML =
-        categories
+        [...categories]
             .sort(
                 (a, b) =>
-                    String(
-                        a.name
-                    ).localeCompare(
-                        String(
-                            b.name
+                    String(a.name)
+                        .localeCompare(
+                            String(b.name)
                         )
-                    )
             )
             .map(
                 category => {
@@ -1428,35 +1307,36 @@ function renderCategoryList() {
                                 ).toLowerCase()
                         ).length;
 
-
                     return `
-                        <div class="category-row">
+                    <div class="category-row">
 
-                            <div>
+                        <div>
+                            <strong>
+                                ${escapeHTML(
+                                    category.name
+                                )}
+                            </strong>
 
-                                <strong>
-                                    ${escapeHTML(
-                                        category.name
-                                    )}
-                                </strong>
-
-                                <small>
-                                    ${used} combo${used === 1 ? "" : "s"}
-                                </small>
-
-                            </div>
-
-
-                            <button
-                                class="btn danger small"
-                                data-delete-category="${escapeHTML(
-                                    category.id
-                                )}"
-                            >
-                                Delete
-                            </button>
-
+                            <small>
+                                ${used}
+                                combo${
+                                    used === 1
+                                        ? ""
+                                        : "s"
+                                }
+                            </small>
                         </div>
+
+                        <button
+                            class="btn danger small"
+                            data-delete-category="${escapeHTML(
+                                category.id
+                            )}"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
                     `;
                 }
             )
@@ -1465,126 +1345,65 @@ function renderCategoryList() {
 
 
 /* =========================================================
-   OPEN COMBO MODAL
+   COMBO MODAL
 ========================================================= */
 
-function openComboModal(
-    combo = null
-) {
+function openComboModal(combo = null) {
 
     if (!comboModal) {
         return;
     }
 
-
     if (combo) {
 
-        if (modalTitle) {
+        modalTitle.textContent =
+            "Edit Combo";
 
-            modalTitle.textContent =
-                "Edit Combo";
-        }
+        editId.value =
+            combo.id;
 
+        comboName.value =
+            combo.name || "";
 
-        if (editId) {
+        comboCategory.value =
+            combo.category || "";
 
-            editId.value =
-                combo.id;
-        }
+        mainLink.value =
+            combo.mainLink || "";
 
+        affiliateLink.value =
+            combo.affiliateLink || "";
 
-        if (comboName) {
+        comboNotes.value =
+            combo.notes || "";
 
-            comboName.value =
-                combo.name || "";
-        }
-
-
-        if (comboCategory) {
-
-            comboCategory.value =
-                combo.category || "";
-        }
-
-
-        if (mainLink) {
-
-            mainLink.value =
-                combo.mainLink || "";
-        }
-
-
-        if (affiliateLink) {
-
-            affiliateLink.value =
-                combo.affiliateLink || "";
-        }
-
-
-        if (comboNotes) {
-
-            comboNotes.value =
-                combo.notes || "";
-        }
-
-
-        if (comboStatus) {
-
-            comboStatus.value =
-                getComboStatus(
-                    combo
-                );
-        }
+        comboStatus.value =
+            getComboStatus(combo);
 
     } else {
 
-        if (modalTitle) {
+        modalTitle.textContent =
+            "Add Combo";
 
-            modalTitle.textContent =
-                "Add Combo";
-        }
+        editId.value =
+            "";
 
+        comboForm.reset();
 
-        if (editId) {
-
-            editId.value =
-                "";
-        }
-
-
-        if (comboForm) {
-
-            comboForm.reset();
-        }
-
-
-        if (comboStatus) {
-
-            comboStatus.value =
-                "Active";
-        }
+        comboStatus.value =
+            "Active";
     }
-
 
     comboModal.classList.remove(
         "hidden"
     );
 
-
     setTimeout(
-        function() {
-
-            comboName?.focus();
-
-        },
+        () => comboName?.focus(),
         50
     );
 }
 
-
-/* =========================================================
-   CLOSE COMBO MODAL
-========================================================= */
 
 function closeComboModal() {
 
@@ -1602,54 +1421,44 @@ async function saveCombo(event) {
 
     event.preventDefault();
 
-
     if (!currentUser) {
         return;
     }
-
 
     const id =
         normalizeText(
             editId?.value
         );
 
-
     const name =
         normalizeText(
             comboName?.value
         );
-
 
     const category =
         normalizeText(
             comboCategory?.value
         );
 
-
     const main =
         normalizeText(
             mainLink?.value
         );
-
 
     const affiliate =
         normalizeText(
             affiliateLink?.value
         );
 
-
     const notes =
         normalizeText(
             comboNotes?.value
         );
 
-
     const status =
         normalizeText(
             comboStatus?.value
-        ) ||
-        "Active";
-
+        ) || "Active";
 
     if (!name) {
 
@@ -1659,7 +1468,6 @@ async function saveCombo(event) {
 
         return;
     }
-
 
     if (
         main &&
@@ -1673,7 +1481,6 @@ async function saveCombo(event) {
         return;
     }
 
-
     if (
         affiliate &&
         !isValidUrl(affiliate)
@@ -1686,12 +1493,10 @@ async function saveCombo(event) {
         return;
     }
 
-
     const submitButton =
         comboForm?.querySelector(
             'button[type="submit"]'
         );
-
 
     if (submitButton) {
 
@@ -1702,69 +1507,46 @@ async function saveCombo(event) {
             "Saving...";
     }
 
-
     try {
 
         if (id) {
 
-            const comboRef =
+            await updateDoc(
                 doc(
                     db,
                     "combos",
                     id
-                );
-
-
-            await updateDoc(
-                comboRef,
+                ),
                 {
-
                     name,
-
                     category,
-
                     mainLink:
                         main,
-
                     affiliateLink:
                         affiliate,
-
                     notes,
-
                     status,
-
                     updatedAt:
                         serverTimestamp()
-
                 }
             );
 
-
             const existingMarketing =
                 marketingLinks[id];
-
 
             if (existingMarketing) {
 
                 const targetUrl =
                     getMarketingTarget({
-
                         name,
-
                         category,
-
                         mainLink:
                             main,
-
                         affiliateLink:
                             affiliate,
-
                         notes,
-
                         status
-
                     });
-
 
                 if (targetUrl) {
 
@@ -1775,20 +1557,14 @@ async function saveCombo(event) {
                             id
                         ),
                         {
-
                             comboName:
                                 name,
-
                             targetUrl,
-
                             status,
-
                             updatedAt:
                                 serverTimestamp()
-
                         }
                     );
-
 
                     await setDoc(
                         doc(
@@ -1797,14 +1573,10 @@ async function saveCombo(event) {
                             id
                         ),
                         {
-
                             targetUrl,
-
                             status,
-
                             updatedAt:
                                 serverTimestamp()
-
                         },
                         {
                             merge:
@@ -1821,19 +1593,14 @@ async function saveCombo(event) {
                             id
                         ),
                         {
-
                             comboName:
                                 name,
-
                             status:
                                 "Archived",
-
                             updatedAt:
                                 serverTimestamp()
-
                         }
                     );
-
 
                     await setDoc(
                         doc(
@@ -1842,13 +1609,10 @@ async function saveCombo(event) {
                             id
                         ),
                         {
-
                             status:
                                 "Archived",
-
                             updatedAt:
                                 serverTimestamp()
-
                         },
                         {
                             merge:
@@ -1858,36 +1622,24 @@ async function saveCombo(event) {
                 }
             }
 
-
             const index =
                 combos.findIndex(
                     combo =>
                         combo.id === id
                 );
 
-
-            if (
-                index !== -1
-            ) {
+            if (index !== -1) {
 
                 combos[index] = {
-
                     ...combos[index],
-
                     name,
-
                     category,
-
                     mainLink:
                         main,
-
                     affiliateLink:
                         affiliate,
-
                     notes,
-
                     status
-
                 };
             }
 
@@ -1900,53 +1652,34 @@ async function saveCombo(event) {
                         "combos"
                     ),
                     {
-
                         name,
-
                         category,
-
                         mainLink:
                             main,
-
                         affiliateLink:
                             affiliate,
-
                         notes,
-
                         status,
-
                         createdAt:
                             serverTimestamp(),
-
                         updatedAt:
                             serverTimestamp()
-
                     }
                 );
 
-
             combos.push({
-
                 id:
                     comboRef.id,
-
                 name,
-
                 category,
-
                 mainLink:
                     main,
-
                 affiliateLink:
                     affiliate,
-
                 notes,
-
                 status
-
             });
         }
-
 
         closeComboModal();
 
@@ -1958,7 +1691,6 @@ async function saveCombo(event) {
             "Save Combo Error:",
             error
         );
-
 
         alert(
             "Unable to save the combo. Please try again."
@@ -1981,19 +1713,16 @@ async function saveCombo(event) {
 
 
 /* =========================================================
-   CREATE MARKETING LINK
+   MARKETING LINK
 ========================================================= */
 
-async function createMarketingLink(
-    id
-) {
+async function createMarketingLink(id) {
 
     const combo =
         combos.find(
             item =>
                 item.id === id
         );
-
 
     if (!combo) {
 
@@ -2004,12 +1733,8 @@ async function createMarketingLink(
         return;
     }
 
-
     const targetUrl =
-        getMarketingTarget(
-            combo
-        );
-
+        getMarketingTarget(combo);
 
     if (!targetUrl) {
 
@@ -2020,7 +1745,6 @@ async function createMarketingLink(
         return;
     }
 
-
     try {
 
         const marketingRef =
@@ -2030,62 +1754,46 @@ async function createMarketingLink(
                 id
             );
 
-
         const existingSnap =
             await getDoc(
                 marketingRef
             );
-
 
         const existing =
             existingSnap.exists()
                 ? existingSnap.data()
                 : {};
 
-
         const status =
             existing.status ||
-            getComboStatus(
-                combo
-            );
-
+            getComboStatus(combo);
 
         const clicks =
             Number(
                 existing.clicks
             ) || 0;
 
-
         await setDoc(
             marketingRef,
             {
-
                 comboId:
                     id,
-
                 comboName:
                     combo.name || "",
-
                 targetUrl,
-
                 clicks,
-
                 status,
-
                 createdAt:
                     existing.createdAt ||
                     serverTimestamp(),
-
                 updatedAt:
                     serverTimestamp()
-
             },
             {
                 merge:
                     true
             }
         );
-
 
         await setDoc(
             doc(
@@ -2094,14 +1802,10 @@ async function createMarketingLink(
                 id
             ),
             {
-
                 targetUrl,
-
                 status,
-
                 updatedAt:
                     serverTimestamp()
-
             },
             {
                 merge:
@@ -2109,43 +1813,27 @@ async function createMarketingLink(
             }
         );
 
-
         marketingLinks[id] = {
-
             id,
-
             comboId:
                 id,
-
             comboName:
                 combo.name || "",
-
             targetUrl,
-
             clicks,
-
             status
-
         };
-
-
-        renderMarketingLinks();
 
         render();
 
-
         const publicUrl =
-            buildMarketingUrl(
-                id
-            );
-
+            buildMarketingUrl(id);
 
         try {
 
             await navigator.clipboard.writeText(
                 publicUrl
             );
-
 
             alert(
                 "Marketing link created and copied:\n\n" +
@@ -2167,17 +1855,12 @@ async function createMarketingLink(
             error
         );
 
-
         alert(
             "Unable to create the marketing link."
         );
     }
 }
 
-
-/* =========================================================
-   UPDATE MARKETING LINK STATUS
-========================================================= */
 
 async function updateMarketingLinkStatus(
     id,
@@ -2188,7 +1871,6 @@ async function updateMarketingLinkStatus(
         return;
     }
 
-
     try {
 
         await updateDoc(
@@ -2198,16 +1880,12 @@ async function updateMarketingLinkStatus(
                 id
             ),
             {
-
                 status:
                     newStatus,
-
                 updatedAt:
                     serverTimestamp()
-
             }
         );
-
 
         await setDoc(
             doc(
@@ -2216,13 +1894,10 @@ async function updateMarketingLinkStatus(
                 id
             ),
             {
-
                 status:
                     newStatus,
-
                 updatedAt:
                     serverTimestamp()
-
             },
             {
                 merge:
@@ -2230,12 +1905,8 @@ async function updateMarketingLinkStatus(
             }
         );
 
-
         marketingLinks[id].status =
             newStatus;
-
-
-        renderMarketingLinks();
 
         render();
 
@@ -2246,7 +1917,6 @@ async function updateMarketingLinkStatus(
             error
         );
 
-
         alert(
             "Unable to update marketing link status."
         );
@@ -2254,24 +1924,15 @@ async function updateMarketingLinkStatus(
 }
 
 
-/* =========================================================
-   DELETE MARKETING LINK
-========================================================= */
+async function deleteMarketingLink(id) {
 
-async function deleteMarketingLink(
-    id
-) {
-
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Delete this marketing link and its click history?"
-        );
-
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
-
 
     try {
 
@@ -2283,7 +1944,6 @@ async function deleteMarketingLink(
             )
         );
 
-
         try {
 
             await deleteDoc(
@@ -2294,19 +1954,15 @@ async function deleteMarketingLink(
                 )
             );
 
-        } catch (publicDeleteError) {
+        } catch (error) {
 
             console.warn(
                 "Public Redirect Delete Warning:",
-                publicDeleteError
+                error
             );
         }
 
-
         delete marketingLinks[id];
-
-
-        renderMarketingLinks();
 
         render();
 
@@ -2317,7 +1973,6 @@ async function deleteMarketingLink(
             error
         );
 
-
         alert(
             "Unable to delete the marketing link."
         );
@@ -2325,26 +1980,16 @@ async function deleteMarketingLink(
 }
 
 
-/* =========================================================
-   COPY MARKETING LINK
-========================================================= */
-
-async function copyMarketingLink(
-    id
-) {
+async function copyMarketingLink(id) {
 
     const url =
-        buildMarketingUrl(
-            id
-        );
-
+        buildMarketingUrl(id);
 
     try {
 
         await navigator.clipboard.writeText(
             url
         );
-
 
         alert(
             "Marketing link copied."
@@ -2360,19 +2005,10 @@ async function copyMarketingLink(
 }
 
 
-/* =========================================================
-   OPEN MARKETING LINK
-========================================================= */
-
-function openMarketingLink(
-    id
-) {
+function openMarketingLink(id) {
 
     const url =
-        buildMarketingUrl(
-            id
-        );
-
+        buildMarketingUrl(id);
 
     window.open(
         url,
@@ -2383,49 +2019,21 @@ function openMarketingLink(
 
 
 /* =========================================================
-   RENDER MARKETING LINKS
+   MARKETING RENDER
 ========================================================= */
 
 function renderMarketingLinks() {
 
     updateMarketingStats();
 
-
     if (!marketingLinksList) {
         return;
     }
 
-
     const links =
         Object.values(
             marketingLinks
-        )
-            .sort(
-                function(a, b) {
-
-                    const aDate =
-                        a.updatedAt?.toDate
-                            ? a.updatedAt.toDate()
-                            : new Date(
-                                a.updatedAt || 0
-                            );
-
-
-                    const bDate =
-                        b.updatedAt?.toDate
-                            ? b.updatedAt.toDate()
-                            : new Date(
-                                b.updatedAt || 0
-                            );
-
-
-                    return (
-                        bDate -
-                        aDate
-                    );
-                }
-            );
-
+        );
 
     if (
         links.length === 0
@@ -2434,23 +2042,39 @@ function renderMarketingLinks() {
         marketingLinksList.innerHTML =
             "";
 
-
         marketingEmptyState?.classList.remove(
             "hidden"
         );
 
-
         return;
     }
-
 
     marketingEmptyState?.classList.add(
         "hidden"
     );
 
-
     marketingLinksList.innerHTML =
         links
+            .sort(
+                (a, b) => {
+
+                    const aDate =
+                        a.updatedAt?.toDate
+                            ? a.updatedAt.toDate()
+                            : new Date(
+                                a.updatedAt || 0
+                            );
+
+                    const bDate =
+                        b.updatedAt?.toDate
+                            ? b.updatedAt.toDate()
+                            : new Date(
+                                b.updatedAt || 0
+                            );
+
+                    return bDate - aDate;
+                }
+            )
             .map(
                 createMarketingLinkHTML
             )
@@ -2458,13 +2082,7 @@ function renderMarketingLinks() {
 }
 
 
-/* =========================================================
-   MARKETING LINK HTML
-========================================================= */
-
-function createMarketingLinkHTML(
-    link
-) {
+function createMarketingLinkHTML(link) {
 
     const combo =
         combos.find(
@@ -2473,39 +2091,29 @@ function createMarketingLinkHTML(
                 link.comboId
         );
 
-
     const comboName =
         link.comboName ||
         combo?.name ||
         "Unknown Combo";
 
-
     const category =
         combo?.category ||
         "—";
 
-
     const status =
-        getMarketingStatus(
-            link
-        );
-
+        getMarketingStatus(link);
 
     const clicks =
         Number(
             link.clicks
         ) || 0;
 
-
     const publicUrl =
         buildMarketingUrl(
             link.id
         );
 
-
-    let statusAction =
-        "";
-
+    let statusAction = "";
 
     if (
         status === "Active"
@@ -2564,7 +2172,6 @@ function createMarketingLinkHTML(
         `;
     }
 
-
     return `
         <article class="marketing-link-card">
 
@@ -2602,7 +2209,6 @@ function createMarketingLinkHTML(
 
             </div>
 
-
             <div class="marketing-link-url">
 
                 <strong>
@@ -2617,7 +2223,6 @@ function createMarketingLinkHTML(
 
             </div>
 
-
             <div class="marketing-link-url">
 
                 <strong>
@@ -2626,12 +2231,12 @@ function createMarketingLinkHTML(
 
                 <code>
                     ${escapeHTML(
-                        link.targetUrl || "—"
+                        link.targetUrl ||
+                        "—"
                     )}
                 </code>
 
             </div>
-
 
             <div class="card-actions">
 
@@ -2645,7 +2250,6 @@ function createMarketingLinkHTML(
                     Copy
                 </button>
 
-
                 <button
                     class="btn secondary small"
                     data-marketing-action="open"
@@ -2656,9 +2260,7 @@ function createMarketingLinkHTML(
                     Open
                 </button>
 
-
                 ${statusAction}
-
 
                 <button
                     class="btn danger small"
@@ -2678,12 +2280,10 @@ function createMarketingLinkHTML(
 
 
 /* =========================================================
-   DELETE COMBO
+   COMBO DELETE / ARCHIVE / RESTORE
 ========================================================= */
 
-async function deleteCombo(
-    id
-) {
+async function deleteCombo(id) {
 
     const combo =
         combos.find(
@@ -2691,22 +2291,17 @@ async function deleteCombo(
                 item.id === id
         );
 
-
     if (!combo) {
         return;
     }
 
-
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             `Delete "${combo.name}"?\n\nThe combo will be removed. Its marketing history will be kept, but the public redirect will be disabled.`
-        );
-
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
-
 
     try {
 
@@ -2717,7 +2312,6 @@ async function deleteCombo(
                 id
             )
         );
-
 
         if (
             marketingLinks[id]
@@ -2732,28 +2326,23 @@ async function deleteCombo(
                         id
                     ),
                     {
-
                         status:
                             "Archived",
-
                         updatedAt:
                             serverTimestamp()
-
                     }
                 );
-
 
                 marketingLinks[id].status =
                     "Archived";
 
-            } catch (historyError) {
+            } catch (error) {
 
                 console.warn(
-                    "Marketing History Update Warning:",
-                    historyError
+                    "Marketing History Warning:",
+                    error
                 );
             }
-
 
             try {
 
@@ -2765,15 +2354,14 @@ async function deleteCombo(
                     )
                 );
 
-            } catch (publicDeleteError) {
+            } catch (error) {
 
                 console.warn(
-                    "Public Redirect Delete Warning:",
-                    publicDeleteError
+                    "Public Redirect Warning:",
+                    error
                 );
             }
         }
-
 
         combos =
             combos.filter(
@@ -2781,10 +2369,7 @@ async function deleteCombo(
                     item.id !== id
             );
 
-
         render();
-
-        renderMarketingLinks();
 
     } catch (error) {
 
@@ -2793,7 +2378,6 @@ async function deleteCombo(
             error
         );
 
-
         alert(
             "Unable to delete the combo."
         );
@@ -2801,13 +2385,7 @@ async function deleteCombo(
 }
 
 
-/* =========================================================
-   ARCHIVE COMBO
-========================================================= */
-
-async function archiveCombo(
-    id
-) {
+async function archiveCombo(id) {
 
     const combo =
         combos.find(
@@ -2815,11 +2393,9 @@ async function archiveCombo(
                 item.id === id
         );
 
-
     if (!combo) {
         return;
     }
-
 
     try {
 
@@ -2830,16 +2406,12 @@ async function archiveCombo(
                 id
             ),
             {
-
                 status:
                     "Archived",
-
                 updatedAt:
                     serverTimestamp()
-
             }
         );
-
 
         const index =
             combos.findIndex(
@@ -2847,15 +2419,11 @@ async function archiveCombo(
                     item.id === id
             );
 
-
-        if (
-            index !== -1
-        ) {
+        if (index !== -1) {
 
             combos[index].status =
                 "Archived";
         }
-
 
         if (
             marketingLinks[id]
@@ -2868,38 +2436,24 @@ async function archiveCombo(
 
         } else {
 
-            try {
-
-                await setDoc(
-                    doc(
-                        db,
-                        "publicRedirects",
-                        id
-                    ),
-                    {
-
-                        status:
-                            "Archived",
-
-                        updatedAt:
-                            serverTimestamp()
-
-                    },
-                    {
-                        merge:
-                            true
-                    }
-                );
-
-            } catch (publicError) {
-
-                console.warn(
-                    "Public Archive Warning:",
-                    publicError
-                );
-            }
+            await setDoc(
+                doc(
+                    db,
+                    "publicRedirects",
+                    id
+                ),
+                {
+                    status:
+                        "Archived",
+                    updatedAt:
+                        serverTimestamp()
+                },
+                {
+                    merge:
+                        true
+                }
+            );
         }
-
 
         render();
 
@@ -2910,7 +2464,6 @@ async function archiveCombo(
             error
         );
 
-
         alert(
             "Unable to archive the combo."
         );
@@ -2918,13 +2471,7 @@ async function archiveCombo(
 }
 
 
-/* =========================================================
-   RESTORE COMBO
-========================================================= */
-
-async function restoreCombo(
-    id
-) {
+async function restoreCombo(id) {
 
     const combo =
         combos.find(
@@ -2932,11 +2479,9 @@ async function restoreCombo(
                 item.id === id
         );
 
-
     if (!combo) {
         return;
     }
-
 
     try {
 
@@ -2947,16 +2492,12 @@ async function restoreCombo(
                 id
             ),
             {
-
                 status:
                     "Active",
-
                 updatedAt:
                     serverTimestamp()
-
             }
         );
-
 
         const index =
             combos.findIndex(
@@ -2964,15 +2505,11 @@ async function restoreCombo(
                     item.id === id
             );
 
-
-        if (
-            index !== -1
-        ) {
+        if (index !== -1) {
 
             combos[index].status =
                 "Active";
         }
-
 
         if (
             marketingLinks[id]
@@ -2984,7 +2521,6 @@ async function restoreCombo(
             );
         }
 
-
         render();
 
     } catch (error) {
@@ -2994,7 +2530,6 @@ async function restoreCombo(
             error
         );
 
-
         alert(
             "Unable to restore the combo."
         );
@@ -3003,36 +2538,26 @@ async function restoreCombo(
 
 
 /* =========================================================
-   CREATE COMBO HTML
+   COMBO HTML
 ========================================================= */
 
-function createComboHTML(
-    combo
-) {
+function createComboHTML(combo) {
 
     const status =
-        getComboStatus(
-            combo
-        );
-
+        getComboStatus(combo);
 
     const marketing =
         marketingLinks[
             combo.id
         ];
 
-
     const clicks =
         Number(
             marketing?.clicks
         ) || 0;
 
-
     const hasMarketing =
-        Boolean(
-            marketing
-        );
-
+        Boolean(marketing);
 
     const marketingButtons =
         hasMarketing
@@ -3069,7 +2594,6 @@ function createComboHTML(
                 </button>
             `;
 
-
     const archiveButton =
         status === "Archived"
             ? `
@@ -3094,7 +2618,6 @@ function createComboHTML(
                     Archive
                 </button>
             `;
-
 
     return `
         <article class="combo-card">
@@ -3134,7 +2657,6 @@ function createComboHTML(
 
             </div>
 
-
             ${
                 combo.notes
                     ? `
@@ -3146,7 +2668,6 @@ function createComboHTML(
                     `
                     : ""
             }
-
 
             <div class="combo-links">
 
@@ -3176,7 +2697,6 @@ function createComboHTML(
                         : ""
                 }
 
-
                 ${
                     combo.affiliateLink
                         ? `
@@ -3205,7 +2725,6 @@ function createComboHTML(
 
             </div>
 
-
             <div class="marketing-box">
 
                 <div>
@@ -3224,15 +2743,11 @@ function createComboHTML(
 
                 </div>
 
-
                 <div class="card-actions">
-
                     ${marketingButtons}
-
                 </div>
 
             </div>
-
 
             <div class="card-actions">
 
@@ -3246,9 +2761,7 @@ function createComboHTML(
                     Edit
                 </button>
 
-
                 ${archiveButton}
-
 
                 <button
                     class="btn danger small"
@@ -3261,7 +2774,6 @@ function createComboHTML(
                 </button>
 
             </div>
-
 
             <div class="combo-dates">
 
@@ -3287,7 +2799,7 @@ function createComboHTML(
 
 
 /* =========================================================
-   FILTER COMBOS
+   FILTER / RENDER
 ========================================================= */
 
 function getFilteredCombos() {
@@ -3297,35 +2809,26 @@ function getFilteredCombos() {
             searchInput?.value
         ).toLowerCase();
 
-
     const category =
         normalizeText(
             categoryFilter?.value
         ).toLowerCase();
-
 
     const status =
         normalizeText(
             statusFilter?.value
         ).toLowerCase();
 
-
     return combos.filter(
         combo => {
 
             const searchable =
                 [
-
                     combo.name,
-
                     combo.category,
-
                     combo.mainLink,
-
                     combo.affiliateLink,
-
                     combo.notes
-
                 ]
                     .map(
                         value =>
@@ -3335,51 +2838,32 @@ function getFilteredCombos() {
                     )
                     .join(" ");
 
-
             const comboCategory =
                 normalizeText(
                     combo.category
                 ).toLowerCase();
-
 
             const comboStatus =
                 getComboStatus(
                     combo
                 ).toLowerCase();
 
-
-            const matchesSearch =
-                !search ||
-                searchable.includes(
-                    search
-                );
-
-
-            const matchesCategory =
-                !category ||
-                comboCategory ===
-                    category;
-
-
-            const matchesStatus =
-                !status ||
-                comboStatus ===
-                    status;
-
-
             return (
-                matchesSearch &&
-                matchesCategory &&
-                matchesStatus
+                (!search ||
+                    searchable.includes(
+                        search
+                    )) &&
+                (!category ||
+                    comboCategory ===
+                        category) &&
+                (!status ||
+                    comboStatus ===
+                        status)
             );
         }
     );
 }
 
-
-/* =========================================================
-   RENDER COMBOS
-========================================================= */
 
 function renderCombos() {
 
@@ -3387,10 +2871,8 @@ function renderCombos() {
         return;
     }
 
-
     const filtered =
         getFilteredCombos();
-
 
     if (resultCount) {
 
@@ -3402,7 +2884,6 @@ function renderCombos() {
             }`;
     }
 
-
     if (
         filtered.length === 0
     ) {
@@ -3410,20 +2891,16 @@ function renderCombos() {
         comboList.innerHTML =
             "";
 
-
         emptyState?.classList.remove(
             "hidden"
         );
 
-
         return;
     }
-
 
     emptyState?.classList.add(
         "hidden"
     );
-
 
     comboList.innerHTML =
         filtered
@@ -3433,10 +2910,6 @@ function renderCombos() {
             .join("");
 }
 
-
-/* =========================================================
-   RENDER EVERYTHING
-========================================================= */
 
 function render() {
 
@@ -3480,10 +2953,8 @@ async function importPastedCombos() {
 
     const raw =
         String(
-            pasteBox?.value ||
-            ""
+            pasteBox?.value || ""
         ).trim();
-
 
     if (!raw) {
 
@@ -3494,16 +2965,12 @@ async function importPastedCombos() {
         return;
     }
 
-
     let parsed;
-
 
     try {
 
         parsed =
-            JSON.parse(
-                raw
-            );
+            JSON.parse(raw);
 
     } catch {
 
@@ -3514,18 +2981,12 @@ async function importPastedCombos() {
         return;
     }
 
-
     const items =
-        Array.isArray(
-            parsed
-        )
+        Array.isArray(parsed)
             ? parsed
             : [parsed];
 
-
-    let imported =
-        0;
-
+    let imported = 0;
 
     try {
 
@@ -3537,30 +2998,24 @@ async function importPastedCombos() {
             if (
                 !item ||
                 typeof item !==
-                "object"
+                    "object"
             ) {
-
                 continue;
             }
-
 
             const name =
                 normalizeText(
                     item.name
                 );
 
-
             if (!name) {
                 continue;
             }
 
-
             const category =
                 normalizeText(
                     item.category
-                ) ||
-                "Other";
-
+                ) || "Other";
 
             const main =
                 normalizeText(
@@ -3569,13 +3024,11 @@ async function importPastedCombos() {
                     item.url
                 );
 
-
             const affiliate =
                 normalizeText(
                     item.affiliateLink ||
                     item.affiliate
                 );
-
 
             const notes =
                 normalizeText(
@@ -3583,13 +3036,10 @@ async function importPastedCombos() {
                     item.description
                 );
 
-
             const status =
                 normalizeText(
                     item.status
-                ) ||
-                "Active";
-
+                ) || "Active";
 
             const ref =
                 await addDoc(
@@ -3598,69 +3048,44 @@ async function importPastedCombos() {
                         "combos"
                     ),
                     {
-
                         name,
-
                         category,
-
                         mainLink:
                             main,
-
                         affiliateLink:
                             affiliate,
-
                         notes,
-
                         status,
-
                         createdAt:
                             serverTimestamp(),
-
                         updatedAt:
                             serverTimestamp()
-
                     }
                 );
 
-
             combos.push({
-
                 id:
                     ref.id,
-
                 name,
-
                 category,
-
                 mainLink:
                     main,
-
                 affiliateLink:
                     affiliate,
-
                 notes,
-
                 status
-
             });
-
 
             imported++;
         }
 
-
         closePasteModal();
 
-
         if (pasteBox) {
-
-            pasteBox.value =
-                "";
+            pasteBox.value = "";
         }
 
-
         render();
-
 
         alert(
             `${imported} combo${
@@ -3676,7 +3101,6 @@ async function importPastedCombos() {
             "Paste Import Error:",
             error
         );
-
 
         alert(
             "Unable to import the pasted data."
@@ -3694,7 +3118,6 @@ function openCategoryModal() {
     categoryModal?.classList.remove(
         "hidden"
     );
-
 
     renderCategoryList();
 
@@ -3717,7 +3140,6 @@ async function addNewCategory() {
             newCategory?.value
         );
 
-
     if (!name) {
 
         alert(
@@ -3726,7 +3148,6 @@ async function addNewCategory() {
 
         return;
     }
-
 
     const exists =
         categories.some(
@@ -3737,7 +3158,6 @@ async function addNewCategory() {
                 name.toLowerCase()
         );
 
-
     if (exists) {
 
         alert(
@@ -3746,7 +3166,6 @@ async function addNewCategory() {
 
         return;
     }
-
 
     const id =
         name
@@ -3757,15 +3176,14 @@ async function addNewCategory() {
             )
             .replace(
                 /^-+|-+$/g,
-                "");
-
+                ""
+            );
 
     try {
 
         let finalId =
             id ||
             `category-${Date.now()}`;
-
 
         const existingDoc =
             await getDoc(
@@ -3776,7 +3194,6 @@ async function addNewCategory() {
                 )
             );
 
-
         if (
             existingDoc.exists()
         ) {
@@ -3785,7 +3202,6 @@ async function addNewCategory() {
                 `${finalId}-${Date.now()}`;
         }
 
-
         await setDoc(
             doc(
                 db,
@@ -3793,32 +3209,22 @@ async function addNewCategory() {
                 finalId
             ),
             {
-
                 name,
-
                 createdAt:
                     serverTimestamp()
-
             }
         );
 
-
         categories.push({
-
             id:
                 finalId,
-
             name
-
         });
 
-
         if (newCategory) {
-
             newCategory.value =
                 "";
         }
-
 
         render();
 
@@ -3829,7 +3235,6 @@ async function addNewCategory() {
             error
         );
 
-
         alert(
             "Unable to add category."
         );
@@ -3837,9 +3242,7 @@ async function addNewCategory() {
 }
 
 
-async function deleteCategory(
-    id
-) {
+async function deleteCategory(id) {
 
     const category =
         categories.find(
@@ -3847,11 +3250,9 @@ async function deleteCategory(
                 item.id === id
         );
 
-
     if (!category) {
         return;
     }
-
 
     const used =
         combos.some(
@@ -3864,7 +3265,6 @@ async function deleteCategory(
                 ).toLowerCase()
         );
 
-
     if (used) {
 
         alert(
@@ -3874,17 +3274,13 @@ async function deleteCategory(
         return;
     }
 
-
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             `Delete category "${category.name}"?`
-        );
-
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
-
 
     try {
 
@@ -3896,13 +3292,11 @@ async function deleteCategory(
             )
         );
 
-
         categories =
             categories.filter(
                 item =>
                     item.id !== id
             );
-
 
         render();
 
@@ -3913,7 +3307,6 @@ async function deleteCategory(
             error
         );
 
-
         alert(
             "Unable to delete category."
         );
@@ -3922,7 +3315,7 @@ async function deleteCategory(
 
 
 /* =========================================================
-   EVENT HANDLERS
+   EVENTS
 ========================================================= */
 
 loginForm?.addEventListener(
@@ -3930,116 +3323,91 @@ loginForm?.addEventListener(
     handleLogin
 );
 
-
 logoutBtn?.addEventListener(
     "click",
     handleLogout
 );
-
 
 comboForm?.addEventListener(
     "submit",
     saveCombo
 );
 
-
 closeModal?.addEventListener(
     "click",
     closeComboModal
 );
-
 
 cancelBtn?.addEventListener(
     "click",
     closeComboModal
 );
 
-
 document
-    .getElementById(
-        "addComboBtn"
-    )
+    .getElementById("addComboBtn")
     ?.addEventListener(
         "click",
         () =>
             openComboModal()
     );
 
-
 document
-    .getElementById(
-        "pasteComboBtn"
-    )
+    .getElementById("pasteComboBtn")
     ?.addEventListener(
         "click",
         openPasteModal
     );
-
 
 cancelPasteBtn?.addEventListener(
     "click",
     closePasteModal
 );
 
-
 importPasteBtn?.addEventListener(
     "click",
     importPastedCombos
 );
-
 
 categoryBtn?.addEventListener(
     "click",
     openCategoryModal
 );
 
-
 addCategoryBtn?.addEventListener(
     "click",
     addNewCategory
 );
 
-
 refreshMarketingBtn?.addEventListener(
     "click",
-    async function() {
+    async () => {
 
-        if (
-            refreshMarketingBtn
-        ) {
+        refreshMarketingBtn.disabled =
+            true;
 
-            refreshMarketingBtn.disabled =
-                true;
-
-            refreshMarketingBtn.textContent =
-                "Refreshing...";
-        }
-
+        refreshMarketingBtn.textContent =
+            "Refreshing...";
 
         try {
 
             await loadMarketingLinks();
 
+            render();
+
         } finally {
 
-            if (
-                refreshMarketingBtn
-            ) {
+            refreshMarketingBtn.disabled =
+                false;
 
-                refreshMarketingBtn.disabled =
-                    false;
-
-                refreshMarketingBtn.textContent =
-                    "Refresh";
-            }
+            refreshMarketingBtn.textContent =
+                "Refresh";
         }
     }
 );
 
-
 helpCenterBtn?.addEventListener(
     "click",
-    function() {
+    () => {
 
         helpModal?.classList.remove(
             "hidden"
@@ -4047,10 +3415,9 @@ helpCenterBtn?.addEventListener(
     }
 );
 
-
 closeHelpModal?.addEventListener(
     "click",
-    function() {
+    () => {
 
         helpModal?.classList.add(
             "hidden"
@@ -4060,7 +3427,7 @@ closeHelpModal?.addEventListener(
 
 
 /* =========================================================
-   SEARCH EVENTS
+   SEARCH
 ========================================================= */
 
 searchInput?.addEventListener(
@@ -4068,64 +3435,52 @@ searchInput?.addEventListener(
     renderCombos
 );
 
-
 categoryFilter?.addEventListener(
     "change",
     renderCombos
 );
-
 
 statusFilter?.addEventListener(
     "change",
     renderCombos
 );
 
-
 emptyAddBtn?.addEventListener(
     "click",
-    function() {
-
-        openComboModal();
-    }
+    () =>
+        openComboModal()
 );
 
 
 /* =========================================================
-   COMBO LIST ACTIONS
+   COMBO ACTIONS
 ========================================================= */
 
 comboList?.addEventListener(
     "click",
-    async function(event) {
+    async event => {
 
         const button =
             event.target.closest(
                 "[data-combo-action]"
             );
 
-
         if (!button) {
             return;
         }
 
-
         const action =
-            button.dataset
-                .comboAction;
-
+            button.dataset.comboAction;
 
         const id =
             button.dataset.id;
-
 
         if (!id) {
             return;
         }
 
-
         if (
-            action ===
-            "edit"
+            action === "edit"
         ) {
 
             const combo =
@@ -4134,73 +3489,45 @@ comboList?.addEventListener(
                         item.id === id
                 );
 
-
             if (combo) {
-
-                openComboModal(
-                    combo
-                );
+                openComboModal(combo);
             }
 
-
         } else if (
-            action ===
-            "delete"
+            action === "delete"
         ) {
 
-            await deleteCombo(
-                id
-            );
-
+            await deleteCombo(id);
 
         } else if (
-            action ===
-            "archive"
+            action === "archive"
         ) {
 
-            await archiveCombo(
-                id
-            );
-
+            await archiveCombo(id);
 
         } else if (
-            action ===
-            "restore"
+            action === "restore"
         ) {
 
-            await restoreCombo(
-                id
-            );
-
+            await restoreCombo(id);
 
         } else if (
-            action ===
-            "create-marketing"
+            action === "create-marketing"
         ) {
 
-            await createMarketingLink(
-                id
-            );
-
+            await createMarketingLink(id);
 
         } else if (
-            action ===
-            "copy-marketing"
+            action === "copy-marketing"
         ) {
 
-            await copyMarketingLink(
-                id
-            );
-
+            await copyMarketingLink(id);
 
         } else if (
-            action ===
-            "open-marketing"
+            action === "open-marketing"
         ) {
 
-            openMarketingLink(
-                id
-            );
+            openMarketingLink(id);
         }
     }
 );
@@ -4212,56 +3539,42 @@ comboList?.addEventListener(
 
 marketingLinksList?.addEventListener(
     "click",
-    async function(event) {
+    async event => {
 
         const button =
             event.target.closest(
                 "[data-marketing-action]"
             );
 
-
         if (!button) {
             return;
         }
-
 
         const action =
             button.dataset
                 .marketingAction;
 
-
         const id =
             button.dataset.id;
-
 
         if (!id) {
             return;
         }
 
-
         if (
-            action ===
-            "copy"
+            action === "copy"
         ) {
 
-            await copyMarketingLink(
-                id
-            );
-
+            await copyMarketingLink(id);
 
         } else if (
-            action ===
-            "open"
+            action === "open"
         ) {
 
-            openMarketingLink(
-                id
-            );
-
+            openMarketingLink(id);
 
         } else if (
-            action ===
-            "pause"
+            action === "pause"
         ) {
 
             await updateMarketingLinkStatus(
@@ -4269,10 +3582,8 @@ marketingLinksList?.addEventListener(
                 "Paused"
             );
 
-
         } else if (
-            action ===
-            "activate"
+            action === "activate"
         ) {
 
             await updateMarketingLinkStatus(
@@ -4280,10 +3591,8 @@ marketingLinksList?.addEventListener(
                 "Active"
             );
 
-
         } else if (
-            action ===
-            "archive"
+            action === "archive"
         ) {
 
             await updateMarketingLinkStatus(
@@ -4291,10 +3600,8 @@ marketingLinksList?.addEventListener(
                 "Archived"
             );
 
-
         } else if (
-            action ===
-            "restore"
+            action === "restore"
         ) {
 
             await updateMarketingLinkStatus(
@@ -4302,15 +3609,11 @@ marketingLinksList?.addEventListener(
                 "Active"
             );
 
-
         } else if (
-            action ===
-            "delete"
+            action === "delete"
         ) {
 
-            await deleteMarketingLink(
-                id
-            );
+            await deleteMarketingLink(id);
         }
     }
 );
@@ -4322,29 +3625,26 @@ marketingLinksList?.addEventListener(
 
 categoryListView?.addEventListener(
     "click",
-    async function(event) {
+    async event => {
 
         const button =
             event.target.closest(
                 "[data-delete-category]"
             );
 
-
         if (!button) {
             return;
         }
 
-
         await deleteCategory(
-            button.dataset
-                .deleteCategory
+            button.dataset.deleteCategory
         );
     }
 );
 
 
 /* =========================================================
-   MODAL OUTSIDE CLICK
+   MODAL CLICK
 ========================================================= */
 
 [
@@ -4359,7 +3659,7 @@ categoryListView?.addEventListener(
 
             modal.addEventListener(
                 "click",
-                function(event) {
+                event => {
 
                     if (
                         event.target ===
@@ -4377,12 +3677,12 @@ categoryListView?.addEventListener(
 
 
 /* =========================================================
-   ESC KEY
+   ESC
 ========================================================= */
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    event => {
 
         if (
             event.key !==
@@ -4390,7 +3690,6 @@ document.addEventListener(
         ) {
             return;
         }
-
 
         comboModal?.classList.add(
             "hidden"
@@ -4417,70 +3716,52 @@ document.addEventListener(
 
 onAuthStateChanged(
     auth,
-    async function(user) {
+    async user => {
 
         currentUser =
             user;
-
 
         if (!user) {
 
             showLogin();
 
-
             authInitialized =
                 true;
-
 
             return;
         }
 
-
         const isAdmin =
-            await checkAdmin(
-                user
-            );
-
+            await checkAdmin(user);
 
         if (!isAdmin) {
 
-            await signOut(
-                auth
-            );
+            const uid =
+                user.uid;
 
+            await signOut(auth);
 
             currentUser =
                 null;
 
-
             showLogin();
 
-
             setLoginMessage(
-                "This account is not authorized as an admin.",
+                "یہ Firebase account Admin کے طور پر authorized نہیں ہے۔ UID: " +
+                uid,
                 "error"
             );
 
-
             authInitialized =
                 true;
-
 
             return;
         }
 
-
         showDashboard();
 
-
-        if (
-            !authInitialized
-        ) {
-
-            authInitialized =
-                true;
-        }
-
+        authInitialized =
+            true;
 
         await loadFirebaseData();
     }
@@ -4491,20 +3772,13 @@ onAuthStateChanged(
    INITIAL SCREEN
 ========================================================= */
 
-if (loginScreen) {
+loginScreen?.classList.add(
+    "login-screen-hidden"
+);
 
-    loginScreen.classList.add(
-        "login-screen-hidden"
-    );
-}
-
-
-if (appShell) {
-
-    appShell.classList.add(
-        "app-shell-hidden"
-    );
-}
+appShell?.classList.add(
+    "app-shell-hidden"
+);
 
 
 /* =========================================================
