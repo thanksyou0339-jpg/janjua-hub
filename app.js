@@ -10,6 +10,7 @@ import { initializeApp } from
 import {
     getAuth,
     signInWithEmailAndPassword,
+    sendPasswordResetEmail,
     signOut,
     onAuthStateChanged
 } from
@@ -25,10 +26,7 @@ import {
     setDoc,
     updateDoc,
     deleteDoc,
-    query,
-    orderBy,
-    serverTimestamp,
-    increment
+    serverTimestamp
 } from
     "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -63,11 +61,14 @@ const firebaseConfig = {
 // FIREBASE INITIALIZE
 // ============================================================
 
-const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp =
+    initializeApp(firebaseConfig);
 
-const auth = getAuth(firebaseApp);
+const auth =
+    getAuth(firebaseApp);
 
-const db = getFirestore(firebaseApp);
+const db =
+    getFirestore(firebaseApp);
 
 
 // ============================================================
@@ -79,6 +80,9 @@ const ADMIN_UID =
 
 const ADMIN_EMAIL =
     "thanksyou0339@gmail.com";
+
+const ADMIN_NAME =
+    "Admin";
 
 
 // ============================================================
@@ -112,7 +116,7 @@ let editingComboId = null;
 
 
 // ============================================================
-// DOM HELPERS
+// DOM HELPER
 // ============================================================
 
 function $(id) {
@@ -121,19 +125,13 @@ function $(id) {
 
 
 // ============================================================
-// LOGIN INPUT RESOLVER
-//
-// IMPORTANT:
-// HTML uses:
-// loginEmail
-// loginPassword
-//
-// This resolver supports those IDs and several fallbacks.
+// LOGIN INPUTS
 // ============================================================
 
 function getLoginInputs() {
 
-    const loginForm = $("loginForm");
+    const loginForm =
+        $("loginForm");
 
     if (!loginForm) {
 
@@ -145,10 +143,6 @@ function getLoginInputs() {
     }
 
 
-    // ----------------------------
-    // EMAIL
-    // ----------------------------
-
     let emailInput =
         $("loginEmail");
 
@@ -156,8 +150,12 @@ function getLoginInputs() {
     if (!emailInput && loginForm.elements) {
 
         emailInput =
-            loginForm.elements.namedItem("loginEmail") ||
-            loginForm.elements.namedItem("email");
+            loginForm.elements.namedItem(
+                "loginEmail"
+            ) ||
+            loginForm.elements.namedItem(
+                "email"
+            );
     }
 
 
@@ -170,19 +168,6 @@ function getLoginInputs() {
     }
 
 
-    if (!emailInput) {
-
-        emailInput =
-            loginForm.querySelector(
-                'input[name="loginEmail"], input[name="email"]'
-            );
-    }
-
-
-    // ----------------------------
-    // PASSWORD
-    // ----------------------------
-
     let passwordInput =
         $("loginPassword");
 
@@ -190,8 +175,12 @@ function getLoginInputs() {
     if (!passwordInput && loginForm.elements) {
 
         passwordInput =
-            loginForm.elements.namedItem("loginPassword") ||
-            loginForm.elements.namedItem("password");
+            loginForm.elements.namedItem(
+                "loginPassword"
+            ) ||
+            loginForm.elements.namedItem(
+                "password"
+            );
     }
 
 
@@ -199,7 +188,7 @@ function getLoginInputs() {
 
         passwordInput =
             loginForm.querySelector(
-                'input[name="loginPassword"], input[name="password"]'
+                'input[type="password"]'
             );
     }
 
@@ -213,18 +202,19 @@ function getLoginInputs() {
     }
 
 
-    // Final fallback:
-    // Find an input that is NOT the email field.
     if (!passwordInput) {
 
         const inputs =
             Array.from(
-                loginForm.querySelectorAll("input")
+                loginForm.querySelectorAll(
+                    "input"
+                )
             );
 
         passwordInput =
             inputs.find(
-                input => input !== emailInput
+                input =>
+                    input !== emailInput
             ) || null;
     }
 
@@ -241,317 +231,442 @@ function getLoginInputs() {
 // LOGIN MESSAGE
 // ============================================================
 
-function setLoginMessage(message, type = "") {
+function setLoginMessage(
+    message,
+    type = ""
+) {
 
-    const el = $("loginMessage");
+    const el =
+        $("loginMessage");
 
     if (!el) return;
 
-    el.textContent = message;
+    el.textContent =
+        message;
 
     el.className =
         "login-message" +
-        (type ? ` ${type}` : "");
+        (
+            type
+                ? ` ${type}`
+                : ""
+        );
 }
 
 
 // ============================================================
-// LOGIN DIAGNOSTIC
+// LOGIN USER NAME
 // ============================================================
 
-let diagnostic = {
+function createLoginUserName() {
 
-    wrapper: null,
-    expectedUid: null,
-    pastedUid: null,
-    actualUid: null,
-    status: null,
-    copyBtn: null,
-    checkBtn: null
-};
-
-
-function createUidDiagnostic() {
-
-    const loginForm = $("loginForm");
+    const loginForm =
+        $("loginForm");
 
     if (!loginForm) return;
 
     if (
-        document.getElementById(
-            "uidDiagnostic"
-        )
+        $("loginUserName")
     ) {
 
         return;
     }
 
 
-    const wrapper =
-        document.createElement("div");
+    const nameElement =
+        document.createElement(
+            "div"
+        );
 
-    wrapper.id =
-        "uidDiagnostic";
+    nameElement.id =
+        "loginUserName";
 
-    wrapper.style.marginTop =
+    nameElement.textContent =
+        ADMIN_NAME;
+
+
+    nameElement.style.margin =
+        "0 0 14px";
+
+    nameElement.style.textAlign =
+        "center";
+
+    nameElement.style.fontWeight =
+        "700";
+
+    nameElement.style.fontSize =
         "18px";
 
-    wrapper.style.padding =
-        "14px";
-
-    wrapper.style.border =
-        "1px solid rgba(255,255,255,.15)";
-
-    wrapper.style.borderRadius =
-        "12px";
-
-    wrapper.style.background =
-        "rgba(0,0,0,.18)";
+    nameElement.style.letterSpacing =
+        ".3px";
 
 
-    wrapper.innerHTML = `
-
-        <div style="
-            font-weight:700;
-            margin-bottom:10px;
-        ">
-            🔐 Admin UID Diagnostic
-        </div>
-
-        <div style="
-            font-size:13px;
-            margin-bottom:6px;
-        ">
-            <strong>Admin Gmail:</strong>
-            <span id="diagAdminEmail"></span>
-        </div>
-
-        <div style="
-            font-size:13px;
-            margin-bottom:6px;
-        ">
-            <strong>Expected Admin UID:</strong>
-        </div>
-
-        <div id="diagExpectedUid" style="
-            padding:8px;
-            margin-bottom:8px;
-            border-radius:8px;
-            background:rgba(0,0,0,.25);
-            word-break:break-all;
-            font-family:monospace;
-            font-size:12px;
-        "></div>
-
-        <button
-            type="button"
-            id="copyExpectedUid"
-            class="secondary-btn"
-            style="margin-bottom:10px;"
-        >
-            Copy UID
-        </button>
-
-        <div style="
-            font-size:13px;
-            margin-bottom:6px;
-        ">
-            <strong>Firebase UID paste/check:</strong>
-        </div>
-
-        <div style="
-            display:flex;
-            gap:8px;
-            flex-wrap:wrap;
-            margin-bottom:8px;
-        ">
-
-            <input
-                id="diagPastedUid"
-                type="text"
-                placeholder="Paste Firebase UID here"
-                autocomplete="off"
-                style="
-                    flex:1;
-                    min-width:200px;
-                "
-            >
-
-            <button
-                type="button"
-                id="checkUidBtn"
-                class="secondary-btn"
-            >
-                Check UID
-            </button>
-
-        </div>
-
-        <div style="
-            font-size:13px;
-            margin-bottom:6px;
-        ">
-            <strong>Actual Firebase UID:</strong>
-        </div>
-
-        <div
-            id="diagActualUid"
-            style="
-                padding:8px;
-                border-radius:8px;
-                background:rgba(0,0,0,.25);
-                word-break:break-all;
-                font-family:monospace;
-                font-size:12px;
-                min-height:18px;
-            "
-        >
-            Firebase Login ابھی نہیں ہوا۔
-        </div>
-
-        <div
-            id="diagStatus"
-            style="
-                margin-top:10px;
-                font-weight:700;
-                font-size:13px;
-            "
-        >
-            Status: Firebase Login ابھی نہیں ہوا۔
-        </div>
-
-    `;
-
-
-    loginForm.appendChild(wrapper);
-
-
-    diagnostic.wrapper =
-        wrapper;
-
-    diagnostic.expectedUid =
-        $("diagExpectedUid");
-
-    diagnostic.pastedUid =
-        $("diagPastedUid");
-
-    diagnostic.actualUid =
-        $("diagActualUid");
-
-    diagnostic.status =
-        $("diagStatus");
-
-    diagnostic.copyBtn =
-        $("copyExpectedUid");
-
-    diagnostic.checkBtn =
-        $("checkUidBtn");
-
-
-    $("diagAdminEmail").textContent =
-        ADMIN_EMAIL;
-
-    diagnostic.expectedUid.textContent =
-        ADMIN_UID;
-
-
-    diagnostic.copyBtn.addEventListener(
-        "click",
-        copyExpectedUid
-    );
-
-
-    diagnostic.checkBtn.addEventListener(
-        "click",
-        checkPastedUid
+    loginForm.parentNode.insertBefore(
+        nameElement,
+        loginForm
     );
 }
 
 
-async function copyExpectedUid() {
+// ============================================================
+// PASSWORD SHOW / HIDE + FORGOT PASSWORD UI
+// ============================================================
 
-    const value =
-        ADMIN_UID;
+function createPasswordControls() {
 
-    try {
+    const passwordInput =
+        $("loginPassword");
 
-        await navigator.clipboard.writeText(
-            value
+    if (!passwordInput) return;
+
+
+    const passwordField =
+        passwordInput.closest(
+            ".login-field"
         );
 
-        diagnostic.status.textContent =
-            "Status: Expected UID copied.";
 
-    } catch (error) {
+    if (!passwordField) return;
 
-        window.prompt(
-            "Copy Expected Admin UID:",
-            value
+
+    const inputWrap =
+        passwordInput.closest(
+            ".input-wrap"
+        );
+
+
+    if (!inputWrap) return;
+
+
+    // --------------------------------------------------------
+    // Make room for password button
+    // --------------------------------------------------------
+
+    inputWrap.style.position =
+        "relative";
+
+
+    passwordInput.style.paddingRight =
+        "90px";
+
+
+    // --------------------------------------------------------
+    // SHOW / HIDE BUTTON
+    // --------------------------------------------------------
+
+    let toggleButton =
+        $("togglePassword");
+
+
+    if (!toggleButton) {
+
+        toggleButton =
+            document.createElement(
+                "button"
+            );
+
+        toggleButton.type =
+            "button";
+
+        toggleButton.id =
+            "togglePassword";
+
+        toggleButton.className =
+            "password-toggle";
+
+        toggleButton.textContent =
+            "Show";
+
+        toggleButton.setAttribute(
+            "aria-label",
+            "Show password"
+        );
+
+        toggleButton.title =
+            "Show password";
+
+
+        toggleButton.style.position =
+            "absolute";
+
+        toggleButton.style.right =
+            "8px";
+
+        toggleButton.style.top =
+            "50%";
+
+        toggleButton.style.transform =
+            "translateY(-50%)";
+
+        toggleButton.style.border =
+            "none";
+
+        toggleButton.style.background =
+            "transparent";
+
+        toggleButton.style.cursor =
+            "pointer";
+
+        toggleButton.style.fontWeight =
+            "600";
+
+        toggleButton.style.padding =
+            "6px 8px";
+
+
+        inputWrap.appendChild(
+            toggleButton
+        );
+    }
+
+
+    if (
+        !toggleButton.dataset.bound
+    ) {
+
+        toggleButton.dataset.bound =
+            "true";
+
+
+        toggleButton.addEventListener(
+            "click",
+            () => {
+
+                const isHidden =
+                    passwordInput.type ===
+                    "password";
+
+
+                passwordInput.type =
+                    isHidden
+                        ? "text"
+                        : "password";
+
+
+                toggleButton.textContent =
+                    isHidden
+                        ? "Hide"
+                        : "Show";
+
+
+                toggleButton.setAttribute(
+                    "aria-label",
+                    isHidden
+                        ? "Hide password"
+                        : "Show password"
+                );
+
+
+                toggleButton.title =
+                    isHidden
+                        ? "Hide password"
+                        : "Show password";
+            }
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // FORGOT PASSWORD
+    // --------------------------------------------------------
+
+    let forgotButton =
+        $("forgotPasswordBtn");
+
+
+    if (!forgotButton) {
+
+        forgotButton =
+            document.createElement(
+                "button"
+            );
+
+        forgotButton.type =
+            "button";
+
+        forgotButton.id =
+            "forgotPasswordBtn";
+
+        forgotButton.className =
+            "forgot-password-btn";
+
+        forgotButton.textContent =
+            "Forgot Password?";
+
+
+        forgotButton.style.display =
+            "block";
+
+        forgotButton.style.margin =
+            "12px auto 0";
+
+        forgotButton.style.border =
+            "none";
+
+        forgotButton.style.background =
+            "transparent";
+
+        forgotButton.style.cursor =
+            "pointer";
+
+        forgotButton.style.fontWeight =
+            "600";
+
+        forgotButton.style.padding =
+            "6px 10px";
+
+
+        passwordField.appendChild(
+            forgotButton
+        );
+    }
+
+
+    if (
+        !forgotButton.dataset.bound
+    ) {
+
+        forgotButton.dataset.bound =
+            "true";
+
+
+        forgotButton.addEventListener(
+            "click",
+            handleForgotPassword
         );
     }
 }
 
 
-function checkPastedUid() {
+// ============================================================
+// FORGOT PASSWORD
+// ============================================================
 
-    if (!diagnostic.pastedUid) return;
+async function handleForgotPassword() {
 
-    const pasted =
-        diagnostic.pastedUid.value
-            .trim();
+    const {
+        emailInput
+    } =
+        getLoginInputs();
 
-    if (!pasted) {
 
-        diagnostic.status.textContent =
-            "Status: پہلے Firebase UID paste کریں۔";
+    let email =
+        String(
+            emailInput?.value || ""
+        ).trim();
+
+
+    // If email field is empty,
+    // use the registered Admin Gmail.
+    if (!email) {
+
+        email =
+            ADMIN_EMAIL;
+
+        if (emailInput) {
+
+            emailInput.value =
+                ADMIN_EMAIL;
+        }
+    }
+
+
+    if (
+        email.toLowerCase() !==
+        ADMIN_EMAIL.toLowerCase()
+    ) {
+
+        setLoginMessage(
+            "Password reset کے لیے Admin Gmail استعمال کریں۔",
+            "error"
+        );
+
+        emailInput?.focus();
 
         return;
     }
 
 
-    if (pasted === ADMIN_UID) {
-
-        diagnostic.status.textContent =
-            "Status: ✅ UID MATCH";
-
-    } else {
-
-        diagnostic.status.textContent =
-            "Status: ❌ UID MISMATCH";
-    }
-}
+    setLoginMessage(
+        "Password reset email بھیجی جا رہی ہے...",
+        ""
+    );
 
 
-function updateActualUid(uid) {
+    try {
 
-    if (!diagnostic.actualUid) return;
+        await sendPasswordResetEmail(
+            auth,
+            ADMIN_EMAIL
+        );
 
-    if (uid) {
 
-        diagnostic.actualUid.textContent =
-            uid;
+        setLoginMessage(
+            "Password reset email بھیج دی گئی ہے۔ Gmail اور Spam/Junk folder چیک کریں۔",
+            "success"
+        );
 
-        if (diagnostic.pastedUid) {
 
-            diagnostic.pastedUid.value =
-                uid;
+    } catch (error) {
+
+        console.error(
+            "Password reset error:",
+            error.code || error.message
+        );
+
+
+        let message =
+            "Password reset نہیں ہو سکا۔";
+
+
+        switch (
+            error.code
+        ) {
+
+            case "auth/invalid-email":
+
+                message =
+                    "Admin Gmail درست نہیں ہے۔";
+
+                break;
+
+
+            case "auth/user-not-found":
+
+                message =
+                    "یہ Admin Gmail Firebase میں موجود نہیں ہے۔";
+
+                break;
+
+
+            case "auth/too-many-requests":
+
+                message =
+                    "بہت زیادہ کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
+
+                break;
+
+
+            case "auth/network-request-failed":
+
+                message =
+                    "Internet/Firebase network مسئلہ ہے۔";
+
+                break;
+
+
+            default:
+
+                message =
+                    error.message ||
+                    "Password reset failed.";
         }
 
-        if (uid === ADMIN_UID) {
 
-            diagnostic.status.textContent =
-                "Status: ✅ UID MATCH";
-
-        } else {
-
-            diagnostic.status.textContent =
-                "Status: ❌ UID MISMATCH";
-        }
-
-    } else {
-
-        // Do NOT erase the last known UID.
-        // This helps diagnose admin failures.
+        setLoginMessage(
+            message,
+            "error"
+        );
     }
 }
 
@@ -560,7 +675,9 @@ function updateActualUid(uid) {
 // LOGIN
 // ============================================================
 
-async function handleLogin(event) {
+async function handleLogin(
+    event
+) {
 
     event.preventDefault();
 
@@ -572,10 +689,6 @@ async function handleLogin(event) {
     } =
         getLoginInputs();
 
-
-    // ----------------------------
-    // FIELD CHECK
-    // ----------------------------
 
     if (!form) {
 
@@ -591,7 +704,7 @@ async function handleLogin(event) {
     if (!emailInput) {
 
         setLoginMessage(
-            "Login Email field نہیں مل رہی۔ HTML میں loginEmail field check کریں۔",
+            "Email field نہیں مل رہی۔",
             "error"
         );
 
@@ -602,7 +715,7 @@ async function handleLogin(event) {
     if (!passwordInput) {
 
         setLoginMessage(
-            "Login Password field نہیں مل رہی۔ HTML میں loginPassword field check کریں۔",
+            "Password field نہیں مل رہی۔",
             "error"
         );
 
@@ -610,14 +723,11 @@ async function handleLogin(event) {
     }
 
 
-    // ----------------------------
-    // READ VALUES AT SUBMIT TIME
-    // ----------------------------
-
     const email =
         String(
             emailInput.value || ""
         ).trim();
+
 
     const password =
         String(
@@ -696,23 +806,19 @@ async function handleLogin(event) {
             credential.user;
 
 
-        // Save actual UID immediately.
-        updateActualUid(
-            user.uid
-        );
-
-
         if (
             user.uid !==
             ADMIN_UID
         ) {
 
             setLoginMessage(
-                "Firebase Login کامیاب ہے، لیکن یہ Admin UID نہیں ہے۔",
+                "یہ account Janjua Hub Admin کے لیے authorized نہیں ہے۔",
                 "error"
             );
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
 
             return;
         }
@@ -727,11 +833,13 @@ async function handleLogin(event) {
         if (!isAdmin) {
 
             setLoginMessage(
-                "Firebase Login کامیاب ہے، لیکن Firestore میں Admin role verify نہیں ہوا۔",
+                "Admin account verify نہیں ہو سکا۔",
                 "error"
             );
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
 
             return;
         }
@@ -755,39 +863,60 @@ async function handleLogin(event) {
             "Login failed.";
 
 
-        switch (error.code) {
+        switch (
+            error.code
+        ) {
 
             case "auth/invalid-credential":
+
                 message =
                     "Email یا Password غلط ہے۔";
+
                 break;
+
 
             case "auth/invalid-api-key":
+
                 message =
                     "Firebase API Key غلط ہے۔";
+
                 break;
+
 
             case "auth/user-not-found":
+
                 message =
                     "یہ Firebase user موجود نہیں ہے۔";
+
                 break;
+
 
             case "auth/wrong-password":
+
                 message =
                     "Password غلط ہے۔";
+
                 break;
+
 
             case "auth/too-many-requests":
+
                 message =
                     "بہت زیادہ login attempts ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
+
                 break;
+
 
             case "auth/network-request-failed":
+
                 message =
                     "Internet/Firebase network مسئلہ ہے۔";
+
                 break;
 
+
             default:
+
                 message =
                     error.message ||
                     "Firebase login failed.";
@@ -806,26 +935,17 @@ async function handleLogin(event) {
 // ADMIN CHECK
 // ============================================================
 
-async function checkAdmin(user) {
+async function checkAdmin(
+    user
+) {
 
     if (!user) return false;
-
-
-    updateActualUid(
-        user.uid
-    );
 
 
     if (
         user.uid !==
         ADMIN_UID
     ) {
-
-        diagnostic.status &&
-            (
-                diagnostic.status.textContent =
-                "Status: ❌ UID MISMATCH"
-            );
 
         return false;
     }
@@ -840,6 +960,7 @@ async function checkAdmin(user) {
                 user.uid
             );
 
+
         const snapshot =
             await getDoc(
                 userRef
@@ -847,12 +968,6 @@ async function checkAdmin(user) {
 
 
         if (!snapshot.exists()) {
-
-            diagnostic.status &&
-                (
-                    diagnostic.status.textContent =
-                    "Status: ❌ Admin Firestore document نہیں ملا۔"
-                );
 
             return false;
         }
@@ -867,17 +982,12 @@ async function checkAdmin(user) {
             "admin"
         ) {
 
-            diagnostic.status &&
-                (
-                    diagnostic.status.textContent =
-                    "Status: ❌ Firestore role admin نہیں ہے۔"
-                );
-
             return false;
         }
 
 
         return true;
+
 
     } catch (error) {
 
@@ -886,19 +996,13 @@ async function checkAdmin(user) {
             error.message
         );
 
-        diagnostic.status &&
-            (
-                diagnostic.status.textContent =
-                "Status: ❌ Firestore Admin check failed."
-            );
-
         return false;
     }
 }
 
 
 // ============================================================
-// SHOW / HIDE DASHBOARD
+// SHOW DASHBOARD
 // ============================================================
 
 function showDashboard() {
@@ -945,10 +1049,15 @@ function showDashboard() {
     if (emailDisplay) {
 
         emailDisplay.textContent =
-            currentUser?.email || "";
+            currentUser?.email ||
+            ADMIN_EMAIL;
     }
 }
 
+
+// ============================================================
+// SHOW LOGIN
+// ============================================================
 
 function showLogin() {
 
@@ -1020,8 +1129,12 @@ async function loadCategories() {
                 DEFAULT_CATEGORIES.map(
                     name => ({
                         id:
-                            name.toLowerCase()
-                                .replace(/[^a-z0-9]+/g, "-"),
+                            name
+                                .toLowerCase()
+                                .replace(
+                                    /[^a-z0-9]+/g,
+                                    "-"
+                                ),
                         name
                     })
                 );
@@ -1040,8 +1153,12 @@ async function loadCategories() {
             DEFAULT_CATEGORIES.map(
                 name => ({
                     id:
-                        name.toLowerCase()
-                            .replace(/[^a-z0-9]+/g, "-"),
+                        name
+                            .toLowerCase()
+                            .replace(
+                                /[^a-z0-9]+/g,
+                                "-"
+                            ),
                     name
                 })
             );
@@ -1088,10 +1205,12 @@ async function loadCombos() {
                     a.createdAt?.toMillis?.() ||
                     0;
 
+
                 const bDate =
                     b.updatedAt?.toMillis?.() ||
                     b.createdAt?.toMillis?.() ||
                     0;
+
 
                 return bDate - aDate;
             }
@@ -1101,12 +1220,14 @@ async function loadCombos() {
         renderCombos();
         updateStats();
 
+
     } catch (error) {
 
         console.error(
             "Combos load error:",
             error.message
         );
+
 
         combos = [];
 
@@ -1149,9 +1270,11 @@ async function loadMarketingLinks() {
                     a.createdAt?.toMillis?.() ||
                     0;
 
+
                 const bDate =
                     b.createdAt?.toMillis?.() ||
                     0;
+
 
                 return bDate - aDate;
             }
@@ -1161,12 +1284,14 @@ async function loadMarketingLinks() {
         renderMarketingLinks();
         updateStats();
 
+
     } catch (error) {
 
         console.error(
             "Marketing links load error:",
             error.message
         );
+
 
         marketingLinks = [];
 
@@ -1201,6 +1326,7 @@ function renderCategories() {
 
     if (!list) return;
 
+
     list.innerHTML = "";
 
 
@@ -1212,8 +1338,10 @@ function renderCategories() {
                     "option"
                 );
 
+
             option.value =
                 category.name || "";
+
 
             list.appendChild(
                 option
@@ -1251,11 +1379,14 @@ function renderCategoryFilter() {
                     "option"
                 );
 
+
             option.value =
                 category.name;
 
+
             option.textContent =
                 category.name;
+
 
             select.appendChild(
                 option
@@ -1270,7 +1401,7 @@ function renderCategoryFilter() {
 
 
 // ============================================================
-// CATEGORY LIST MODAL
+// CATEGORY LIST
 // ============================================================
 
 function renderCategoryList() {
@@ -1291,6 +1422,7 @@ function renderCategoryList() {
                 document.createElement(
                     "div"
                 );
+
 
             row.className =
                 "category-item";
@@ -1333,7 +1465,8 @@ function renderCategoryList() {
                     "click",
                     () =>
                         deleteCategory(
-                            button.dataset.deleteCategory
+                            button.dataset
+                                .deleteCategory
                         )
                 );
             }
@@ -1402,9 +1535,12 @@ async function addCategory() {
         );
 
 
-        input.value = "";
+        input.value =
+            "";
+
 
         await loadCategories();
+
 
     } catch (error) {
 
@@ -1424,7 +1560,9 @@ async function addCategory() {
 // DELETE CATEGORY
 // ============================================================
 
-async function deleteCategory(id) {
+async function deleteCategory(
+    id
+) {
 
     if (!id) return;
 
@@ -1461,6 +1599,7 @@ async function deleteCategory(id) {
 
 
         await loadCategories();
+
 
     } catch (error) {
 
@@ -1559,7 +1698,8 @@ function renderCombos() {
         );
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
 
     filtered.forEach(
@@ -1599,7 +1739,9 @@ function renderCombos() {
 // CREATE COMBO CARD
 // ============================================================
 
-function createComboCard(combo) {
+function createComboCard(
+    combo
+) {
 
     const card =
         document.createElement(
@@ -1624,13 +1766,15 @@ function createComboCard(combo) {
 
                 <h3>
                     ${escapeHtml(
-                        combo.name || "Untitled Combo"
+                        combo.name ||
+                        "Untitled Combo"
                     )}
                 </h3>
 
                 <span class="combo-category">
                     ${escapeHtml(
-                        combo.category || "Other"
+                        combo.category ||
+                        "Other"
                     )}
                 </span>
 
@@ -1724,49 +1868,43 @@ function createComboCard(combo) {
     `;
 
 
-    const editBtn =
-        card.querySelector(
+    card
+        .querySelector(
             "[data-edit]"
+        )
+        ?.addEventListener(
+            "click",
+            () =>
+                openEditCombo(
+                    combo.id
+                )
         );
 
 
-    const marketingBtn =
-        card.querySelector(
+    card
+        .querySelector(
             "[data-marketing]"
+        )
+        ?.addEventListener(
+            "click",
+            () =>
+                createMarketingLink(
+                    combo
+                )
         );
 
 
-    const deleteBtn =
-        card.querySelector(
+    card
+        .querySelector(
             "[data-delete]"
+        )
+        ?.addEventListener(
+            "click",
+            () =>
+                deleteCombo(
+                    combo.id
+                )
         );
-
-
-    editBtn?.addEventListener(
-        "click",
-        () =>
-            openEditCombo(
-                combo.id
-            )
-    );
-
-
-    marketingBtn?.addEventListener(
-        "click",
-        () =>
-            createMarketingLink(
-                combo
-            )
-    );
-
-
-    deleteBtn?.addEventListener(
-        "click",
-        () =>
-            deleteCombo(
-                combo.id
-            )
-    );
 
 
     return card;
@@ -1783,10 +1921,7 @@ function openAddCombo() {
         null;
 
 
-    const form =
-        $("comboForm");
-
-    form?.reset();
+    $("comboForm")?.reset();
 
 
     $("editId").value =
@@ -1811,7 +1946,9 @@ function openAddCombo() {
 // OPEN EDIT COMBO
 // ============================================================
 
-function openEditCombo(id) {
+function openEditCombo(
+    id
+) {
 
     const combo =
         combos.find(
@@ -1852,7 +1989,8 @@ function openEditCombo(id) {
 
 
     $("comboStatus").value =
-        combo.status || "Active";
+        combo.status ||
+        "Active";
 
 
     $("modalTitle").textContent =
@@ -1869,7 +2007,9 @@ function openEditCombo(id) {
 // SAVE COMBO
 // ============================================================
 
-async function saveCombo(event) {
+async function saveCombo(
+    event
+) {
 
     event.preventDefault();
 
@@ -1979,6 +2119,7 @@ async function saveCombo(event) {
 
         await loadCombos();
 
+
     } catch (error) {
 
         console.error(
@@ -1997,7 +2138,9 @@ async function saveCombo(event) {
 // DELETE COMBO
 // ============================================================
 
-async function deleteCombo(id) {
+async function deleteCombo(
+    id
+) {
 
     if (!id) return;
 
@@ -2035,6 +2178,7 @@ async function deleteCombo(id) {
 
         await loadCombos();
 
+
     } catch (error) {
 
         console.error(
@@ -2058,6 +2202,7 @@ function openPasteCombo() {
     const box =
         $("pasteBox");
 
+
     if (box) {
 
         box.value =
@@ -2070,6 +2215,10 @@ function openPasteCombo() {
     );
 }
 
+
+// ============================================================
+// IMPORT PASTE COMBO
+// ============================================================
 
 async function importPasteCombo() {
 
@@ -2102,7 +2251,9 @@ async function importPasteCombo() {
 
 
         const items =
-            Array.isArray(parsed)
+            Array.isArray(
+                parsed
+            )
                 ? parsed
                 : [parsed];
 
@@ -2189,12 +2340,30 @@ async function importPasteCombo() {
 
 
 // ============================================================
-// MARKETING LINK
+// CREATE MARKETING LINK
 // ============================================================
 
-async function createMarketingLink(combo) {
+async function createMarketingLink(
+    combo
+) {
 
     if (!combo?.id) return;
+
+
+    const targetUrl =
+        combo.affiliateLink ||
+        combo.mainLink ||
+        "";
+
+
+    if (!targetUrl) {
+
+        alert(
+            "اس Combo میں Main Link یا Affiliate Link موجود نہیں ہے۔"
+        );
+
+        return;
+    }
 
 
     try {
@@ -2214,10 +2383,7 @@ async function createMarketingLink(combo) {
                         combo.name ||
                         "",
 
-                    targetUrl:
-                        combo.affiliateLink ||
-                        combo.mainLink ||
-                        "",
+                    targetUrl,
 
                     clicks:
                         0,
@@ -2254,10 +2420,7 @@ async function createMarketingLink(combo) {
             ),
             {
 
-                targetUrl:
-                    combo.affiliateLink ||
-                    combo.mainLink ||
-                    "",
+                targetUrl,
 
                 comboId:
                     combo.id,
@@ -2318,7 +2481,8 @@ function renderMarketingLinks() {
     if (!container) return;
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
 
     marketingLinks.forEach(
@@ -2413,7 +2577,9 @@ function renderMarketingLinks() {
 // COPY MARKETING LINK
 // ============================================================
 
-async function copyMarketingLink(id) {
+async function copyMarketingLink(
+    id
+) {
 
     const base =
         window.location.origin +
@@ -2436,9 +2602,11 @@ async function copyMarketingLink(id) {
             url
         );
 
+
         alert(
             "Marketing Link copied."
         );
+
 
     } catch {
 
@@ -2530,15 +2698,18 @@ function updateStats() {
 
 
 // ============================================================
-// MODAL HELPERS
+// MODALS
 // ============================================================
 
-function openModal(id) {
+function openModal(
+    id
+) {
 
     const modal =
         $(id);
 
     if (!modal) return;
+
 
     modal.classList.remove(
         "hidden"
@@ -2546,12 +2717,15 @@ function openModal(id) {
 }
 
 
-function closeModal(id) {
+function closeModal(
+    id
+) {
 
     const modal =
         $(id);
 
     if (!modal) return;
+
 
     modal.classList.add(
         "hidden"
@@ -2567,64 +2741,6 @@ function openHelp() {
 
     openModal(
         "helpModal"
-    );
-}
-
-
-// ============================================================
-// PASSWORD TOGGLE
-//
-// HTML میں toggle button نہیں ہے، اس لیے یہ optional ہے.
-// اگر بعد میں button add کیا جائے تو یہ کام کرے گا.
-// ============================================================
-
-function setupPasswordToggle() {
-
-    const password =
-        $("loginPassword");
-
-
-    if (!password) return;
-
-
-    const possibleButtons =
-        [
-            $("togglePassword"),
-            $("passwordToggle"),
-            $("showPasswordBtn")
-        ]
-            .filter(Boolean);
-
-
-    possibleButtons.forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    if (
-                        password.type ===
-                        "password"
-                    ) {
-
-                        password.type =
-                            "text";
-
-                        button.textContent =
-                            "Hide Password";
-
-                    } else {
-
-                        password.type =
-                            "password";
-
-                        button.textContent =
-                            "Show Password";
-                    }
-                }
-            );
-        }
     );
 }
 
@@ -2838,7 +2954,9 @@ function setupEvents() {
         );
 
 
-    setupPasswordToggle();
+    createLoginUserName();
+
+    createPasswordControls();
 }
 
 
@@ -2846,7 +2964,9 @@ function setupEvents() {
 // ESCAPE HTML
 // ============================================================
 
-function escapeHtml(value) {
+function escapeHtml(
+    value
+) {
 
     return String(
         value ?? ""
@@ -2878,7 +2998,9 @@ function escapeHtml(value) {
 // SAFE URL
 // ============================================================
 
-function safeUrl(value) {
+function safeUrl(
+    value
+) {
 
     const text =
         String(
@@ -2899,10 +3021,8 @@ function safeUrl(value) {
 
 
         if (
-            url.protocol ===
-                "http:" ||
-            url.protocol ===
-                "https:"
+            url.protocol === "http:" ||
+            url.protocol === "https:"
         ) {
 
             return url.href;
@@ -2910,7 +3030,7 @@ function safeUrl(value) {
 
 
     } catch {
-        // Ignore invalid URL.
+        // Invalid URL.
     }
 
 
@@ -2937,12 +3057,6 @@ onAuthStateChanged(
         }
 
 
-        // Always preserve actual UID.
-        updateActualUid(
-            user.uid
-        );
-
-
         const isAdmin =
             await checkAdmin(
                 user
@@ -2954,14 +3068,13 @@ onAuthStateChanged(
             currentUser =
                 null;
 
+
             setLoginMessage(
-                "Firebase Login ہو گیا، لیکن یہ account Janjua Hub Admin نہیں ہے۔",
+                "یہ account Janjua Hub Admin نہیں ہے۔",
                 "error"
             );
 
 
-            // Keep actual UID visible
-            // for diagnostic comparison.
             await signOut(
                 auth
             );
@@ -2993,10 +3106,22 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        createUidDiagnostic();
-
         setupEvents();
 
         showLogin();
+
+        // Put the Admin email in the login field
+        // without requiring the user to type it every time.
+        const {
+            emailInput
+        } =
+            getLoginInputs();
+
+
+        if (emailInput) {
+
+            emailInput.value =
+                ADMIN_EMAIL;
+        }
     }
 );
