@@ -84,85 +84,180 @@ const loginMessage = document.getElementById("loginMessage");
 
 const appShell = document.getElementById("appShell");
 
-const adminEmailDisplay = document.getElementById("adminEmailDisplay");
-const logoutBtn = document.getElementById("logoutBtn");
-const helpBtn = document.getElementById("helpBtn");
+const adminEmailDisplay =
+    document.getElementById("adminEmailDisplay");
 
-const addBtn = document.getElementById("addBtn");
-const pasteBtn = document.getElementById("pasteBtn");
+const logoutBtn =
+    document.getElementById("logoutBtn");
 
-const totalCount = document.getElementById("totalCount");
-const activeCount = document.getElementById("activeCount");
-const pendingCount = document.getElementById("pendingCount");
-const archivedCount = document.getElementById("archivedCount");
+const helpBtn =
+    document.getElementById("helpBtn");
 
-const searchInput = document.getElementById("searchInput");
-const categoryFilter = document.getElementById("categoryFilter");
-const statusFilter = document.getElementById("statusFilter");
+const addBtn =
+    document.getElementById("addBtn");
 
-const categoryBtn = document.getElementById("categoryBtn");
+const pasteBtn =
+    document.getElementById("pasteBtn");
 
-const resultCount = document.getElementById("resultCount");
-const comboList = document.getElementById("comboList");
-const emptyState = document.getElementById("emptyState");
-const emptyAddBtn = document.getElementById("emptyAddBtn");
+
+/* =========================================================
+   STATS
+========================================================= */
+
+const totalCount =
+    document.getElementById("totalCount");
+
+const activeCount =
+    document.getElementById("activeCount");
+
+const pendingCount =
+    document.getElementById("pendingCount");
+
+const archivedCount =
+    document.getElementById("archivedCount");
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const categoryFilter =
+    document.getElementById("categoryFilter");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const categoryBtn =
+    document.getElementById("categoryBtn");
+
+
+/* =========================================================
+   COMBO LIST
+========================================================= */
+
+const resultCount =
+    document.getElementById("resultCount");
+
+const comboList =
+    document.getElementById("comboList");
+
+const emptyState =
+    document.getElementById("emptyState");
+
+const emptyAddBtn =
+    document.getElementById("emptyAddBtn");
+
+
+/* =========================================================
+   MARKETING LINKS CONTROL
+========================================================= */
+
+const refreshMarketingBtn =
+    document.getElementById("refreshMarketingBtn");
+
+const marketingLinksList =
+    document.getElementById("marketingLinksList");
+
+const marketingEmptyState =
+    document.getElementById("marketingEmptyState");
 
 
 /* =========================================================
    COMBO MODAL
 ========================================================= */
 
-const comboModal = document.getElementById("comboModal");
-const closeModal = document.getElementById("closeModal");
+const comboModal =
+    document.getElementById("comboModal");
 
-const comboForm = document.getElementById("comboForm");
+const closeModal =
+    document.getElementById("closeModal");
 
-const editId = document.getElementById("editId");
-const modalTitle = document.getElementById("modalTitle");
+const comboForm =
+    document.getElementById("comboForm");
 
-const comboName = document.getElementById("comboName");
-const comboCategory = document.getElementById("comboCategory");
-const categoryList = document.getElementById("categoryList");
+const editId =
+    document.getElementById("editId");
 
-const mainLink = document.getElementById("mainLink");
-const affiliateLink = document.getElementById("affiliateLink");
+const modalTitle =
+    document.getElementById("modalTitle");
 
-const comboNotes = document.getElementById("comboNotes");
-const comboStatus = document.getElementById("comboStatus");
+const comboName =
+    document.getElementById("comboName");
 
-const cancelBtn = document.getElementById("cancelBtn");
+const comboCategory =
+    document.getElementById("comboCategory");
+
+const categoryList =
+    document.getElementById("categoryList");
+
+const mainLink =
+    document.getElementById("mainLink");
+
+const affiliateLink =
+    document.getElementById("affiliateLink");
+
+const comboNotes =
+    document.getElementById("comboNotes");
+
+const comboStatus =
+    document.getElementById("comboStatus");
+
+const cancelBtn =
+    document.getElementById("cancelBtn");
 
 
 /* =========================================================
    PASTE MODAL
 ========================================================= */
 
-const pasteModal = document.getElementById("pasteModal");
-const closePasteModal = document.getElementById("closePasteModal");
+const pasteModal =
+    document.getElementById("pasteModal");
 
-const pasteBox = document.getElementById("pasteBox");
-const cancelPasteBtn = document.getElementById("cancelPasteBtn");
-const importPasteBtn = document.getElementById("importPasteBtn");
+const closePasteModal =
+    document.getElementById("closePasteModal");
+
+const pasteBox =
+    document.getElementById("pasteBox");
+
+const cancelPasteBtn =
+    document.getElementById("cancelPasteBtn");
+
+const importPasteBtn =
+    document.getElementById("importPasteBtn");
 
 
 /* =========================================================
    CATEGORY MODAL
 ========================================================= */
 
-const categoryModal = document.getElementById("categoryModal");
-const closeCategoryModal = document.getElementById("closeCategoryModal");
+const categoryModal =
+    document.getElementById("categoryModal");
 
-const newCategory = document.getElementById("newCategory");
-const addCategoryBtn = document.getElementById("addCategoryBtn");
-const categoryListView = document.getElementById("categoryListView");
+const closeCategoryModal =
+    document.getElementById("closeCategoryModal");
+
+const newCategory =
+    document.getElementById("newCategory");
+
+const addCategoryBtn =
+    document.getElementById("addCategoryBtn");
+
+const categoryListView =
+    document.getElementById("categoryListView");
 
 
 /* =========================================================
    HELP MODAL
 ========================================================= */
 
-const helpModal = document.getElementById("helpModal");
-const closeHelpModal = document.getElementById("closeHelpModal");
+const helpModal =
+    document.getElementById("helpModal");
+
+const closeHelpModal =
+    document.getElementById("closeHelpModal");
 
 
 /* =========================================================
@@ -215,7 +310,8 @@ function showDashboard() {
     }
 
     if (adminEmailDisplay && currentUser) {
-        adminEmailDisplay.textContent = currentUser.email || ADMIN_EMAIL;
+        adminEmailDisplay.textContent =
+            currentUser.email || ADMIN_EMAIL;
     }
 }
 
@@ -267,14 +363,23 @@ function getMarketingTarget(combo) {
         return "";
     }
 
-    const affiliate = String(combo.affiliateLink || "").trim();
-    const main = String(combo.mainLink || "").trim();
+    const affiliate =
+        String(combo.affiliateLink || "").trim();
 
-    if (affiliate && isValidHttpUrl(affiliate)) {
+    const main =
+        String(combo.mainLink || "").trim();
+
+    if (
+        affiliate &&
+        isValidHttpUrl(affiliate)
+    ) {
         return affiliate;
     }
 
-    if (main && isValidHttpUrl(main)) {
+    if (
+        main &&
+        isValidHttpUrl(main)
+    ) {
         return main;
     }
 
@@ -284,15 +389,68 @@ function getMarketingTarget(combo) {
 
 function buildMarketingUrl(id, targetUrl) {
 
-    const goUrl = new URL(
-        "go.html",
-        window.location.href
+    const goUrl =
+        new URL(
+            "go.html",
+            window.location.href
+        );
+
+    goUrl.searchParams.set(
+        "id",
+        id
     );
 
-    goUrl.searchParams.set("id", id);
-    goUrl.searchParams.set("url", targetUrl);
+    goUrl.searchParams.set(
+        "url",
+        targetUrl
+    );
 
     return goUrl.toString();
+}
+
+
+/* =========================================================
+   MARKETING LINK STATUS
+========================================================= */
+
+function getMarketingStatus(link) {
+
+    if (!link) {
+        return "Active";
+    }
+
+    return (
+        link.status ||
+        "Active"
+    );
+}
+
+
+function getMarketingStatusClass(status) {
+
+    return String(status || "Active")
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+}
+
+
+/* =========================================================
+   MARKETING LINK DISPLAY URL
+========================================================= */
+
+function shortenUrl(url, maxLength = 75) {
+
+    const value =
+        String(url || "");
+
+    if (value.length <= maxLength) {
+        return value;
+    }
+
+    return (
+        value.slice(0, maxLength) +
+        "..."
+    );
 }
 
 
@@ -308,41 +466,57 @@ function openComboModal(combo = null) {
 
     if (combo) {
 
-        modalTitle.textContent = "Edit Combo";
+        modalTitle.textContent =
+            "Edit Combo";
 
-        editId.value = combo.id || "";
+        editId.value =
+            combo.id || "";
 
-        comboName.value = combo.name || "";
-        comboCategory.value = combo.category || "";
+        comboName.value =
+            combo.name || "";
 
-        mainLink.value = combo.mainLink || "";
-        affiliateLink.value = combo.affiliateLink || "";
+        comboCategory.value =
+            combo.category || "";
 
-        comboNotes.value = combo.notes || "";
+        mainLink.value =
+            combo.mainLink || "";
 
-        comboStatus.value = combo.status || "Active";
+        affiliateLink.value =
+            combo.affiliateLink || "";
+
+        comboNotes.value =
+            combo.notes || "";
+
+        comboStatus.value =
+            combo.status || "Active";
 
     } else {
 
-        modalTitle.textContent = "Add Combo";
+        modalTitle.textContent =
+            "Add Combo";
 
         editId.value = "";
 
         comboForm.reset();
 
-        comboStatus.value = "Active";
+        comboStatus.value =
+            "Active";
     }
 
     renderCategoryOptions();
 
-    comboModal.classList.remove("hidden");
+    comboModal.classList.remove(
+        "hidden"
+    );
 }
 
 
 function closeComboModal() {
 
     if (comboModal) {
-        comboModal.classList.add("hidden");
+        comboModal.classList.add(
+            "hidden"
+        );
     }
 }
 
@@ -355,14 +529,18 @@ function openPasteModal() {
 
     pasteBox.value = "";
 
-    pasteModal.classList.remove("hidden");
+    pasteModal.classList.remove(
+        "hidden"
+    );
 }
 
 
 function closePaste() {
 
     if (pasteModal) {
-        pasteModal.classList.add("hidden");
+        pasteModal.classList.add(
+            "hidden"
+        );
     }
 }
 
@@ -375,14 +553,18 @@ function openCategoryModal() {
 
     renderCategoryList();
 
-    categoryModal.classList.remove("hidden");
+    categoryModal.classList.remove(
+        "hidden"
+    );
 }
 
 
 function closeCategory() {
 
     if (categoryModal) {
-        categoryModal.classList.add("hidden");
+        categoryModal.classList.add(
+            "hidden"
+        );
     }
 }
 
@@ -390,7 +572,9 @@ function closeCategory() {
 function openHelpModal() {
 
     if (helpModal) {
-        helpModal.classList.remove("hidden");
+        helpModal.classList.remove(
+            "hidden"
+        );
     }
 }
 
@@ -398,7 +582,9 @@ function openHelpModal() {
 function closeHelp() {
 
     if (helpModal) {
-        helpModal.classList.add("hidden");
+        helpModal.classList.add(
+            "hidden"
+        );
     }
 }
 
@@ -409,54 +595,22 @@ function closeHelp() {
 
 if (loginForm) {
 
-    loginForm.addEventListener("submit", async function (event) {
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const email = loginEmail.value.trim();
-        const password = loginPassword.value;
+            const email =
+                loginEmail.value.trim();
 
-        if (!email || !password) {
+            const password =
+                loginPassword.value;
 
-            loginMessage.textContent =
-                "Email اور Password دونوں درج کریں۔";
-
-            loginMessage.className =
-                "login-message error";
-
-            return;
-        }
-
-        loginMessage.textContent = "Login ہو رہا ہے...";
-
-        loginMessage.className =
-            "login-message loading";
-
-        const submitButton =
-            loginForm.querySelector("button[type='submit']");
-
-        if (submitButton) {
-            submitButton.disabled = true;
-        }
-
-        try {
-
-            const credential =
-                await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-            const isAdmin =
-                await checkAdmin(credential.user);
-
-            if (!isAdmin) {
-
-                await signOut(auth);
+            if (!email || !password) {
 
                 loginMessage.textContent =
-                    "یہ اکاؤنٹ Admin نہیں ہے۔";
+                    "Email اور Password دونوں درج کریں۔";
 
                 loginMessage.className =
                     "login-message error";
@@ -465,46 +619,99 @@ if (loginForm) {
             }
 
             loginMessage.textContent =
-                "Login کامیاب۔";
+                "Login ہو رہا ہے...";
 
             loginMessage.className =
-                "login-message success";
+                "login-message loading";
 
-        } catch (error) {
-
-            console.error("Login Error:", error);
-
-            let message =
-                "Login ناکام ہوا۔ Email یا Password چیک کریں۔";
-
-            if (
-                error.code === "auth/invalid-credential" ||
-                error.code === "auth/wrong-password" ||
-                error.code === "auth/user-not-found"
-            ) {
-
-                message =
-                    "Email یا Password غلط ہے۔";
-            }
-
-            if (error.code === "auth/too-many-requests") {
-
-                message =
-                    "کئی کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
-            }
-
-            loginMessage.textContent = message;
-
-            loginMessage.className =
-                "login-message error";
-
-        } finally {
+            const submitButton =
+                loginForm.querySelector(
+                    "button[type='submit']"
+                );
 
             if (submitButton) {
-                submitButton.disabled = false;
+                submitButton.disabled = true;
+            }
+
+            try {
+
+                const credential =
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                const isAdmin =
+                    await checkAdmin(
+                        credential.user
+                    );
+
+                if (!isAdmin) {
+
+                    await signOut(auth);
+
+                    loginMessage.textContent =
+                        "یہ اکاؤنٹ Admin نہیں ہے۔";
+
+                    loginMessage.className =
+                        "login-message error";
+
+                    return;
+                }
+
+                loginMessage.textContent =
+                    "Login کامیاب۔";
+
+                loginMessage.className =
+                    "login-message success";
+
+            } catch (error) {
+
+                console.error(
+                    "Login Error:",
+                    error
+                );
+
+                let message =
+                    "Login ناکام ہوا۔ Email یا Password چیک کریں۔";
+
+                if (
+                    error.code ===
+                        "auth/invalid-credential" ||
+                    error.code ===
+                        "auth/wrong-password" ||
+                    error.code ===
+                        "auth/user-not-found"
+                ) {
+
+                    message =
+                        "Email یا Password غلط ہے۔";
+                }
+
+                if (
+                    error.code ===
+                    "auth/too-many-requests"
+                ) {
+
+                    message =
+                        "کئی کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
+                }
+
+                loginMessage.textContent =
+                    message;
+
+                loginMessage.className =
+                    "login-message error";
+
+            } finally {
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
             }
         }
-    });
+    );
 }
 
 
@@ -514,18 +721,23 @@ if (loginForm) {
 
 if (logoutBtn) {
 
-    logoutBtn.addEventListener("click", async function () {
+    logoutBtn.addEventListener(
+        "click",
+        async function () {
 
-        try {
+            try {
 
-            await signOut(auth);
+                await signOut(auth);
 
-        } catch (error) {
+            } catch (error) {
 
-            console.error("Logout Error:", error);
-
+                console.error(
+                    "Logout Error:",
+                    error
+                );
+            }
         }
-    });
+    );
 }
 
 
@@ -541,25 +753,36 @@ async function checkAdmin(user) {
 
     if (
         user.email &&
-        user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+        user.email.toLowerCase() ===
+        ADMIN_EMAIL.toLowerCase()
     ) {
 
         const adminRef =
-            doc(db, "users", user.uid);
+            doc(
+                db,
+                "users",
+                user.uid
+            );
 
         const adminSnap =
             await getDoc(adminRef);
 
         if (adminSnap.exists()) {
 
-            const data = adminSnap.data();
+            const data =
+                adminSnap.data();
 
-            return data.role === "admin";
+            return data.role ===
+                "admin";
         }
     }
 
     const userRef =
-        doc(db, "users", user.uid);
+        doc(
+            db,
+            "users",
+            user.uid
+        );
 
     const userSnap =
         await getDoc(userRef);
@@ -568,7 +791,8 @@ async function checkAdmin(user) {
         return false;
     }
 
-    const data = userSnap.data();
+    const data =
+        userSnap.data();
 
     return data.role === "admin";
 }
@@ -580,25 +804,11 @@ async function checkAdmin(user) {
 
 bootApp();
 
-onAuthStateChanged(auth, async function (user) {
+onAuthStateChanged(
+    auth,
+    async function (user) {
 
-    if (!user) {
-
-        currentUser = null;
-
-        showLogin();
-
-        return;
-    }
-
-    try {
-
-        const isAdmin =
-            await checkAdmin(user);
-
-        if (!isAdmin) {
-
-            await signOut(auth);
+        if (!user) {
 
             currentUser = null;
 
@@ -607,26 +817,43 @@ onAuthStateChanged(auth, async function (user) {
             return;
         }
 
-        currentUser = user;
+        try {
 
-        showDashboard();
+            const isAdmin =
+                await checkAdmin(user);
 
-        await loadFirebaseData();
+            if (!isAdmin) {
 
-    } catch (error) {
+                await signOut(auth);
 
-        console.error(
-            "Authentication verification error:",
-            error
-        );
+                currentUser = null;
 
-        await signOut(auth);
+                showLogin();
 
-        currentUser = null;
+                return;
+            }
 
-        showLogin();
+            currentUser = user;
+
+            showDashboard();
+
+            await loadFirebaseData();
+
+        } catch (error) {
+
+            console.error(
+                "Authentication verification error:",
+                error
+            );
+
+            await signOut(auth);
+
+            currentUser = null;
+
+            showLogin();
+        }
     }
-});
+);
 
 
 /* =========================================================
@@ -639,19 +866,25 @@ async function loadCombos() {
 
         const snapshot =
             await getDocs(
-                collection(db, "combos")
+                collection(
+                    db,
+                    "combos"
+                )
             );
 
-        combos = snapshot.docs.map(function (item) {
+        combos =
+            snapshot.docs.map(
+                function (item) {
 
-            const data = item.data();
+                    const data =
+                        item.data();
 
-            return {
-                id: item.id,
-                ...data
-            };
-
-        });
+                    return {
+                        id: item.id,
+                        ...data
+                    };
+                }
+            );
 
     } catch (error) {
 
@@ -675,31 +908,41 @@ async function loadCategories() {
 
         const snapshot =
             await getDocs(
-                collection(db, "categories")
+                collection(
+                    db,
+                    "categories"
+                )
             );
 
-        categories = snapshot.docs.map(function (item) {
+        categories =
+            snapshot.docs.map(
+                function (item) {
 
-            const data = item.data();
+                    const data =
+                        item.data();
 
-            return {
-                id: item.id,
-                ...data
-            };
-
-        });
+                    return {
+                        id: item.id,
+                        ...data
+                    };
+                }
+            );
 
         if (!categories.length) {
 
             categories =
-                DEFAULT_CATEGORIES.map(function (name) {
+                DEFAULT_CATEGORIES.map(
+                    function (name) {
 
-                    return {
-                        id: name.toLowerCase(),
-                        name: name
-                    };
+                        return {
+                            id:
+                                name.toLowerCase(),
 
-                });
+                            name:
+                                name
+                        };
+                    }
+                );
         }
 
     } catch (error) {
@@ -710,14 +953,18 @@ async function loadCategories() {
         );
 
         categories =
-            DEFAULT_CATEGORIES.map(function (name) {
+            DEFAULT_CATEGORIES.map(
+                function (name) {
 
-                return {
-                    id: name.toLowerCase(),
-                    name: name
-                };
+                    return {
+                        id:
+                            name.toLowerCase(),
 
-            });
+                        name:
+                            name
+                    };
+                }
+            );
     }
 }
 
@@ -734,17 +981,21 @@ async function loadMarketingLinks() {
 
         const snapshot =
             await getDocs(
-                collection(db, "marketingLinks")
+                collection(
+                    db,
+                    "marketingLinks"
+                )
             );
 
-        snapshot.docs.forEach(function (item) {
+        snapshot.docs.forEach(
+            function (item) {
 
-            marketingLinks[item.id] = {
-                id: item.id,
-                ...item.data()
-            };
-
-        });
+                marketingLinks[item.id] = {
+                    id: item.id,
+                    ...item.data()
+                };
+            }
+        );
 
     } catch (error) {
 
@@ -773,7 +1024,9 @@ async function loadFirebaseData() {
     renderCategoryOptions();
     renderCategoryFilter();
     renderCategoryList();
+
     render();
+    renderMarketingLinks();
 }
 
 
@@ -784,7 +1037,7 @@ async function loadFirebaseData() {
 function getTimeValue(value) {
 
     if (!value) {
-        return "";
+        return 0;
     }
 
     if (
@@ -815,120 +1068,218 @@ function getTimeValue(value) {
 
 if (comboForm) {
 
-    comboForm.addEventListener("submit", async function (event) {
+    comboForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const name =
-            comboName.value.trim();
+            const name =
+                comboName.value.trim();
 
-        const category =
-            comboCategory.value.trim();
+            const category =
+                comboCategory.value.trim();
 
-        const main =
-            mainLink.value.trim();
+            const main =
+                mainLink.value.trim();
 
-        const affiliate =
-            affiliateLink.value.trim();
+            const affiliate =
+                affiliateLink.value.trim();
 
-        const notes =
-            comboNotes.value.trim();
+            const notes =
+                comboNotes.value.trim();
 
-        const status =
-            comboStatus.value || "Active";
+            const status =
+                comboStatus.value ||
+                "Active";
 
-        if (!name) {
+            if (!name) {
 
-            alert("Combo Name ضروری ہے۔");
-
-            return;
-        }
-
-        const existingId =
-            editId.value.trim();
-
-        try {
-
-            if (existingId) {
-
-                const comboRef =
-                    doc(db, "combos", existingId);
-
-                await updateDoc(
-                    comboRef,
-                    {
-                        name: name,
-                        category: category,
-                        mainLink: main,
-                        affiliateLink: affiliate,
-                        notes: notes,
-                        status: status,
-                        updatedAt: serverTimestamp()
-                    }
+                alert(
+                    "Combo Name ضروری ہے۔"
                 );
 
-                const index =
-                    combos.findIndex(
-                        item => item.id === existingId
-                    );
-
-                if (index !== -1) {
-
-                    combos[index] = {
-                        ...combos[index],
-                        name: name,
-                        category: category,
-                        mainLink: main,
-                        affiliateLink: affiliate,
-                        notes: notes,
-                        status: status
-                    };
-                }
-
-            } else {
-
-                const newCombo = {
-
-                    name: name,
-                    category: category,
-                    mainLink: main,
-                    affiliateLink: affiliate,
-                    notes: notes,
-                    status: status,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp()
-                };
-
-                const created =
-                    await addDoc(
-                        collection(db, "combos"),
-                        newCombo
-                    );
-
-                combos.push({
-                    id: created.id,
-                    ...newCombo,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                });
+                return;
             }
 
-            closeComboModal();
+            const existingId =
+                editId.value.trim();
 
-            render();
+            try {
 
-        } catch (error) {
+                if (existingId) {
 
-            console.error(
-                "Save Combo Error:",
-                error
-            );
+                    const comboRef =
+                        doc(
+                            db,
+                            "combos",
+                            existingId
+                        );
 
-            alert(
-                "Combo save نہیں ہو سکا۔"
-            );
+                    await updateDoc(
+                        comboRef,
+                        {
+                            name: name,
+                            category: category,
+                            mainLink: main,
+                            affiliateLink: affiliate,
+                            notes: notes,
+                            status: status,
+                            updatedAt:
+                                serverTimestamp()
+                        }
+                    );
+
+                    const index =
+                        combos.findIndex(
+                            item =>
+                                item.id ===
+                                existingId
+                        );
+
+                    if (index !== -1) {
+
+                        combos[index] = {
+                            ...combos[index],
+                            name: name,
+                            category: category,
+                            mainLink: main,
+                            affiliateLink: affiliate,
+                            notes: notes,
+                            status: status
+                        };
+                    }
+
+                    /*
+                       اگر Marketing Link پہلے سے موجود ہے،
+                       تو اس کا نام اور target بھی update کریں۔
+                    */
+
+                    if (
+                        marketingLinks[
+                            existingId
+                        ]
+                    ) {
+
+                        const newTarget =
+                            getMarketingTarget({
+                                ...combos[index],
+                                id: existingId,
+                                name: name,
+                                category: category,
+                                mainLink: main,
+                                affiliateLink: affiliate,
+                                notes: notes,
+                                status: status
+                            });
+
+                        const linkRef =
+                            doc(
+                                db,
+                                "marketingLinks",
+                                existingId
+                            );
+
+                        await updateDoc(
+                            linkRef,
+                            {
+                                comboName: name,
+                                targetUrl:
+                                    newTarget ||
+                                    marketingLinks[
+                                        existingId
+                                    ].targetUrl ||
+                                    "",
+                                updatedAt:
+                                    serverTimestamp()
+                            }
+                        );
+
+                        marketingLinks[
+                            existingId
+                        ] = {
+                            ...marketingLinks[
+                                existingId
+                            ],
+                            comboName: name,
+                            targetUrl:
+                                newTarget ||
+                                marketingLinks[
+                                    existingId
+                                ].targetUrl ||
+                                ""
+                        };
+                    }
+
+                } else {
+
+                    const newCombo = {
+
+                        name: name,
+
+                        category:
+                            category,
+
+                        mainLink:
+                            main,
+
+                        affiliateLink:
+                            affiliate,
+
+                        notes:
+                            notes,
+
+                        status:
+                            status,
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+                    };
+
+                    const created =
+                        await addDoc(
+                            collection(
+                                db,
+                                "combos"
+                            ),
+                            newCombo
+                        );
+
+                    combos.push({
+                        id:
+                            created.id,
+
+                        ...newCombo,
+
+                        createdAt:
+                            new Date(),
+
+                        updatedAt:
+                            new Date()
+                    });
+                }
+
+                closeComboModal();
+
+                render();
+                renderMarketingLinks();
+
+            } catch (error) {
+
+                console.error(
+                    "Save Combo Error:",
+                    error
+                );
+
+                alert(
+                    "Combo save نہیں ہو سکا۔"
+                );
+            }
         }
-    });
+    );
 }
 
 
@@ -940,7 +1291,8 @@ function editCombo(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     if (!combo) {
@@ -959,7 +1311,8 @@ async function deleteCombo(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     if (!combo) {
@@ -978,17 +1331,23 @@ async function deleteCombo(id) {
     try {
 
         await deleteDoc(
-            doc(db, "combos", id)
+            doc(
+                db,
+                "combos",
+                id
+            )
         );
 
         combos =
             combos.filter(
-                item => item.id !== id
+                item =>
+                    item.id !== id
             );
 
         delete marketingLinks[id];
 
         render();
+        renderMarketingLinks();
 
     } catch (error) {
 
@@ -1005,14 +1364,15 @@ async function deleteCombo(id) {
 
 
 /* =========================================================
-   ARCHIVE / RESTORE
+   ARCHIVE / RESTORE COMBO
 ========================================================= */
 
 async function archiveCombo(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     if (!combo) {
@@ -1027,16 +1387,51 @@ async function archiveCombo(id) {
     try {
 
         await updateDoc(
-            doc(db, "combos", id),
+            doc(
+                db,
+                "combos",
+                id
+            ),
             {
-                status: newStatus,
-                updatedAt: serverTimestamp()
+                status:
+                    newStatus,
+
+                updatedAt:
+                    serverTimestamp()
             }
         );
 
-        combo.status = newStatus;
+        combo.status =
+            newStatus;
+
+        /*
+           اگر Marketing Link موجود ہے تو
+           اس کا admin status بھی update کریں۔
+        */
+
+        if (marketingLinks[id]) {
+
+            await updateDoc(
+                doc(
+                    db,
+                    "marketingLinks",
+                    id
+                ),
+                {
+                    status:
+                        newStatus,
+
+                    updatedAt:
+                        serverTimestamp()
+                }
+            );
+
+            marketingLinks[id].status =
+                newStatus;
+        }
 
         render();
+        renderMarketingLinks();
 
     } catch (error) {
 
@@ -1078,7 +1473,8 @@ if (importPasteBtn) {
 
             try {
 
-                data = JSON.parse(raw);
+                data =
+                    JSON.parse(raw);
 
             } catch (error) {
 
@@ -1095,10 +1491,13 @@ if (importPasteBtn) {
 
                 if (
                     data &&
-                    Array.isArray(data.combos)
+                    Array.isArray(
+                        data.combos
+                    )
                 ) {
 
-                    items = data.combos;
+                    items =
+                        data.combos;
 
                 } else {
 
@@ -1110,48 +1509,64 @@ if (importPasteBtn) {
 
             try {
 
-                for (const item of items) {
+                for (
+                    const item of items
+                ) {
 
-                    if (!item || typeof item !== "object") {
+                    if (
+                        !item ||
+                        typeof item !==
+                        "object"
+                    ) {
                         continue;
                     }
 
                     const newCombo = {
 
-                        name: String(
-                            item.name || ""
-                        ).trim(),
+                        name:
+                            String(
+                                item.name ||
+                                ""
+                            ).trim(),
 
-                        category: String(
-                            item.category || "Other"
-                        ).trim(),
+                        category:
+                            String(
+                                item.category ||
+                                "Other"
+                            ).trim(),
 
-                        mainLink: String(
-                            item.mainLink ||
-                            item.main_link ||
-                            ""
-                        ).trim(),
+                        mainLink:
+                            String(
+                                item.mainLink ||
+                                item.main_link ||
+                                ""
+                            ).trim(),
 
-                        affiliateLink: String(
-                            item.affiliateLink ||
-                            item.affiliate_link ||
-                            ""
-                        ).trim(),
+                        affiliateLink:
+                            String(
+                                item.affiliateLink ||
+                                item.affiliate_link ||
+                                ""
+                            ).trim(),
 
-                        notes: String(
-                            item.notes ||
-                            item.description ||
-                            ""
-                        ).trim(),
+                        notes:
+                            String(
+                                item.notes ||
+                                item.description ||
+                                ""
+                            ).trim(),
 
-                        status: String(
-                            item.status ||
-                            "Active"
-                        ).trim(),
+                        status:
+                            String(
+                                item.status ||
+                                "Active"
+                            ).trim(),
 
-                        createdAt: serverTimestamp(),
+                        createdAt:
+                            serverTimestamp(),
 
-                        updatedAt: serverTimestamp()
+                        updatedAt:
+                            serverTimestamp()
                     };
 
                     if (!newCombo.name) {
@@ -1160,15 +1575,24 @@ if (importPasteBtn) {
 
                     const created =
                         await addDoc(
-                            collection(db, "combos"),
+                            collection(
+                                db,
+                                "combos"
+                            ),
                             newCombo
                         );
 
                     combos.push({
-                        id: created.id,
+                        id:
+                            created.id,
+
                         ...newCombo,
-                        createdAt: new Date(),
-                        updatedAt: new Date()
+
+                        createdAt:
+                            new Date(),
+
+                        updatedAt:
+                            new Date()
                     });
 
                     imported++;
@@ -1177,6 +1601,7 @@ if (importPasteBtn) {
                 closePaste();
 
                 render();
+                renderMarketingLinks();
 
                 alert(
                     `${imported} Combo import ہو گئے۔`
@@ -1204,7 +1629,10 @@ if (importPasteBtn) {
 
 function renderCategoryOptions() {
 
-    if (!comboCategory || !categoryList) {
+    if (
+        !comboCategory ||
+        !categoryList
+    ) {
         return;
     }
 
@@ -1214,10 +1642,14 @@ function renderCategoryOptions() {
     comboCategory.innerHTML = "";
 
     const emptyOption =
-        document.createElement("option");
+        document.createElement(
+            "option"
+        );
 
     emptyOption.value = "";
-    emptyOption.textContent = "Select Category";
+
+    emptyOption.textContent =
+        "Select Category";
 
     comboCategory.appendChild(
         emptyOption
@@ -1225,42 +1657,50 @@ function renderCategoryOptions() {
 
     categories
         .slice()
-        .sort((a, b) =>
-            String(a.name).localeCompare(
-                String(b.name)
-            )
+        .sort(
+            (a, b) =>
+                String(a.name)
+                    .localeCompare(
+                        String(b.name)
+                    )
         )
-        .forEach(function (category) {
+        .forEach(
+            function (category) {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value =
-                category.name;
+                option.value =
+                    category.name;
 
-            option.textContent =
-                category.name;
+                option.textContent =
+                    category.name;
 
-            comboCategory.appendChild(
-                option
-            );
-        });
+                comboCategory.appendChild(
+                    option
+                );
+            }
+        );
 
     if (current) {
-        comboCategory.value = current;
+        comboCategory.value =
+            current;
     }
 
     categoryList.innerHTML =
         categories
-            .map(function (category) {
+            .map(
+                function (category) {
 
-                return `
-                    <option value="${escapeHTML(
-                        category.name
-                    )}">
-                    `;
-
-            })
+                    return `
+                        <option value="${escapeHTML(
+                            category.name
+                        )}">
+                        `;
+                }
+            )
             .join("");
 }
 
@@ -1283,29 +1723,36 @@ function renderCategoryFilter() {
 
     categories
         .slice()
-        .sort((a, b) =>
-            String(a.name).localeCompare(
-                String(b.name)
-            )
+        .sort(
+            (a, b) =>
+                String(a.name)
+                    .localeCompare(
+                        String(b.name)
+                    )
         )
-        .forEach(function (category) {
+        .forEach(
+            function (category) {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
-            option.value =
-                category.name;
+                option.value =
+                    category.name;
 
-            option.textContent =
-                category.name;
+                option.textContent =
+                    category.name;
 
-            categoryFilter.appendChild(
-                option
-            );
-        });
+                categoryFilter.appendChild(
+                    option
+                );
+            }
+        );
 
     if (current) {
-        categoryFilter.value = current;
+        categoryFilter.value =
+            current;
     }
 }
 
@@ -1331,32 +1778,39 @@ function renderCategoryList() {
     categoryListView.innerHTML =
         categories
             .slice()
-            .sort((a, b) =>
-                String(a.name).localeCompare(
-                    String(b.name)
-                )
+            .sort(
+                (a, b) =>
+                    String(a.name)
+                        .localeCompare(
+                            String(b.name)
+                        )
             )
-            .map(function (category) {
+            .map(
+                function (category) {
 
-                return `
-                    <div class="category-item">
-                        <span>${escapeHTML(
-                            category.name
-                        )}</span>
+                    return `
+                        <div class="category-item">
 
-                        <button
-                            type="button"
-                            class="btn danger"
-                            onclick="removeCategory('${escapeHTML(
-                                category.id
-                            )}')"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                `;
+                            <span>
+                                ${escapeHTML(
+                                    category.name
+                                )}
+                            </span>
 
-            })
+                            <button
+                                type="button"
+                                class="btn danger"
+                                onclick="removeCategory('${escapeHTML(
+                                    category.id
+                                )}')"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+                    `;
+                }
+            )
             .join("");
 }
 
@@ -1386,7 +1840,9 @@ if (addCategoryBtn) {
             const exists =
                 categories.some(
                     item =>
-                        String(item.name).toLowerCase() ===
+                        String(
+                            item.name
+                        ).toLowerCase() ===
                         name.toLowerCase()
                 );
 
@@ -1404,9 +1860,18 @@ if (addCategoryBtn) {
                 const categoryId =
                     name
                         .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, "-")
-                        .replace(/^-+|-+$/g, "")
-                        .slice(0, 100) ||
+                        .replace(
+                            /[^a-z0-9]+/g,
+                            "-"
+                        )
+                        .replace(
+                            /^-+|-+$/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            100
+                        ) ||
                     `category-${Date.now()}`;
 
                 const categoryRef =
@@ -1419,17 +1884,24 @@ if (addCategoryBtn) {
                 await setDoc(
                     categoryRef,
                     {
-                        name: name,
-                        createdAt: serverTimestamp()
+                        name:
+                            name,
+
+                        createdAt:
+                            serverTimestamp()
                     }
                 );
 
                 categories.push({
-                    id: categoryId,
-                    name: name
+                    id:
+                        categoryId,
+
+                    name:
+                        name
                 });
 
-                newCategory.value = "";
+                newCategory.value =
+                    "";
 
                 renderCategoryOptions();
                 renderCategoryFilter();
@@ -1460,7 +1932,8 @@ async function removeCategory(id) {
 
     const category =
         categories.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     if (!category) {
@@ -1470,10 +1943,12 @@ async function removeCategory(id) {
     const used =
         combos.some(
             combo =>
-                String(combo.category || "")
-                    .toLowerCase() ===
-                String(category.name || "")
-                    .toLowerCase()
+                String(
+                    combo.category || ""
+                ).toLowerCase() ===
+                String(
+                    category.name || ""
+                ).toLowerCase()
         );
 
     if (used) {
@@ -1506,7 +1981,8 @@ async function removeCategory(id) {
 
         categories =
             categories.filter(
-                item => item.id !== id
+                item =>
+                    item.id !== id
             );
 
         renderCategoryOptions();
@@ -1536,7 +2012,8 @@ async function createMarketingLink(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     if (!combo) {
@@ -1570,7 +2047,9 @@ async function createMarketingLink(id) {
             );
 
         const existing =
-            await getDoc(linkRef);
+            await getDoc(
+                linkRef
+            );
 
         const existingData =
             existing.exists()
@@ -1578,14 +2057,21 @@ async function createMarketingLink(id) {
                 : {};
 
         const oldClicks =
-            typeof existingData.clicks === "number"
+            typeof existingData.clicks ===
+            "number"
                 ? existingData.clicks
                 : 0;
+
+        const oldStatus =
+            existingData.status ||
+            combo.status ||
+            "Active";
 
         await setDoc(
             linkRef,
             {
-                comboId: id,
+                comboId:
+                    id,
 
                 comboName:
                     combo.name || "",
@@ -1597,7 +2083,7 @@ async function createMarketingLink(id) {
                     oldClicks,
 
                 status:
-                    combo.status || "Active",
+                    oldStatus,
 
                 createdAt:
                     existingData.createdAt ||
@@ -1613,9 +2099,11 @@ async function createMarketingLink(id) {
 
         marketingLinks[id] = {
 
-            id: id,
+            id:
+                id,
 
-            comboId: id,
+            comboId:
+                id,
 
             comboName:
                 combo.name || "",
@@ -1627,7 +2115,7 @@ async function createMarketingLink(id) {
                 oldClicks,
 
             status:
-                combo.status || "Active",
+                oldStatus,
 
             createdAt:
                 existingData.createdAt,
@@ -1661,6 +2149,7 @@ async function createMarketingLink(id) {
         }
 
         render();
+        renderMarketingLinks();
 
     } catch (error) {
 
@@ -1684,7 +2173,8 @@ async function copyMarketingLink(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     const link =
@@ -1746,7 +2236,8 @@ function openMarketingLink(id) {
 
     const combo =
         combos.find(
-            item => item.id === id
+            item =>
+                item.id === id
         );
 
     const link =
@@ -1788,76 +2279,577 @@ function openMarketingLink(id) {
 
 
 /* =========================================================
-   RENDER
+   UPDATE MARKETING LINK STATUS
+========================================================= */
+
+async function updateMarketingLinkStatus(
+    id,
+    newStatus
+) {
+
+    const link =
+        marketingLinks[id];
+
+    if (!link) {
+
+        alert(
+            "Marketing Link موجود نہیں ہے۔"
+        );
+
+        return;
+    }
+
+    const allowedStatuses = [
+        "Active",
+        "Paused",
+        "Archived"
+    ];
+
+    if (
+        !allowedStatuses.includes(
+            newStatus
+        )
+    ) {
+
+        return;
+    }
+
+    try {
+
+        await updateDoc(
+            doc(
+                db,
+                "marketingLinks",
+                id
+            ),
+            {
+                status:
+                    newStatus,
+
+                updatedAt:
+                    serverTimestamp()
+            }
+        );
+
+        marketingLinks[id].status =
+            newStatus;
+
+        renderMarketingLinks();
+        render();
+
+    } catch (error) {
+
+        console.error(
+            "Marketing Link Status Error:",
+            error
+        );
+
+        alert(
+            "Marketing Link status update نہیں ہو سکا۔"
+        );
+    }
+}
+
+
+/* =========================================================
+   DELETE MARKETING LINK
+========================================================= */
+
+async function deleteMarketingLink(id) {
+
+    const link =
+        marketingLinks[id];
+
+    if (!link) {
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            `"${link.comboName || "Marketing Link"}" کا Marketing Link delete کرنا ہے؟`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        await deleteDoc(
+            doc(
+                db,
+                "marketingLinks",
+                id
+            )
+        );
+
+        delete marketingLinks[id];
+
+        renderMarketingLinks();
+        render();
+
+    } catch (error) {
+
+        console.error(
+            "Delete Marketing Link Error:",
+            error
+        );
+
+        alert(
+            "Marketing Link delete نہیں ہو سکا۔"
+        );
+    }
+}
+
+
+/* =========================================================
+   MARKETING LINKS CONTROL RENDER
+========================================================= */
+
+function renderMarketingLinks() {
+
+    if (!marketingLinksList) {
+        return;
+    }
+
+    const links =
+        Object.values(
+            marketingLinks
+        )
+        .sort(
+            function (a, b) {
+
+                return (
+                    getTimeValue(
+                        b.updatedAt
+                    ) -
+                    getTimeValue(
+                        a.updatedAt
+                    )
+                );
+            }
+        );
+
+    if (!links.length) {
+
+        marketingLinksList.innerHTML =
+            "";
+
+        if (marketingEmptyState) {
+
+            marketingEmptyState.classList.remove(
+                "hidden"
+            );
+        }
+
+        return;
+    }
+
+    if (marketingEmptyState) {
+
+        marketingEmptyState.classList.add(
+            "hidden"
+        );
+    }
+
+    marketingLinksList.innerHTML =
+        links
+            .map(
+                createMarketingLinkHTML
+            )
+            .join("");
+}
+
+
+/* =========================================================
+   CREATE MARKETING LINK CONTROL HTML
+========================================================= */
+
+function createMarketingLinkHTML(link) {
+
+    const id =
+        link.id;
+
+    const combo =
+        combos.find(
+            item =>
+                item.id === id
+        );
+
+    const comboName =
+        link.comboName ||
+        combo?.name ||
+        "Unknown Combo";
+
+    const clicks =
+        typeof link.clicks ===
+        "number"
+            ? link.clicks
+            : 0;
+
+    const status =
+        getMarketingStatus(
+            link
+        );
+
+    const statusClass =
+        getMarketingStatusClass(
+            status
+        );
+
+    const target =
+        link.targetUrl ||
+        getMarketingTarget(
+            combo
+        );
+
+    const publicUrl =
+        target
+            ? buildMarketingUrl(
+                id,
+                target
+            )
+            : "";
+
+    let statusAction = "";
+
+    if (status === "Active") {
+
+        statusAction = `
+            <button
+                type="button"
+                class="btn"
+                onclick="updateMarketingLinkStatus(
+                    '${escapeHTML(id)}',
+                    'Paused'
+                )"
+            >
+                Pause
+            </button>
+        `;
+
+    } else if (status === "Paused") {
+
+        statusAction = `
+            <button
+                type="button"
+                class="btn"
+                onclick="updateMarketingLinkStatus(
+                    '${escapeHTML(id)}',
+                    'Active'
+                )"
+            >
+                Activate
+            </button>
+
+            <button
+                type="button"
+                class="btn"
+                onclick="updateMarketingLinkStatus(
+                    '${escapeHTML(id)}',
+                    'Archived'
+                )"
+            >
+                Archive
+            </button>
+        `;
+
+    } else {
+
+        statusAction = `
+            <button
+                type="button"
+                class="btn"
+                onclick="updateMarketingLinkStatus(
+                    '${escapeHTML(id)}',
+                    'Active'
+                )"
+            >
+                Restore
+            </button>
+        `;
+    }
+
+    return `
+        <article class="combo">
+
+            <div>
+
+                <h4>
+                    ${escapeHTML(
+                        comboName
+                    )}
+                </h4>
+
+                <div class="meta">
+
+                    <span class="tag">
+                        Marketing Link
+                    </span>
+
+                    <span class="tag ${escapeHTML(
+                        statusClass
+                    )}">
+                        ${escapeHTML(
+                            status
+                        )}
+                    </span>
+
+                    <span class="tag">
+                        Clicks: ${clicks}
+                    </span>
+
+                </div>
+
+
+                ${
+                    combo?.category
+                        ? `
+                            <div class="notes">
+                                Category:
+                                ${escapeHTML(
+                                    combo.category
+                                )}
+                            </div>
+                        `
+                        : ""
+                }
+
+
+                ${
+                    target
+                        ? `
+                            <div class="notes">
+                                Target:
+                                ${escapeHTML(
+                                    shortenUrl(
+                                        target
+                                    )
+                                )}
+                            </div>
+                        `
+                        : `
+                            <div class="notes">
+                                Target URL موجود نہیں ہے۔
+                            </div>
+                        `
+                }
+
+
+                ${
+                    publicUrl
+                        ? `
+                            <div class="notes">
+                                ${escapeHTML(
+                                    publicUrl
+                                )}
+                            </div>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="actions">
+
+                ${
+                    publicUrl
+                        ? `
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="copyMarketingLink(
+                                    '${escapeHTML(id)}'
+                                )"
+                            >
+                                Copy
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="openMarketingLink(
+                                    '${escapeHTML(id)}'
+                                )"
+                            >
+                                Open
+                            </button>
+                        `
+                        : ""
+                }
+
+
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="createMarketingLink(
+                        '${escapeHTML(id)}'
+                    )"
+                >
+                    Update
+                </button>
+
+
+                ${statusAction}
+
+
+                <button
+                    type="button"
+                    class="btn danger"
+                    onclick="deleteMarketingLink(
+                        '${escapeHTML(id)}'
+                    )"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   REFRESH MARKETING LINKS
+========================================================= */
+
+async function refreshMarketingLinks() {
+
+    if (refreshMarketingBtn) {
+
+        refreshMarketingBtn.disabled =
+            true;
+
+        refreshMarketingBtn.textContent =
+            "Refreshing...";
+    }
+
+    try {
+
+        await loadMarketingLinks();
+
+        renderMarketingLinks();
+
+    } catch (error) {
+
+        console.error(
+            "Refresh Marketing Links Error:",
+            error
+        );
+
+    } finally {
+
+        if (refreshMarketingBtn) {
+
+            refreshMarketingBtn.disabled =
+                false;
+
+            refreshMarketingBtn.textContent =
+                "Refresh Links";
+        }
+    }
+}
+
+
+if (refreshMarketingBtn) {
+
+    refreshMarketingBtn.addEventListener(
+        "click",
+        refreshMarketingLinks
+    );
+}
+
+
+/* =========================================================
+   RENDER COMBOS
 ========================================================= */
 
 function render() {
 
     const search =
         String(
-            searchInput?.value || ""
+            searchInput?.value ||
+            ""
         )
             .trim()
             .toLowerCase();
 
     const category =
         String(
-            categoryFilter?.value || ""
+            categoryFilter?.value ||
+            ""
         );
 
     const status =
         String(
-            statusFilter?.value || ""
+            statusFilter?.value ||
+            ""
         );
 
     const filtered =
         combos
-            .filter(function (combo) {
+            .filter(
+                function (combo) {
 
-                if (search) {
+                    if (search) {
 
-                    const text =
-                        [
-                            combo.name,
-                            combo.category,
-                            combo.mainLink,
-                            combo.affiliateLink,
-                            combo.notes,
-                            combo.status
-                        ]
-                            .join(" ")
-                            .toLowerCase();
+                        const text =
+                            [
+                                combo.name,
+                                combo.category,
+                                combo.mainLink,
+                                combo.affiliateLink,
+                                combo.notes,
+                                combo.status
+                            ]
+                                .join(" ")
+                                .toLowerCase();
 
-                    if (!text.includes(search)) {
+                        if (
+                            !text.includes(
+                                search
+                            )
+                        ) {
+                            return false;
+                        }
+                    }
+
+                    if (
+                        category &&
+                        combo.category !==
+                        category
+                    ) {
+
                         return false;
                     }
+
+                    if (
+                        status &&
+                        combo.status !==
+                        status
+                    ) {
+
+                        return false;
+                    }
+
+                    return true;
                 }
+            )
+            .sort(
+                function (a, b) {
 
-                if (
-                    category &&
-                    combo.category !== category
-                ) {
-
-                    return false;
+                    return (
+                        getTimeValue(
+                            b.updatedAt
+                        ) -
+                        getTimeValue(
+                            a.updatedAt
+                        )
+                    );
                 }
-
-                if (
-                    status &&
-                    combo.status !== status
-                ) {
-
-                    return false;
-                }
-
-                return true;
-            })
-            .sort(function (a, b) {
-
-                return (
-                    getTimeValue(b.updatedAt) -
-                    getTimeValue(a.updatedAt)
-                );
-            });
+            );
 
 
     /* =====================================================
@@ -1870,36 +2862,43 @@ function render() {
     const active =
         combos.filter(
             item =>
-                item.status === "Active"
+                item.status ===
+                "Active"
         ).length;
 
     const pending =
         combos.filter(
             item =>
-                item.status === "Pending"
+                item.status ===
+                "Pending"
         ).length;
 
     const archived =
         combos.filter(
             item =>
-                item.status === "Archived"
+                item.status ===
+                "Archived"
         ).length;
 
 
     if (totalCount) {
-        totalCount.textContent = total;
+        totalCount.textContent =
+            total;
     }
 
     if (activeCount) {
-        activeCount.textContent = active;
+        activeCount.textContent =
+            active;
     }
 
     if (pendingCount) {
-        pendingCount.textContent = pending;
+        pendingCount.textContent =
+            pending;
     }
 
     if (archivedCount) {
-        archivedCount.textContent = archived;
+        archivedCount.textContent =
+            archived;
     }
 
 
@@ -1907,7 +2906,9 @@ function render() {
 
         resultCount.textContent =
             `${filtered.length} result${
-                filtered.length === 1 ? "" : "s"
+                filtered.length === 1
+                    ? ""
+                    : "s"
             }`;
     }
 
@@ -1922,22 +2923,31 @@ function render() {
 
     if (!filtered.length) {
 
-        comboList.innerHTML = "";
+        comboList.innerHTML =
+            "";
 
         if (emptyState) {
-            emptyState.classList.remove("hidden");
+
+            emptyState.classList.remove(
+                "hidden"
+            );
         }
 
         return;
     }
 
     if (emptyState) {
-        emptyState.classList.add("hidden");
+
+        emptyState.classList.add(
+            "hidden"
+        );
     }
 
     comboList.innerHTML =
         filtered
-            .map(createComboHTML)
+            .map(
+                createComboHTML
+            )
             .join("");
 }
 
@@ -1949,23 +2959,31 @@ function render() {
 function createComboHTML(combo) {
 
     const marketing =
-        marketingLinks[combo.id];
+        marketingLinks[
+            combo.id
+        ];
 
     const clicks =
         marketing &&
-        typeof marketing.clicks === "number"
+        typeof marketing.clicks ===
+        "number"
             ? marketing.clicks
             : 0;
 
     const marketingTarget =
         marketing?.targetUrl ||
-        getMarketingTarget(combo);
+        getMarketingTarget(
+            combo
+        );
 
     const hasMarketing =
-        Boolean(marketing);
+        Boolean(
+            marketing
+        );
 
     const marketingUrl =
-        hasMarketing && marketingTarget
+        hasMarketing &&
+        marketingTarget
             ? buildMarketingUrl(
                 combo.id,
                 marketingTarget
@@ -1975,10 +2993,14 @@ function createComboHTML(combo) {
 
     const statusClass =
         String(
-            combo.status || "Active"
+            combo.status ||
+            "Active"
         )
             .toLowerCase()
-            .replace(/\s+/g, "-");
+            .replace(
+                /\s+/g,
+                "-"
+            );
 
 
     return `
@@ -1987,9 +3009,11 @@ function createComboHTML(combo) {
             <div class="combo-card-header">
 
                 <div>
+
                     <h3>
                         ${escapeHTML(
-                            combo.name || "Untitled Combo"
+                            combo.name ||
+                            "Untitled Combo"
                         )}
                     </h3>
 
@@ -1997,7 +3021,8 @@ function createComboHTML(combo) {
 
                         <span class="tag">
                             ${escapeHTML(
-                                combo.category || "Other"
+                                combo.category ||
+                                "Other"
                             )}
                         </span>
 
@@ -2005,11 +3030,13 @@ function createComboHTML(combo) {
                             statusClass
                         )}">
                             ${escapeHTML(
-                                combo.status || "Active"
+                                combo.status ||
+                                "Active"
                             )}
                         </span>
 
                     </div>
+
                 </div>
 
             </div>
@@ -2099,9 +3126,11 @@ function createComboHTML(combo) {
                                 <button
                                     type="button"
                                     class="btn"
-                                    onclick="copyMarketingLink('${escapeHTML(
-                                        combo.id
-                                    )}')"
+                                    onclick="copyMarketingLink(
+                                        '${escapeHTML(
+                                            combo.id
+                                        )}'
+                                    )"
                                 >
                                     Copy Link
                                 </button>
@@ -2109,9 +3138,11 @@ function createComboHTML(combo) {
                                 <button
                                     type="button"
                                     class="btn"
-                                    onclick="openMarketingLink('${escapeHTML(
-                                        combo.id
-                                    )}')"
+                                    onclick="openMarketingLink(
+                                        '${escapeHTML(
+                                            combo.id
+                                        )}'
+                                    )"
                                 >
                                     Open Link
                                 </button>
@@ -2119,9 +3150,11 @@ function createComboHTML(combo) {
                                 <button
                                     type="button"
                                     class="btn"
-                                    onclick="createMarketingLink('${escapeHTML(
-                                        combo.id
-                                    )}')"
+                                    onclick="createMarketingLink(
+                                        '${escapeHTML(
+                                            combo.id
+                                        )}'
+                                    )"
                                 >
                                     Update Link
                                 </button>
@@ -2130,21 +3163,23 @@ function createComboHTML(combo) {
                                 <button
                                     type="button"
                                     class="btn"
-                                    onclick="createMarketingLink('${escapeHTML(
-                                        combo.id
-                                    )}')"
+                                    onclick="createMarketingLink(
+                                        '${escapeHTML(
+                                            combo.id
+                                        )}'
+                                    )"
                                 >
                                     Create Marketing Link
                                 </button>
                             `
-
                     }
 
                 </div>
 
 
                 ${
-                    hasMarketing && marketingUrl
+                    hasMarketing &&
+                    marketingUrl
                         ? `
                             <div class="combo-notes">
                                 ${escapeHTML(
@@ -2163,9 +3198,11 @@ function createComboHTML(combo) {
                 <button
                     type="button"
                     class="btn"
-                    onclick="editCombo('${escapeHTML(
-                        combo.id
-                    )}')"
+                    onclick="editCombo(
+                        '${escapeHTML(
+                            combo.id
+                        )}'
+                    )"
                 >
                     Edit
                 </button>
@@ -2174,12 +3211,15 @@ function createComboHTML(combo) {
                 <button
                     type="button"
                     class="btn"
-                    onclick="archiveCombo('${escapeHTML(
-                        combo.id
-                    )}')"
+                    onclick="archiveCombo(
+                        '${escapeHTML(
+                            combo.id
+                        )}'
+                    )"
                 >
                     ${
-                        combo.status === "Archived"
+                        combo.status ===
+                        "Archived"
                             ? "Restore"
                             : "Archive"
                     }
@@ -2189,9 +3229,11 @@ function createComboHTML(combo) {
                 <button
                     type="button"
                     class="btn danger"
-                    onclick="deleteCombo('${escapeHTML(
-                        combo.id
-                    )}')"
+                    onclick="deleteCombo(
+                        '${escapeHTML(
+                            combo.id
+                        )}'
+                    )"
                 >
                     Delete
                 </button>
@@ -2353,7 +3395,10 @@ if (comboModal) {
         "click",
         function (event) {
 
-            if (event.target === comboModal) {
+            if (
+                event.target ===
+                comboModal
+            ) {
                 closeComboModal();
             }
         }
@@ -2367,7 +3412,10 @@ if (pasteModal) {
         "click",
         function (event) {
 
-            if (event.target === pasteModal) {
+            if (
+                event.target ===
+                pasteModal
+            ) {
                 closePaste();
             }
         }
@@ -2381,7 +3429,10 @@ if (categoryModal) {
         "click",
         function (event) {
 
-            if (event.target === categoryModal) {
+            if (
+                event.target ===
+                categoryModal
+            ) {
                 closeCategory();
             }
         }
@@ -2395,7 +3446,10 @@ if (helpModal) {
         "click",
         function (event) {
 
-            if (event.target === helpModal) {
+            if (
+                event.target ===
+                helpModal
+            ) {
                 closeHelp();
             }
         }
@@ -2411,7 +3465,10 @@ document.addEventListener(
     "keydown",
     function (event) {
 
-        if (event.key !== "Escape") {
+        if (
+            event.key !==
+            "Escape"
+        ) {
             return;
         }
 
@@ -2447,3 +3504,9 @@ window.copyMarketingLink =
 
 window.openMarketingLink =
     openMarketingLink;
+
+window.updateMarketingLinkStatus =
+    updateMarketingLinkStatus;
+
+window.deleteMarketingLink =
+    deleteMarketingLink;
