@@ -19,8 +19,7 @@ import {
     doc,
     getDoc,
     setDoc,
-    serverTimestamp,
-    increment
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
@@ -72,8 +71,8 @@ const db =
    SETTINGS
 ========================================================= */
 
-const ADMIN_EMAIL =
-    "thanksyou0339@gmail.com";
+const ADMIN_UID =
+    "Va1ERyp4TJR8OVOf0MVjDYPC8hk2";
 
 
 const DEFAULT_CATEGORIES = [
@@ -425,8 +424,7 @@ function normalizeText(value) {
 
     return String(
         value ?? ""
-    )
-        .trim();
+    ).trim();
 }
 
 
@@ -463,6 +461,7 @@ function getMarketingTarget(combo) {
             combo.mainLink
         );
 
+
     if (
         affiliate &&
         isValidUrl(
@@ -473,6 +472,7 @@ function getMarketingTarget(combo) {
         return affiliate;
     }
 
+
     if (
         main &&
         isValidUrl(
@@ -482,6 +482,7 @@ function getMarketingTarget(combo) {
 
         return main;
     }
+
 
     return "";
 }
@@ -515,6 +516,7 @@ function formatDate(value) {
         return "—";
     }
 
+
     try {
 
         if (
@@ -542,6 +544,7 @@ function formatDate(value) {
                 value
             );
 
+
         if (
             Number.isNaN(
                 date.getTime()
@@ -550,6 +553,7 @@ function formatDate(value) {
 
             return "—";
         }
+
 
         return date.toLocaleString();
 
@@ -560,22 +564,25 @@ function formatDate(value) {
 }
 
 
+/* =========================================================
+   MARKETING URL
+========================================================= */
+
 function buildMarketingUrl(id) {
 
-    return (
-        window.location.origin +
-        window.location.pathname
-            .replace(
-                /\/[^/]*$/,
-                "/go.html"
-            ) +
-        "?id=" +
+    return new URL(
+        "go.html?id=" +
         encodeURIComponent(
             id
-        )
-    );
+        ),
+        window.location.href
+    ).toString();
 }
 
+
+/* =========================================================
+   LOGIN MESSAGE
+========================================================= */
 
 function setLoginMessage(
     text,
@@ -586,11 +593,14 @@ function setLoginMessage(
         return;
     }
 
+
     loginMessage.textContent =
         text || "";
 
+
     loginMessage.className =
         "login-message";
+
 
     if (type) {
 
@@ -614,6 +624,7 @@ function showLogin() {
         );
     }
 
+
     if (appShell) {
 
         appShell.classList.add(
@@ -632,6 +643,7 @@ function showDashboard() {
         );
     }
 
+
     if (appShell) {
 
         appShell.classList.remove(
@@ -639,11 +651,12 @@ function showDashboard() {
         );
     }
 
+
     if (adminEmail) {
 
         adminEmail.textContent =
             currentUser?.email ||
-            ADMIN_EMAIL;
+            "";
     }
 }
 
@@ -658,13 +671,24 @@ async function checkAdmin(user) {
         return false;
     }
 
+
+    /*
+     * The Firebase Auth UID is the primary admin identity.
+     * The Firestore users/{uid} document must also contain:
+     *
+     * role: "admin"
+     *
+     * This avoids depending on a hard-coded email address.
+     */
+
     if (
-        user.email?.toLowerCase() !==
-        ADMIN_EMAIL.toLowerCase()
+        user.uid !==
+        ADMIN_UID
     ) {
 
         return false;
     }
+
 
     try {
 
@@ -675,10 +699,12 @@ async function checkAdmin(user) {
                 user.uid
             );
 
+
         const userSnap =
             await getDoc(
                 userRef
             );
+
 
         if (
             !userSnap.exists()
@@ -687,8 +713,10 @@ async function checkAdmin(user) {
             return false;
         }
 
+
         const data =
             userSnap.data();
+
 
         return (
             data.role ===
@@ -701,6 +729,7 @@ async function checkAdmin(user) {
             "Admin Check Error:",
             error
         );
+
 
         return false;
     }
@@ -715,10 +744,12 @@ async function handleLogin(event) {
 
     event.preventDefault();
 
+
     const email =
         normalizeText(
             adminEmail?.value
         );
+
 
     const password =
         String(
@@ -727,12 +758,16 @@ async function handleLogin(event) {
         );
 
 
-    if (!email || !password) {
+    if (
+        !email ||
+        !password
+    ) {
 
         setLoginMessage(
             "Please enter your email and password.",
             "error"
         );
+
 
         return;
     }
@@ -775,10 +810,12 @@ async function handleLogin(event) {
                 auth
             );
 
+
             setLoginMessage(
                 "This account is not authorized as an admin.",
                 "error"
             );
+
 
             return;
         }
@@ -824,6 +861,22 @@ async function handleLogin(event) {
 
             message =
                 "Network error. Please check your internet connection.";
+
+        } else if (
+            error.code ===
+            "auth/user-disabled"
+        ) {
+
+            message =
+                "This account has been disabled.";
+
+        } else if (
+            error.code ===
+            "auth/user-not-found"
+        ) {
+
+            message =
+                "No Firebase account was found for this email.";
         }
 
 
@@ -967,9 +1020,12 @@ async function loadCategories() {
                             categoryId
                         ),
                         {
+
                             name,
+
                             createdAt:
                                 serverTimestamp()
+
                         }
                     );
 
@@ -1045,10 +1101,12 @@ async function loadMarketingLinks() {
 
                 marketingLinks[item.id] =
                     {
+
                         id:
                             item.id,
 
                         ...item.data()
+
                     };
             }
         );
@@ -1073,10 +1131,15 @@ async function loadMarketingLinks() {
 async function loadFirebaseData() {
 
     await Promise.all([
+
         loadCombos(),
+
         loadCategories(),
+
         loadMarketingLinks()
+
     ]);
+
 
     render();
 }
@@ -1244,6 +1307,7 @@ function renderCategoryOptions() {
                             category.name
                         )}"></option>`
                 )
+                )
                 .join("");
     }
 
@@ -1369,6 +1433,7 @@ function renderCategoryList() {
                         <div class="category-row">
 
                             <div>
+
                                 <strong>
                                     ${escapeHTML(
                                         category.name
@@ -1378,7 +1443,9 @@ function renderCategoryList() {
                                 <small>
                                     ${used} combo${used === 1 ? "" : "s"}
                                 </small>
+
                             </div>
+
 
                             <button
                                 class="btn danger small"
@@ -1648,19 +1715,14 @@ async function saveCombo(event) {
                 );
 
 
-            const oldCombo =
-                combos.find(
-                    combo =>
-                        combo.id === id
-                );
-
-
             await updateDoc(
                 comboRef,
                 {
 
                     name,
+
                     category,
+
                     mainLink:
                         main,
 
@@ -1673,6 +1735,7 @@ async function saveCombo(event) {
 
                     updatedAt:
                         serverTimestamp()
+
                 }
             );
 
@@ -1685,14 +1748,21 @@ async function saveCombo(event) {
 
                 const targetUrl =
                     getMarketingTarget({
+
                         name,
+
                         category,
+
                         mainLink:
                             main,
+
                         affiliateLink:
                             affiliate,
+
                         notes,
+
                         status
+
                     });
 
 
@@ -1715,6 +1785,7 @@ async function saveCombo(event) {
 
                             updatedAt:
                                 serverTimestamp()
+
                         }
                     );
 
@@ -1733,6 +1804,7 @@ async function saveCombo(event) {
 
                             updatedAt:
                                 serverTimestamp()
+
                         },
                         {
                             merge:
@@ -1758,6 +1830,7 @@ async function saveCombo(event) {
 
                             updatedAt:
                                 serverTimestamp()
+
                         }
                     );
 
@@ -1775,6 +1848,7 @@ async function saveCombo(event) {
 
                             updatedAt:
                                 serverTimestamp()
+
                         },
                         {
                             merge:
@@ -1801,22 +1875,21 @@ async function saveCombo(event) {
                     ...combos[index],
 
                     name,
+
                     category,
+
                     mainLink:
                         main,
+
                     affiliateLink:
                         affiliate,
+
                     notes,
+
                     status
 
                 };
             }
-
-
-            console.log(
-                "Combo updated:",
-                oldCombo
-            );
 
         } else {
 
@@ -1829,12 +1902,17 @@ async function saveCombo(event) {
                     {
 
                         name,
+
                         category,
+
                         mainLink:
                             main,
+
                         affiliateLink:
                             affiliate,
+
                         notes,
+
                         status,
 
                         createdAt:
@@ -1842,6 +1920,7 @@ async function saveCombo(event) {
 
                         updatedAt:
                             serverTimestamp()
+
                     }
                 );
 
@@ -1852,12 +1931,17 @@ async function saveCombo(event) {
                     comboRef.id,
 
                 name,
+
                 category,
+
                 mainLink:
                     main,
+
                 affiliateLink:
                     affiliate,
+
                 notes,
+
                 status
 
             });
@@ -2061,6 +2145,7 @@ async function createMarketingLink(
             await navigator.clipboard.writeText(
                 publicUrl
             );
+
 
             alert(
                 "Marketing link created and copied:\n\n" +
@@ -2325,12 +2410,14 @@ function renderMarketingLinks() {
                                 a.updatedAt || 0
                             );
 
+
                     const bDate =
                         b.updatedAt?.toDate
                             ? b.updatedAt.toDate()
                             : new Date(
                                 b.updatedAt || 0
                             );
+
 
                     return (
                         bDate -
@@ -2347,9 +2434,11 @@ function renderMarketingLinks() {
         marketingLinksList.innerHTML =
             "";
 
+
         marketingEmptyState?.classList.remove(
             "hidden"
         );
+
 
         return;
     }
@@ -2556,6 +2645,7 @@ function createMarketingLinkHTML(
                     Copy
                 </button>
 
+
                 <button
                     class="btn secondary small"
                     data-marketing-action="open"
@@ -2566,7 +2656,9 @@ function createMarketingLinkHTML(
                     Open
                 </button>
 
+
                 ${statusAction}
+
 
                 <button
                     class="btn danger small"
@@ -2627,13 +2719,6 @@ async function deleteCombo(
         );
 
 
-        /*
-         * Keep marketingLinks history.
-         * Disable/remove the public redirect so an old
-         * marketing URL cannot continue sending traffic
-         * to a deleted combo.
-         */
-
         if (
             marketingLinks[id]
         ) {
@@ -2656,6 +2741,7 @@ async function deleteCombo(
 
                     }
                 );
+
 
                 marketingLinks[id].status =
                     "Archived";
@@ -3068,6 +3154,7 @@ function createComboHTML(
                     combo.mainLink
                         ? `
                             <div>
+
                                 <strong>
                                     Main Link
                                 </strong>
@@ -3083,6 +3170,7 @@ function createComboHTML(
                                         combo.mainLink
                                     )}
                                 </a>
+
                             </div>
                         `
                         : ""
@@ -3093,6 +3181,7 @@ function createComboHTML(
                     combo.affiliateLink
                         ? `
                             <div>
+
                                 <strong>
                                     Affiliate Link
                                 </strong>
@@ -3108,6 +3197,7 @@ function createComboHTML(
                                         combo.affiliateLink
                                     )}
                                 </a>
+
                             </div>
                         `
                         : ""
@@ -3134,6 +3224,7 @@ function createComboHTML(
 
                 </div>
 
+
                 <div class="card-actions">
 
                     ${marketingButtons}
@@ -3155,7 +3246,9 @@ function createComboHTML(
                     Edit
                 </button>
 
+
                 ${archiveButton}
+
 
                 <button
                     class="btn danger small"
@@ -3224,9 +3317,13 @@ function getFilteredCombos() {
                 [
 
                     combo.name,
+
                     combo.category,
+
                     combo.mainLink,
+
                     combo.affiliateLink,
+
                     combo.notes
 
                 ]
@@ -3317,6 +3414,7 @@ function renderCombos() {
         emptyState?.classList.remove(
             "hidden"
         );
+
 
         return;
     }
@@ -3502,6 +3600,7 @@ async function importPastedCombos() {
                     {
 
                         name,
+
                         category,
 
                         mainLink:
@@ -3530,6 +3629,7 @@ async function importPastedCombos() {
                     ref.id,
 
                 name,
+
                 category,
 
                 mainLink:
@@ -3539,6 +3639,7 @@ async function importPastedCombos() {
                     affiliate,
 
                 notes,
+
                 status
 
             });
@@ -3593,6 +3694,7 @@ function openCategoryModal() {
     categoryModal?.classList.remove(
         "hidden"
     );
+
 
     renderCategoryList();
 
@@ -4032,6 +4134,7 @@ comboList?.addEventListener(
                         item.id === id
                 );
 
+
             if (combo) {
 
                 openComboModal(
@@ -4324,8 +4427,10 @@ onAuthStateChanged(
 
             showLogin();
 
+
             authInitialized =
                 true;
+
 
             return;
         }
@@ -4343,18 +4448,23 @@ onAuthStateChanged(
                 auth
             );
 
+
             currentUser =
                 null;
 
+
             showLogin();
+
 
             setLoginMessage(
                 "This account is not authorized as an admin.",
                 "error"
             );
 
+
             authInitialized =
                 true;
+
 
             return;
         }
