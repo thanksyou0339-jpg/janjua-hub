@@ -344,7 +344,7 @@
 
 
         /* =====================================================
-           ERROR
+           ERROR HANDLER
         ===================================================== */
 
         function showError(text) {
@@ -375,7 +375,7 @@
 
 
         /* =====================================================
-           READ MARKETING LINK ID
+           READ CLEAN MARKETING LINK
         ===================================================== */
 
         const params =
@@ -422,28 +422,35 @@
                 }
 
 
-                /*
-                   ابھی destination URL
-                   marketingLinks document
-                   سے حاصل کیا جائے گا۔
-                */
+                /* =================================================
+                   PUBLIC REDIRECT DOCUMENT
+                   
+                   publicRedirects/{id}
+                   
+                   This is the public-safe mapping used by
+                   the clean go.html?id=... URL.
+                ================================================= */
 
-                const linkRef =
+                const publicRef =
                     doc(
                         db,
-                        "marketingLinks",
+                        "publicRedirects",
                         id
                     );
 
 
-                const linkSnap =
+                const publicSnap =
                     await getDoc(
-                        linkRef
+                        publicRef
                     );
 
 
+                /* =================================================
+                   LINK NOT FOUND
+                ================================================= */
+
                 if (
-                    !linkSnap.exists()
+                    !publicSnap.exists()
                 ) {
 
                     showError(
@@ -455,7 +462,7 @@
 
 
                 const data =
-                    linkSnap.data();
+                    publicSnap.data();
 
 
                 const targetUrl =
@@ -471,6 +478,10 @@
                         "Active"
                     );
 
+
+                /* =================================================
+                   DESTINATION CHECK
+                ================================================= */
 
                 if (!targetUrl) {
 
@@ -512,7 +523,12 @@
                             targetUrl
                         );
 
-                } catch (error) {
+                } catch (urlError) {
+
+                    console.error(
+                        "Invalid destination URL:",
+                        urlError
+                    );
 
                     showError(
                         "Destination URL is invalid."
@@ -538,18 +554,33 @@
 
 
                 /* =================================================
-                   CLICK COUNT
+                   CLICK TRACKING
+                   
+                   Click count is stored in:
+                   marketingLinks/{id}
+                   
+                   The public redirect itself is read from:
+                   publicRedirects/{id}
                 ================================================= */
 
                 try {
 
+                    const marketingRef =
+                        doc(
+                            db,
+                            "marketingLinks",
+                            id
+                        );
+
+
                     await updateDoc(
-                        linkRef,
+                        marketingRef,
                         {
                             clicks:
                                 increment(1)
                         }
                     );
+
 
                 } catch (trackingError) {
 
