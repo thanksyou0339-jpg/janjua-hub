@@ -19,8 +19,7 @@ import {
     doc,
     getDoc,
     setDoc,
-    serverTimestamp,
-    increment
+    serverTimestamp
 }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -76,13 +75,23 @@ let currentUser = null;
    DOM
 ========================================================= */
 
-const loginScreen = document.getElementById("loginScreen");
-const loginForm = document.getElementById("loginForm");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
-const loginMessage = document.getElementById("loginMessage");
+const loginScreen =
+    document.getElementById("loginScreen");
 
-const appShell = document.getElementById("appShell");
+const loginForm =
+    document.getElementById("loginForm");
+
+const loginEmail =
+    document.getElementById("loginEmail");
+
+const loginPassword =
+    document.getElementById("loginPassword");
+
+const loginMessage =
+    document.getElementById("loginMessage");
+
+const appShell =
+    document.getElementById("appShell");
 
 const adminEmailDisplay =
     document.getElementById("adminEmailDisplay");
@@ -266,52 +275,75 @@ const closeHelpModal =
 
 function bootApp() {
 
-    document.body.classList.add("auth-booting");
+    document.body.classList.add(
+        "auth-booting"
+    );
 
     if (loginScreen) {
-        loginScreen.classList.add("hidden");
+        loginScreen.classList.add(
+            "hidden"
+        );
     }
 
     if (appShell) {
-        appShell.classList.add("app-shell-hidden");
+        appShell.classList.add(
+            "app-shell-hidden"
+        );
     }
 }
 
 
 function showLogin() {
 
-    document.body.classList.remove("auth-booting");
+    document.body.classList.remove(
+        "auth-booting"
+    );
 
     if (loginScreen) {
-        loginScreen.classList.remove("hidden");
+        loginScreen.classList.remove(
+            "hidden"
+        );
     }
 
     if (appShell) {
-        appShell.classList.add("app-shell-hidden");
+        appShell.classList.add(
+            "app-shell-hidden"
+        );
     }
 
     if (loginMessage) {
         loginMessage.textContent = "";
-        loginMessage.className = "login-message";
+        loginMessage.className =
+            "login-message";
     }
 }
 
 
 function showDashboard() {
 
-    document.body.classList.remove("auth-booting");
+    document.body.classList.remove(
+        "auth-booting"
+    );
 
     if (loginScreen) {
-        loginScreen.classList.add("hidden");
+        loginScreen.classList.add(
+            "hidden"
+        );
     }
 
     if (appShell) {
-        appShell.classList.remove("app-shell-hidden");
+        appShell.classList.remove(
+            "app-shell-hidden"
+        );
     }
 
-    if (adminEmailDisplay && currentUser) {
+    if (
+        adminEmailDisplay &&
+        currentUser
+    ) {
         adminEmailDisplay.textContent =
-            currentUser.email || ADMIN_EMAIL;
+            currentUser.email ||
+            ADMIN_EMAIL;
     }
 }
 
@@ -323,11 +355,26 @@ function showDashboard() {
 function escapeHTML(value) {
 
     return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -339,7 +386,8 @@ function isValidHttpUrl(value) {
 
     try {
 
-        const url = new URL(value);
+        const url =
+            new URL(value);
 
         return (
             url.protocol === "http:" ||
@@ -364,10 +412,14 @@ function getMarketingTarget(combo) {
     }
 
     const affiliate =
-        String(combo.affiliateLink || "").trim();
+        String(
+            combo.affiliateLink || ""
+        ).trim();
 
     const main =
-        String(combo.mainLink || "").trim();
+        String(
+            combo.mainLink || ""
+        ).trim();
 
     if (
         affiliate &&
@@ -387,7 +439,10 @@ function getMarketingTarget(combo) {
 }
 
 
-function buildMarketingUrl(id, targetUrl) {
+function buildMarketingUrl(
+    id,
+    targetUrl
+) {
 
     const goUrl =
         new URL(
@@ -400,6 +455,12 @@ function buildMarketingUrl(id, targetUrl) {
         id
     );
 
+    /*
+       Target URL ابھی بھی query parameter
+       میں رکھا جا رہا ہے تاکہ موجودہ go.html
+       workflow برقرار رہے۔
+    */
+
     goUrl.searchParams.set(
         "url",
         targetUrl
@@ -410,7 +471,7 @@ function buildMarketingUrl(id, targetUrl) {
 
 
 /* =========================================================
-   MARKETING LINK STATUS
+   MARKETING STATUS
 ========================================================= */
 
 function getMarketingStatus(link) {
@@ -426,31 +487,104 @@ function getMarketingStatus(link) {
 }
 
 
-function getMarketingStatusClass(status) {
+function getMarketingStatusClass(
+    status
+) {
 
-    return String(status || "Active")
+    return String(
+        status || "Active"
+    )
         .toLowerCase()
-        .replace(/\s+/g, "-");
+        .replace(
+            /\s+/g,
+            "-"
+        );
 }
 
 
 /* =========================================================
-   MARKETING LINK DISPLAY URL
+   DISPLAY HELPERS
 ========================================================= */
 
-function shortenUrl(url, maxLength = 75) {
+function shortenUrl(
+    url,
+    maxLength = 75
+) {
 
     const value =
         String(url || "");
 
-    if (value.length <= maxLength) {
+    if (
+        value.length <=
+        maxLength
+    ) {
         return value;
     }
 
     return (
-        value.slice(0, maxLength) +
+        value.slice(
+            0,
+            maxLength
+        ) +
         "..."
     );
+}
+
+
+function truncateText(
+    value,
+    maxLength = 90
+) {
+
+    const text =
+        String(value || "");
+
+    if (
+        text.length <=
+        maxLength
+    ) {
+        return text;
+    }
+
+    return (
+        text.slice(
+            0,
+            maxLength
+        ) +
+        "…"
+    );
+}
+
+
+function getTimeValue(value) {
+
+    if (!value) {
+        return 0;
+    }
+
+    if (
+        typeof value === "object" &&
+        typeof value.toDate === "function"
+    ) {
+
+        return value
+            .toDate()
+            .getTime();
+    }
+
+    if (
+        value instanceof Date
+    ) {
+
+        return value.getTime();
+    }
+
+    const parsed =
+        new Date(value).getTime();
+
+    return Number.isNaN(parsed)
+        ? 0
+        : parsed;
 }
 
 
@@ -458,7 +592,9 @@ function shortenUrl(url, maxLength = 75) {
    MODALS
 ========================================================= */
 
-function openComboModal(combo = null) {
+function openComboModal(
+    combo = null
+) {
 
     if (!comboModal) {
         return;
@@ -488,7 +624,8 @@ function openComboModal(combo = null) {
             combo.notes || "";
 
         comboStatus.value =
-            combo.status || "Active";
+            combo.status ||
+            "Active";
 
     } else {
 
@@ -514,6 +651,7 @@ function openComboModal(combo = null) {
 function closeComboModal() {
 
     if (comboModal) {
+
         comboModal.classList.add(
             "hidden"
         );
@@ -538,6 +676,7 @@ function openPasteModal() {
 function closePaste() {
 
     if (pasteModal) {
+
         pasteModal.classList.add(
             "hidden"
         );
@@ -562,6 +701,7 @@ function openCategoryModal() {
 function closeCategory() {
 
     if (categoryModal) {
+
         categoryModal.classList.add(
             "hidden"
         );
@@ -572,6 +712,7 @@ function closeCategory() {
 function openHelpModal() {
 
     if (helpModal) {
+
         helpModal.classList.remove(
             "hidden"
         );
@@ -582,6 +723,7 @@ function openHelpModal() {
 function closeHelp() {
 
     if (helpModal) {
+
         helpModal.classList.add(
             "hidden"
         );
@@ -597,7 +739,7 @@ if (loginForm) {
 
     loginForm.addEventListener(
         "submit",
-        async function (event) {
+        async function(event) {
 
             event.preventDefault();
 
@@ -607,7 +749,10 @@ if (loginForm) {
             const password =
                 loginPassword.value;
 
-            if (!email || !password) {
+            if (
+                !email ||
+                !password
+            ) {
 
                 loginMessage.textContent =
                     "Email اور Password دونوں درج کریں۔";
@@ -630,7 +775,8 @@ if (loginForm) {
                 );
 
             if (submitButton) {
-                submitButton.disabled = true;
+                submitButton.disabled =
+                    true;
             }
 
             try {
@@ -649,7 +795,9 @@ if (loginForm) {
 
                 if (!isAdmin) {
 
-                    await signOut(auth);
+                    await signOut(
+                        auth
+                    );
 
                     loginMessage.textContent =
                         "یہ اکاؤنٹ Admin نہیں ہے۔";
@@ -707,7 +855,9 @@ if (loginForm) {
             } finally {
 
                 if (submitButton) {
-                    submitButton.disabled = false;
+
+                    submitButton.disabled =
+                        false;
                 }
             }
         }
@@ -723,11 +873,13 @@ if (logoutBtn) {
 
     logoutBtn.addEventListener(
         "click",
-        async function () {
+        async function() {
 
             try {
 
-                await signOut(auth);
+                await signOut(
+                    auth
+                );
 
             } catch (error) {
 
@@ -765,15 +917,21 @@ async function checkAdmin(user) {
             );
 
         const adminSnap =
-            await getDoc(adminRef);
+            await getDoc(
+                adminRef
+            );
 
-        if (adminSnap.exists()) {
+        if (
+            adminSnap.exists()
+        ) {
 
             const data =
                 adminSnap.data();
 
-            return data.role ===
-                "admin";
+            return (
+                data.role ===
+                "admin"
+            );
         }
     }
 
@@ -785,16 +943,23 @@ async function checkAdmin(user) {
         );
 
     const userSnap =
-        await getDoc(userRef);
+        await getDoc(
+            userRef
+        );
 
-    if (!userSnap.exists()) {
+    if (
+        !userSnap.exists()
+    ) {
         return false;
     }
 
     const data =
         userSnap.data();
 
-    return data.role === "admin";
+    return (
+        data.role ===
+        "admin"
+    );
 }
 
 
@@ -806,7 +971,7 @@ bootApp();
 
 onAuthStateChanged(
     auth,
-    async function (user) {
+    async function(user) {
 
         if (!user) {
 
@@ -820,11 +985,15 @@ onAuthStateChanged(
         try {
 
             const isAdmin =
-                await checkAdmin(user);
+                await checkAdmin(
+                    user
+                );
 
             if (!isAdmin) {
 
-                await signOut(auth);
+                await signOut(
+                    auth
+                );
 
                 currentUser = null;
 
@@ -833,7 +1002,8 @@ onAuthStateChanged(
                 return;
             }
 
-            currentUser = user;
+            currentUser =
+                user;
 
             showDashboard();
 
@@ -846,7 +1016,9 @@ onAuthStateChanged(
                 error
             );
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
 
             currentUser = null;
 
@@ -874,13 +1046,14 @@ async function loadCombos() {
 
         combos =
             snapshot.docs.map(
-                function (item) {
+                function(item) {
 
                     const data =
                         item.data();
 
                     return {
-                        id: item.id,
+                        id:
+                            item.id,
                         ...data
                     };
                 }
@@ -916,23 +1089,26 @@ async function loadCategories() {
 
         categories =
             snapshot.docs.map(
-                function (item) {
+                function(item) {
 
                     const data =
                         item.data();
 
                     return {
-                        id: item.id,
+                        id:
+                            item.id,
                         ...data
                     };
                 }
             );
 
-        if (!categories.length) {
+        if (
+            !categories.length
+        ) {
 
             categories =
                 DEFAULT_CATEGORIES.map(
-                    function (name) {
+                    function(name) {
 
                         return {
                             id:
@@ -954,7 +1130,7 @@ async function loadCategories() {
 
         categories =
             DEFAULT_CATEGORIES.map(
-                function (name) {
+                function(name) {
 
                     return {
                         id:
@@ -988,10 +1164,14 @@ async function loadMarketingLinks() {
             );
 
         snapshot.docs.forEach(
-            function (item) {
+            function(item) {
 
-                marketingLinks[item.id] = {
-                    id: item.id,
+                marketingLinks[
+                    item.id
+                ] = {
+                    id:
+                        item.id,
+
                     ...item.data()
                 };
             }
@@ -1031,38 +1211,6 @@ async function loadFirebaseData() {
 
 
 /* =========================================================
-   TIME
-========================================================= */
-
-function getTimeValue(value) {
-
-    if (!value) {
-        return 0;
-    }
-
-    if (
-        typeof value === "object" &&
-        typeof value.toDate === "function"
-    ) {
-
-        return value.toDate().getTime();
-    }
-
-    if (value instanceof Date) {
-
-        return value.getTime();
-    }
-
-    const parsed =
-        new Date(value).getTime();
-
-    return Number.isNaN(parsed)
-        ? 0
-        : parsed;
-}
-
-
-/* =========================================================
    ADD / SAVE COMBO
 ========================================================= */
 
@@ -1070,7 +1218,7 @@ if (comboForm) {
 
     comboForm.addEventListener(
         "submit",
-        async function (event) {
+        async function(event) {
 
             event.preventDefault();
 
@@ -1119,12 +1267,24 @@ if (comboForm) {
                     await updateDoc(
                         comboRef,
                         {
-                            name: name,
-                            category: category,
-                            mainLink: main,
-                            affiliateLink: affiliate,
-                            notes: notes,
-                            status: status,
+                            name:
+                                name,
+
+                            category:
+                                category,
+
+                            mainLink:
+                                main,
+
+                            affiliateLink:
+                                affiliate,
+
+                            notes:
+                                notes,
+
+                            status:
+                                status,
+
                             updatedAt:
                                 serverTimestamp()
                         }
@@ -1137,22 +1297,37 @@ if (comboForm) {
                                 existingId
                         );
 
-                    if (index !== -1) {
+                    if (
+                        index !== -1
+                    ) {
 
                         combos[index] = {
                             ...combos[index],
-                            name: name,
-                            category: category,
-                            mainLink: main,
-                            affiliateLink: affiliate,
-                            notes: notes,
-                            status: status
+
+                            name:
+                                name,
+
+                            category:
+                                category,
+
+                            mainLink:
+                                main,
+
+                            affiliateLink:
+                                affiliate,
+
+                            notes:
+                                notes,
+
+                            status:
+                                status
                         };
                     }
 
                     /*
-                       اگر Marketing Link پہلے سے موجود ہے،
-                       تو اس کا نام اور target بھی update کریں۔
+                       Existing Marketing Link کو
+                       Combo کی نئی معلومات کے ساتھ update کریں۔
+                       اس کا اپنا status reset نہیں ہوگا۔
                     */
 
                     if (
@@ -1161,17 +1336,38 @@ if (comboForm) {
                         ]
                     ) {
 
+                        const updatedCombo =
+                            {
+                                ...(index !== -1
+                                    ? combos[index]
+                                    : {}),
+
+                                id:
+                                    existingId,
+
+                                name:
+                                    name,
+
+                                category:
+                                    category,
+
+                                mainLink:
+                                    main,
+
+                                affiliateLink:
+                                    affiliate,
+
+                                notes:
+                                    notes,
+
+                                status:
+                                    status
+                            };
+
                         const newTarget =
-                            getMarketingTarget({
-                                ...combos[index],
-                                id: existingId,
-                                name: name,
-                                category: category,
-                                mainLink: main,
-                                affiliateLink: affiliate,
-                                notes: notes,
-                                status: status
-                            });
+                            getMarketingTarget(
+                                updatedCombo
+                            );
 
                         const linkRef =
                             doc(
@@ -1183,13 +1379,16 @@ if (comboForm) {
                         await updateDoc(
                             linkRef,
                             {
-                                comboName: name,
+                                comboName:
+                                    name,
+
                                 targetUrl:
                                     newTarget ||
                                     marketingLinks[
                                         existingId
                                     ].targetUrl ||
                                     "",
+
                                 updatedAt:
                                     serverTimestamp()
                             }
@@ -1201,7 +1400,10 @@ if (comboForm) {
                             ...marketingLinks[
                                 existingId
                             ],
-                            comboName: name,
+
+                            comboName:
+                                name,
+
                             targetUrl:
                                 newTarget ||
                                 marketingLinks[
@@ -1215,7 +1417,8 @@ if (comboForm) {
 
                     const newCombo = {
 
-                        name: name,
+                        name:
+                            name,
 
                         category:
                             category,
@@ -1249,6 +1452,7 @@ if (comboForm) {
                         );
 
                     combos.push({
+
                         id:
                             created.id,
 
@@ -1299,7 +1503,9 @@ function editCombo(id) {
         return;
     }
 
-    openComboModal(combo);
+    openComboModal(
+        combo
+    );
 }
 
 
@@ -1343,6 +1549,13 @@ async function deleteCombo(id) {
                 item =>
                     item.id !== id
             );
+
+        /*
+           Local UI سے marketing link ہٹا دیں۔
+           Firestore marketingLinks document کو
+           delete نہیں کیا جا رہا تاکہ click/history
+           accidental طور پر ضائع نہ ہو۔
+        */
 
         delete marketingLinks[id];
 
@@ -1405,11 +1618,14 @@ async function archiveCombo(id) {
             newStatus;
 
         /*
-           اگر Marketing Link موجود ہے تو
-           اس کا admin status بھی update کریں۔
+           Combo archive/restore کے ساتھ
+           موجودہ Marketing Link کا status بھی
+           sync کیا جا رہا ہے۔
         */
 
-        if (marketingLinks[id]) {
+        if (
+            marketingLinks[id]
+        ) {
 
             await updateDoc(
                 doc(
@@ -1455,7 +1671,7 @@ if (importPasteBtn) {
 
     importPasteBtn.addEventListener(
         "click",
-        async function () {
+        async function() {
 
             const raw =
                 pasteBox.value.trim();
@@ -1474,7 +1690,9 @@ if (importPasteBtn) {
             try {
 
                 data =
-                    JSON.parse(raw);
+                    JSON.parse(
+                        raw
+                    );
 
             } catch (error) {
 
@@ -1485,9 +1703,12 @@ if (importPasteBtn) {
                 return;
             }
 
-            let items = data;
+            let items =
+                data;
 
-            if (!Array.isArray(items)) {
+            if (
+                !Array.isArray(items)
+            ) {
 
                 if (
                     data &&
@@ -1501,7 +1722,8 @@ if (importPasteBtn) {
 
                 } else {
 
-                    items = [data];
+                    items =
+                        [data];
                 }
             }
 
@@ -1569,7 +1791,9 @@ if (importPasteBtn) {
                             serverTimestamp()
                     };
 
-                    if (!newCombo.name) {
+                    if (
+                        !newCombo.name
+                    ) {
                         continue;
                     }
 
@@ -1583,6 +1807,7 @@ if (importPasteBtn) {
                         );
 
                     combos.push({
+
                         id:
                             created.id,
 
@@ -1639,14 +1864,16 @@ function renderCategoryOptions() {
     const current =
         comboCategory.value;
 
-    comboCategory.innerHTML = "";
+    comboCategory.innerHTML =
+        "";
 
     const emptyOption =
         document.createElement(
             "option"
         );
 
-    emptyOption.value = "";
+    emptyOption.value =
+        "";
 
     emptyOption.textContent =
         "Select Category";
@@ -1665,7 +1892,7 @@ function renderCategoryOptions() {
                     )
         )
         .forEach(
-            function (category) {
+            function(category) {
 
                 const option =
                     document.createElement(
@@ -1685,6 +1912,7 @@ function renderCategoryOptions() {
         );
 
     if (current) {
+
         comboCategory.value =
             current;
     }
@@ -1692,7 +1920,7 @@ function renderCategoryOptions() {
     categoryList.innerHTML =
         categories
             .map(
-                function (category) {
+                function(category) {
 
                     return `
                         <option value="${escapeHTML(
@@ -1731,7 +1959,7 @@ function renderCategoryFilter() {
                     )
         )
         .forEach(
-            function (category) {
+            function(category) {
 
                 const option =
                     document.createElement(
@@ -1751,6 +1979,7 @@ function renderCategoryFilter() {
         );
 
     if (current) {
+
         categoryFilter.value =
             current;
     }
@@ -1767,7 +1996,9 @@ function renderCategoryList() {
         return;
     }
 
-    if (!categories.length) {
+    if (
+        !categories.length
+    ) {
 
         categoryListView.innerHTML =
             `<div class="empty-state">No categories.</div>`;
@@ -1786,7 +2017,7 @@ function renderCategoryList() {
                         )
             )
             .map(
-                function (category) {
+                function(category) {
 
                     return `
                         <div class="category-item">
@@ -1823,7 +2054,7 @@ if (addCategoryBtn) {
 
     addCategoryBtn.addEventListener(
         "click",
-        async function () {
+        async function() {
 
             const name =
                 newCategory.value.trim();
@@ -1893,6 +2124,7 @@ if (addCategoryBtn) {
                 );
 
                 categories.push({
+
                     id:
                         categoryId,
 
@@ -2005,7 +2237,7 @@ async function removeCategory(id) {
 
 
 /* =========================================================
-   MARKETING LINK - CREATE / UPDATE
+   CREATE / UPDATE MARKETING LINK
 ========================================================= */
 
 async function createMarketingLink(id) {
@@ -2026,7 +2258,9 @@ async function createMarketingLink(id) {
     }
 
     const target =
-        getMarketingTarget(combo);
+        getMarketingTarget(
+            combo
+        );
 
     if (!target) {
 
@@ -2062,6 +2296,12 @@ async function createMarketingLink(id) {
                 ? existingData.clicks
                 : 0;
 
+        /*
+           اہم:
+           اگر Marketing Link پہلے سے موجود ہے
+           تو اس کا status برقرار رہے گا۔
+        */
+
         const oldStatus =
             existingData.status ||
             combo.status ||
@@ -2093,7 +2333,8 @@ async function createMarketingLink(id) {
                     serverTimestamp()
             },
             {
-                merge: true
+                merge:
+                    true
             }
         );
 
@@ -2140,7 +2381,9 @@ async function createMarketingLink(id) {
                 "Marketing Link تیار ہو گیا اور Clipboard میں Copy ہو گیا۔"
             );
 
-        } catch (clipboardError) {
+        } catch (
+            clipboardError
+        ) {
 
             window.prompt(
                 "Marketing Link:",
@@ -2180,7 +2423,9 @@ async function copyMarketingLink(id) {
     const link =
         marketingLinks[id];
 
-    if (!combo || !link) {
+    if (
+        !link
+    ) {
 
         alert(
             "Marketing Link موجود نہیں ہے۔"
@@ -2191,7 +2436,9 @@ async function copyMarketingLink(id) {
 
     const target =
         link.targetUrl ||
-        getMarketingTarget(combo);
+        getMarketingTarget(
+            combo
+        );
 
     if (!target) {
 
@@ -2243,7 +2490,7 @@ function openMarketingLink(id) {
     const link =
         marketingLinks[id];
 
-    if (!combo || !link) {
+    if (!link) {
 
         alert(
             "Marketing Link پہلے Create کریں۔"
@@ -2254,7 +2501,9 @@ function openMarketingLink(id) {
 
     const target =
         link.targetUrl ||
-        getMarketingTarget(combo);
+        getMarketingTarget(
+            combo
+        );
 
     if (!target) {
 
@@ -2310,7 +2559,6 @@ async function updateMarketingLinkStatus(
             newStatus
         )
     ) {
-
         return;
     }
 
@@ -2331,8 +2579,15 @@ async function updateMarketingLinkStatus(
             }
         );
 
-        marketingLinks[id].status =
-            newStatus;
+        marketingLinks[id] = {
+            ...marketingLinks[id],
+
+            status:
+                newStatus,
+
+            updatedAt:
+                new Date()
+        };
 
         renderMarketingLinks();
         render();
@@ -2416,26 +2671,28 @@ function renderMarketingLinks() {
         Object.values(
             marketingLinks
         )
-        .sort(
-            function (a, b) {
+            .sort(
+                function(a, b) {
 
-                return (
-                    getTimeValue(
-                        b.updatedAt
-                    ) -
-                    getTimeValue(
-                        a.updatedAt
-                    )
-                );
-            }
-        );
+                    return (
+                        getTimeValue(
+                            b.updatedAt
+                        ) -
+                        getTimeValue(
+                            a.updatedAt
+                        )
+                    );
+                }
+            );
 
     if (!links.length) {
 
         marketingLinksList.innerHTML =
             "";
 
-        if (marketingEmptyState) {
+        if (
+            marketingEmptyState
+        ) {
 
             marketingEmptyState.classList.remove(
                 "hidden"
@@ -2445,7 +2702,9 @@ function renderMarketingLinks() {
         return;
     }
 
-    if (marketingEmptyState) {
+    if (
+        marketingEmptyState
+    ) {
 
         marketingEmptyState.classList.add(
             "hidden"
@@ -2462,10 +2721,12 @@ function renderMarketingLinks() {
 
 
 /* =========================================================
-   CREATE MARKETING LINK CONTROL HTML
+   MARKETING LINK CONTROL HTML
 ========================================================= */
 
-function createMarketingLinkHTML(link) {
+function createMarketingLinkHTML(
+    link
+) {
 
     const id =
         link.id;
@@ -2513,7 +2774,9 @@ function createMarketingLinkHTML(link) {
 
     let statusAction = "";
 
-    if (status === "Active") {
+    if (
+        status === "Active"
+    ) {
 
         statusAction = `
             <button
@@ -2528,7 +2791,9 @@ function createMarketingLinkHTML(link) {
             </button>
         `;
 
-    } else if (status === "Paused") {
+    } else if (
+        status === "Paused"
+    ) {
 
         statusAction = `
             <button
@@ -2601,7 +2866,6 @@ function createMarketingLinkHTML(link) {
 
                 </div>
 
-
                 ${
                     combo?.category
                         ? `
@@ -2614,7 +2878,6 @@ function createMarketingLinkHTML(link) {
                         `
                         : ""
                 }
-
 
                 ${
                     target
@@ -2635,13 +2898,15 @@ function createMarketingLinkHTML(link) {
                         `
                 }
 
-
                 ${
                     publicUrl
                         ? `
                             <div class="notes">
                                 ${escapeHTML(
-                                    publicUrl
+                                    truncateText(
+                                        publicUrl,
+                                        120
+                                    )
                                 )}
                             </div>
                         `
@@ -2679,7 +2944,6 @@ function createMarketingLinkHTML(link) {
                         : ""
                 }
 
-
                 <button
                     type="button"
                     class="btn"
@@ -2690,9 +2954,7 @@ function createMarketingLinkHTML(link) {
                     Update
                 </button>
 
-
                 ${statusAction}
-
 
                 <button
                     type="button"
@@ -2717,7 +2979,9 @@ function createMarketingLinkHTML(link) {
 
 async function refreshMarketingLinks() {
 
-    if (refreshMarketingBtn) {
+    if (
+        refreshMarketingBtn
+    ) {
 
         refreshMarketingBtn.disabled =
             true;
@@ -2732,6 +2996,13 @@ async function refreshMarketingLinks() {
 
         renderMarketingLinks();
 
+        /*
+           Combo list میں بھی Marketing Link
+           status/clicks تازہ دکھائیں۔
+        */
+
+        render();
+
     } catch (error) {
 
         console.error(
@@ -2739,9 +3010,15 @@ async function refreshMarketingLinks() {
             error
         );
 
+        alert(
+            "Marketing Links refresh نہیں ہو سکے۔"
+        );
+
     } finally {
 
-        if (refreshMarketingBtn) {
+        if (
+            refreshMarketingBtn
+        ) {
 
             refreshMarketingBtn.disabled =
                 false;
@@ -2753,7 +3030,9 @@ async function refreshMarketingLinks() {
 }
 
 
-if (refreshMarketingBtn) {
+if (
+    refreshMarketingBtn
+) {
 
     refreshMarketingBtn.addEventListener(
         "click",
@@ -2767,6 +3046,13 @@ if (refreshMarketingBtn) {
 ========================================================= */
 
 function render() {
+
+    /*
+       Marketing Links section کو بھی
+       ہر render کے ساتھ refresh رکھیں۔
+    */
+
+    renderMarketingLinks();
 
     const search =
         String(
@@ -2791,7 +3077,7 @@ function render() {
     const filtered =
         combos
             .filter(
-                function (combo) {
+                function(combo) {
 
                     if (search) {
 
@@ -2838,7 +3124,7 @@ function render() {
                 }
             )
             .sort(
-                function (a, b) {
+                function(a, b) {
 
                     return (
                         getTimeValue(
@@ -2882,21 +3168,25 @@ function render() {
 
 
     if (totalCount) {
+
         totalCount.textContent =
             total;
     }
 
     if (activeCount) {
+
         activeCount.textContent =
             active;
     }
 
     if (pendingCount) {
+
         pendingCount.textContent =
             pending;
     }
 
     if (archivedCount) {
+
         archivedCount.textContent =
             archived;
     }
@@ -2921,7 +3211,9 @@ function render() {
         return;
     }
 
-    if (!filtered.length) {
+    if (
+        !filtered.length
+    ) {
 
         comboList.innerHTML =
             "";
@@ -2956,7 +3248,9 @@ function render() {
    CREATE COMBO HTML
 ========================================================= */
 
-function createComboHTML(combo) {
+function createComboHTML(
+    combo
+) {
 
     const marketing =
         marketingLinks[
@@ -2990,7 +3284,6 @@ function createComboHTML(combo) {
             )
             : "";
 
-
     const statusClass =
         String(
             combo.status ||
@@ -3001,7 +3294,6 @@ function createComboHTML(combo) {
                 /\s+/g,
                 "-"
             );
-
 
     return `
         <article class="combo-card">
@@ -3284,7 +3576,7 @@ if (addBtn) {
 
     addBtn.addEventListener(
         "click",
-        function () {
+        function() {
 
             openComboModal();
         }
@@ -3296,7 +3588,7 @@ if (emptyAddBtn) {
 
     emptyAddBtn.addEventListener(
         "click",
-        function () {
+        function() {
 
             openComboModal();
         }
@@ -3393,12 +3685,13 @@ if (comboModal) {
 
     comboModal.addEventListener(
         "click",
-        function (event) {
+        function(event) {
 
             if (
                 event.target ===
                 comboModal
             ) {
+
                 closeComboModal();
             }
         }
@@ -3410,12 +3703,13 @@ if (pasteModal) {
 
     pasteModal.addEventListener(
         "click",
-        function (event) {
+        function(event) {
 
             if (
                 event.target ===
                 pasteModal
             ) {
+
                 closePaste();
             }
         }
@@ -3427,12 +3721,13 @@ if (categoryModal) {
 
     categoryModal.addEventListener(
         "click",
-        function (event) {
+        function(event) {
 
             if (
                 event.target ===
                 categoryModal
             ) {
+
                 closeCategory();
             }
         }
@@ -3444,12 +3739,13 @@ if (helpModal) {
 
     helpModal.addEventListener(
         "click",
-        function (event) {
+        function(event) {
 
             if (
                 event.target ===
                 helpModal
             ) {
+
                 closeHelp();
             }
         }
@@ -3463,7 +3759,7 @@ if (helpModal) {
 
 document.addEventListener(
     "keydown",
-    function (event) {
+    function(event) {
 
         if (
             event.key !==
