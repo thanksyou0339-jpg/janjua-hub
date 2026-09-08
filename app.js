@@ -1370,8 +1370,7 @@ if (comboForm) {
 
 
                         /*
-                           Always make sure the public
-                           redirect exists and is synced.
+                           Public redirect ہمیشہ sync رہے۔
                         */
 
                         await setDoc(
@@ -1535,6 +1534,10 @@ async function deleteCombo(id) {
 
     try {
 
+        /* =========================================
+           DELETE COMBO
+        ========================================= */
+
         await deleteDoc(
             doc(
                 db,
@@ -1543,6 +1546,11 @@ async function deleteCombo(id) {
             )
         );
 
+
+        /* =========================================
+           REMOVE PUBLIC REDIRECT
+           Marketing history محفوظ رہے گی۔
+        ========================================= */
 
         try {
 
@@ -1563,21 +1571,69 @@ async function deleteCombo(id) {
         }
 
 
+        /* =========================================
+           PRESERVE MARKETING HISTORY
+           مگر اسے Archived کر دیں۔
+        ========================================= */
+
+        if (
+            marketingLinks[id]
+        ) {
+
+            try {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "marketingLinks",
+                        id
+                    ),
+                    {
+                        status:
+                            "Archived",
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+                );
+
+            } catch (marketingUpdateError) {
+
+                console.warn(
+                    "Marketing History Update Warning:",
+                    marketingUpdateError
+                );
+            }
+
+            marketingLinks[id] = {
+                ...marketingLinks[id],
+
+                status:
+                    "Archived",
+
+                updatedAt:
+                    new Date()
+            };
+        }
+
+
+        /* =========================================
+           REMOVE FROM LOCAL COMBO LIST
+        ========================================= */
+
         combos =
             combos.filter(
                 item =>
                     item.id !== id
             );
 
-        /*
-           Local marketing link remove کریں۔
-           Firestore marketingLinks history محفوظ رہ سکتی ہے۔
-        */
-
-        delete marketingLinks[id];
 
         render();
         renderMarketingLinks();
+
+        alert(
+            "Combo delete ہو گیا۔ Marketing Link کی click history محفوظ ہے۔"
+        );
 
     } catch (error) {
 
@@ -1677,6 +1733,9 @@ async function archiveCombo(id) {
 
             marketingLinks[id].status =
                 newStatus;
+
+            marketingLinks[id].updatedAt =
+                new Date();
         }
 
         render();
@@ -2527,6 +2586,18 @@ function openMarketingLink(id) {
         return;
     }
 
+    if (
+        getMarketingStatus(link) ===
+        "Archived"
+    ) {
+
+        alert(
+            "یہ Marketing Link Archived ہے۔"
+        );
+
+        return;
+    }
+
     const publicUrl =
         buildMarketingUrl(id);
 
@@ -2670,12 +2741,6 @@ async function deleteMarketingLink(id) {
         );
 
 
-        /*
-           اگر public redirect پہلے ہی موجود نہ ہو
-           تو private link delete پھر بھی successful
-           سمجھا جائے گا۔
-        */
-
         try {
 
             await deleteDoc(
@@ -2797,7 +2862,7 @@ function createMarketingLinkHTML(link) {
     const comboName =
         link.comboName ||
         combo?.name ||
-        "Unknown Combo";
+        "Deleted Combo";
 
     const clicks =
         typeof link.clicks ===
@@ -2817,6 +2882,9 @@ function createMarketingLinkHTML(link) {
 
     const publicUrl =
         buildMarketingUrl(id);
+
+    const comboDeleted =
+        !combo;
 
     let statusAction = "";
 
@@ -2913,6 +2981,16 @@ function createMarketingLinkHTML(link) {
                 </div>
 
                 ${
+                    comboDeleted
+                        ? `
+                            <div class="notes">
+                                Original Combo delete ہو چکا ہے۔ Click history محفوظ ہے۔
+                            </div>
+                        `
+                        : ""
+                }
+
+                ${
                     combo?.category
                         ? `
                             <div class="notes">
@@ -2959,37 +3037,48 @@ function createMarketingLinkHTML(link) {
 
             <div class="actions">
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="copyMarketingLink(
-                        '${escapeHTML(id)}'
-                    )"
-                >
-                    Copy
-                </button>
+                ${
+                    status !== "Archived" &&
+                    !comboDeleted
+                        ? `
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="copyMarketingLink(
+                                    '${escapeHTML(id)}'
+                                )"
+                            >
+                                Copy
+                            </button>
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="openMarketingLink(
-                        '${escapeHTML(id)}'
-                    )"
-                >
-                    Open
-                </button>
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="openMarketingLink(
+                                    '${escapeHTML(id)}'
+                                )"
+                            >
+                                Open
+                            </button>
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="createMarketingLink(
-                        '${escapeHTML(id)}'
-                    )"
-                >
-                    Update
-                </button>
+                            <button
+                                type="button"
+                                class="btn"
+                                onclick="createMarketingLink(
+                                    '${escapeHTML(id)}'
+                                )"
+                            >
+                                Update
+                            </button>
+                        `
+                        : ""
+                }
 
-                ${statusAction}
+                ${
+                    comboDeleted
+                        ? ""
+                        : statusAction
+                }
 
                 <button
                     type="button"
