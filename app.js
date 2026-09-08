@@ -4,8 +4,8 @@
 // Firebase + Firestore + Authentication
 // ============================================================
 
-import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
     getAuth,
@@ -13,8 +13,7 @@ import {
     sendPasswordResetEmail,
     signOut,
     onAuthStateChanged
-} from
-    "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
     getFirestore,
@@ -27,8 +26,7 @@ import {
     updateDoc,
     deleteDoc,
     serverTimestamp
-} from
-    "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 // ============================================================
@@ -36,24 +34,12 @@ import {
 // ============================================================
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
-
-    authDomain:
-        "all-in-one-marketing.firebaseapp.com",
-
-    projectId:
-        "all-in-one-marketing",
-
-    storageBucket:
-        "all-in-one-marketing.firebasestorage.app",
-
-    messagingSenderId:
-        "701353417673",
-
-    appId:
-        "1:701353417673:web:84b5cce6029f98b89fa618"
+    apiKey: "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
+    authDomain: "all-in-one-marketing.firebaseapp.com",
+    projectId: "all-in-one-marketing",
+    storageBucket: "all-in-one-marketing.firebasestorage.app",
+    messagingSenderId: "701353417673",
+    appId: "1:701353417673:web:84b5cce6029f98b89fa618"
 };
 
 
@@ -61,28 +47,22 @@ const firebaseConfig = {
 // FIREBASE INITIALIZE
 // ============================================================
 
-const firebaseApp =
-    initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-const auth =
-    getAuth(firebaseApp);
+const auth = getAuth(firebaseApp);
 
-const db =
-    getFirestore(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 
 // ============================================================
 // ADMIN CONFIG
 // ============================================================
 
-const ADMIN_UID =
-    "CIBDAEAysWajofKyAKa1Mzf70rB2";
+const ADMIN_UID = "CIBDAEAysWajofKyAKa1Mzf70rB2";
 
-const ADMIN_EMAIL =
-    "thanksyou0339@gmail.com";
+const ADMIN_EMAIL = "thanksyou0339@gmail.com";
 
-const ADMIN_NAME =
-    "Admin";
+const ADMIN_NAME = "Admin";
 
 
 // ============================================================
@@ -105,13 +85,9 @@ const DEFAULT_CATEGORIES = [
 // ============================================================
 
 let combos = [];
-
 let categories = [];
-
 let marketingLinks = [];
-
 let currentUser = null;
-
 let editingComboId = null;
 
 
@@ -130,11 +106,9 @@ function $(id) {
 
 function getLoginInputs() {
 
-    const loginForm =
-        $("loginForm");
+    const loginForm = $("loginForm");
 
     if (!loginForm) {
-
         return {
             form: null,
             emailInput: null,
@@ -142,82 +116,51 @@ function getLoginInputs() {
         };
     }
 
-
-    let emailInput =
-        $("loginEmail");
-
+    let emailInput = $("loginEmail");
 
     if (!emailInput && loginForm.elements) {
-
         emailInput =
-            loginForm.elements.namedItem(
-                "loginEmail"
-            ) ||
-            loginForm.elements.namedItem(
-                "email"
-            );
+            loginForm.elements.namedItem("loginEmail") ||
+            loginForm.elements.namedItem("email");
     }
-
 
     if (!emailInput) {
-
         emailInput =
-            loginForm.querySelector(
-                'input[type="email"]'
-            );
+            loginForm.querySelector('input[type="email"]');
     }
 
-
-    let passwordInput =
-        $("loginPassword");
-
+    let passwordInput = $("loginPassword");
 
     if (!passwordInput && loginForm.elements) {
-
         passwordInput =
-            loginForm.elements.namedItem(
-                "loginPassword"
-            ) ||
-            loginForm.elements.namedItem(
-                "password"
-            );
+            loginForm.elements.namedItem("loginPassword") ||
+            loginForm.elements.namedItem("password");
     }
 
-
     if (!passwordInput) {
-
         passwordInput =
-            loginForm.querySelector(
-                'input[type="password"]'
-            );
+            loginForm.querySelector('input[type="password"]');
     }
 
-
     if (!passwordInput) {
-
         passwordInput =
             loginForm.querySelector(
                 'input[autocomplete="current-password"]'
             );
     }
 
-
     if (!passwordInput) {
 
         const inputs =
             Array.from(
-                loginForm.querySelectorAll(
-                    "input"
-                )
+                loginForm.querySelectorAll("input")
             );
 
         passwordInput =
             inputs.find(
-                input =>
-                    input !== emailInput
+                input => input !== emailInput
             ) || null;
     }
-
 
     return {
         form: loginForm,
@@ -231,234 +174,143 @@ function getLoginInputs() {
 // LOGIN MESSAGE
 // ============================================================
 
-function setLoginMessage(
-    message,
-    type = ""
-) {
+function setLoginMessage(message, type = "") {
 
-    const el =
-        $("loginMessage");
+    const el = $("loginMessage");
 
     if (!el) return;
 
-    el.textContent =
-        message;
+    el.textContent = message;
 
     el.className =
         "login-message" +
-        (
-            type
-                ? ` ${type}`
-                : ""
-        );
+        (type ? ` ${type}` : "");
 }
 
 
 // ============================================================
-// LOGIN USER NAME
+// ADMIN NAME
 // ============================================================
 
 function createLoginUserName() {
 
-    const loginForm =
-        $("loginForm");
+    const loginForm = $("loginForm");
 
     if (!loginForm) return;
 
-    if (
-        $("loginUserName")
-    ) {
+    let nameElement = $("loginUserName");
 
-        return;
+    if (!nameElement) {
+
+        nameElement =
+            document.createElement("div");
+
+        nameElement.id = "loginUserName";
+
+        loginForm.parentNode.insertBefore(
+            nameElement,
+            loginForm
+        );
     }
 
+    nameElement.textContent = ADMIN_NAME;
 
-    const nameElement =
-        document.createElement(
-            "div"
-        );
-
-    nameElement.id =
-        "loginUserName";
-
-    nameElement.textContent =
-        ADMIN_NAME;
-
-
-    nameElement.style.margin =
-        "0 0 14px";
-
-    nameElement.style.textAlign =
-        "center";
-
-    nameElement.style.fontWeight =
-        "700";
-
-    nameElement.style.fontSize =
-        "18px";
-
-    nameElement.style.letterSpacing =
-        ".3px";
-
-
-    loginForm.parentNode.insertBefore(
-        nameElement,
-        loginForm
-    );
+    nameElement.style.margin = "0 0 14px";
+    nameElement.style.textAlign = "center";
+    nameElement.style.fontWeight = "700";
+    nameElement.style.fontSize = "18px";
+    nameElement.style.letterSpacing = ".3px";
 }
 
 
 // ============================================================
-// PASSWORD SHOW / HIDE + FORGOT PASSWORD UI
+// PASSWORD CONTROLS
 // ============================================================
 
 function createPasswordControls() {
 
-    const passwordInput =
-        $("loginPassword");
+    const passwordInput = $("loginPassword");
 
     if (!passwordInput) return;
 
-
     const passwordField =
-        passwordInput.closest(
-            ".login-field"
-        );
-
+        passwordInput.closest(".login-field");
 
     if (!passwordField) return;
 
-
     const inputWrap =
-        passwordInput.closest(
-            ".input-wrap"
-        );
-
+        passwordInput.closest(".input-wrap");
 
     if (!inputWrap) return;
 
+    inputWrap.style.position = "relative";
 
-    // --------------------------------------------------------
-    // Make room for password button
-    // --------------------------------------------------------
-
-    inputWrap.style.position =
-        "relative";
-
-
-    passwordInput.style.paddingRight =
-        "90px";
+    passwordInput.style.paddingRight = "90px";
 
 
     // --------------------------------------------------------
-    // SHOW / HIDE BUTTON
+    // SHOW / HIDE PASSWORD
     // --------------------------------------------------------
 
-    let toggleButton =
-        $("togglePassword");
-
+    let toggleButton = $("togglePassword");
 
     if (!toggleButton) {
 
         toggleButton =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
-        toggleButton.type =
-            "button";
-
-        toggleButton.id =
-            "togglePassword";
-
-        toggleButton.className =
-            "password-toggle";
-
-        toggleButton.textContent =
-            "Show";
+        toggleButton.type = "button";
+        toggleButton.id = "togglePassword";
+        toggleButton.className = "password-toggle";
+        toggleButton.textContent = "Show";
 
         toggleButton.setAttribute(
             "aria-label",
             "Show password"
         );
 
-        toggleButton.title =
-            "Show password";
+        toggleButton.title = "Show password";
 
-
-        toggleButton.style.position =
-            "absolute";
-
-        toggleButton.style.right =
-            "8px";
-
-        toggleButton.style.top =
-            "50%";
-
+        toggleButton.style.position = "absolute";
+        toggleButton.style.right = "8px";
+        toggleButton.style.top = "50%";
         toggleButton.style.transform =
             "translateY(-50%)";
+        toggleButton.style.border = "none";
+        toggleButton.style.background = "transparent";
+        toggleButton.style.cursor = "pointer";
+        toggleButton.style.fontWeight = "600";
+        toggleButton.style.padding = "6px 8px";
 
-        toggleButton.style.border =
-            "none";
-
-        toggleButton.style.background =
-            "transparent";
-
-        toggleButton.style.cursor =
-            "pointer";
-
-        toggleButton.style.fontWeight =
-            "600";
-
-        toggleButton.style.padding =
-            "6px 8px";
-
-
-        inputWrap.appendChild(
-            toggleButton
-        );
+        inputWrap.appendChild(toggleButton);
     }
 
+    if (!toggleButton.dataset.bound) {
 
-    if (
-        !toggleButton.dataset.bound
-    ) {
-
-        toggleButton.dataset.bound =
-            "true";
-
+        toggleButton.dataset.bound = "true";
 
         toggleButton.addEventListener(
             "click",
             () => {
 
-                const isHidden =
-                    passwordInput.type ===
-                    "password";
-
+                const hidden =
+                    passwordInput.type === "password";
 
                 passwordInput.type =
-                    isHidden
-                        ? "text"
-                        : "password";
-
+                    hidden ? "text" : "password";
 
                 toggleButton.textContent =
-                    isHidden
-                        ? "Hide"
-                        : "Show";
-
+                    hidden ? "Hide" : "Show";
 
                 toggleButton.setAttribute(
                     "aria-label",
-                    isHidden
+                    hidden
                         ? "Hide password"
                         : "Show password"
                 );
 
-
                 toggleButton.title =
-                    isHidden
+                    hidden
                         ? "Hide password"
                         : "Show password";
             }
@@ -473,62 +325,33 @@ function createPasswordControls() {
     let forgotButton =
         $("forgotPasswordBtn");
 
-
     if (!forgotButton) {
 
         forgotButton =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
-        forgotButton.type =
-            "button";
-
-        forgotButton.id =
-            "forgotPasswordBtn";
-
+        forgotButton.type = "button";
+        forgotButton.id = "forgotPasswordBtn";
         forgotButton.className =
             "forgot-password-btn";
 
         forgotButton.textContent =
             "Forgot Password?";
 
+        forgotButton.style.display = "block";
+        forgotButton.style.margin = "12px auto 0";
+        forgotButton.style.border = "none";
+        forgotButton.style.background = "transparent";
+        forgotButton.style.cursor = "pointer";
+        forgotButton.style.fontWeight = "600";
+        forgotButton.style.padding = "6px 10px";
 
-        forgotButton.style.display =
-            "block";
-
-        forgotButton.style.margin =
-            "12px auto 0";
-
-        forgotButton.style.border =
-            "none";
-
-        forgotButton.style.background =
-            "transparent";
-
-        forgotButton.style.cursor =
-            "pointer";
-
-        forgotButton.style.fontWeight =
-            "600";
-
-        forgotButton.style.padding =
-            "6px 10px";
-
-
-        passwordField.appendChild(
-            forgotButton
-        );
+        passwordField.appendChild(forgotButton);
     }
 
+    if (!forgotButton.dataset.bound) {
 
-    if (
-        !forgotButton.dataset.bound
-    ) {
-
-        forgotButton.dataset.bound =
-            "true";
-
+        forgotButton.dataset.bound = "true";
 
         forgotButton.addEventListener(
             "click",
@@ -544,32 +367,19 @@ function createPasswordControls() {
 
 async function handleForgotPassword() {
 
-    const {
-        emailInput
-    } =
-        getLoginInputs();
-
+    const { emailInput } = getLoginInputs();
 
     let email =
-        String(
-            emailInput?.value || ""
-        ).trim();
+        String(emailInput?.value || "").trim();
 
-
-    // If email field is empty,
-    // use the registered Admin Gmail.
     if (!email) {
 
-        email =
-            ADMIN_EMAIL;
+        email = ADMIN_EMAIL;
 
         if (emailInput) {
-
-            emailInput.value =
-                ADMIN_EMAIL;
+            emailInput.value = ADMIN_EMAIL;
         }
     }
-
 
     if (
         email.toLowerCase() !==
@@ -586,12 +396,9 @@ async function handleForgotPassword() {
         return;
     }
 
-
     setLoginMessage(
-        "Password reset email بھیجی جا رہی ہے...",
-        ""
+        "Password reset email بھیجی جا رہی ہے..."
     );
-
 
     try {
 
@@ -600,12 +407,10 @@ async function handleForgotPassword() {
             ADMIN_EMAIL
         );
 
-
         setLoginMessage(
             "Password reset email بھیج دی گئی ہے۔ Gmail اور Spam/Junk folder چیک کریں۔",
             "success"
         );
-
 
     } catch (error) {
 
@@ -614,54 +419,36 @@ async function handleForgotPassword() {
             error.code || error.message
         );
 
-
         let message =
             "Password reset نہیں ہو سکا۔";
 
-
-        switch (
-            error.code
-        ) {
+        switch (error.code) {
 
             case "auth/invalid-email":
-
                 message =
                     "Admin Gmail درست نہیں ہے۔";
-
                 break;
-
 
             case "auth/user-not-found":
-
                 message =
                     "یہ Admin Gmail Firebase میں موجود نہیں ہے۔";
-
                 break;
-
 
             case "auth/too-many-requests":
-
                 message =
                     "بہت زیادہ کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
-
                 break;
-
 
             case "auth/network-request-failed":
-
                 message =
                     "Internet/Firebase network مسئلہ ہے۔";
-
                 break;
 
-
             default:
-
                 message =
                     error.message ||
                     "Password reset failed.";
         }
-
 
         setLoginMessage(
             message,
@@ -675,20 +462,15 @@ async function handleForgotPassword() {
 // LOGIN
 // ============================================================
 
-async function handleLogin(
-    event
-) {
+async function handleLogin(event) {
 
     event.preventDefault();
-
 
     const {
         form,
         emailInput,
         passwordInput
-    } =
-        getLoginInputs();
-
+    } = getLoginInputs();
 
     if (!form) {
 
@@ -700,7 +482,6 @@ async function handleLogin(
         return;
     }
 
-
     if (!emailInput) {
 
         setLoginMessage(
@@ -710,7 +491,6 @@ async function handleLogin(
 
         return;
     }
-
 
     if (!passwordInput) {
 
@@ -722,18 +502,11 @@ async function handleLogin(
         return;
     }
 
-
     const email =
-        String(
-            emailInput.value || ""
-        ).trim();
-
+        String(emailInput.value || "").trim();
 
     const password =
-        String(
-            passwordInput.value || ""
-        );
-
+        String(passwordInput.value || "");
 
     if (!email && !password) {
 
@@ -744,7 +517,6 @@ async function handleLogin(
 
         return;
     }
-
 
     if (!email) {
 
@@ -758,7 +530,6 @@ async function handleLogin(
         return;
     }
 
-
     if (!password) {
 
         setLoginMessage(
@@ -770,7 +541,6 @@ async function handleLogin(
 
         return;
     }
-
 
     if (
         email.toLowerCase() !==
@@ -785,12 +555,9 @@ async function handleLogin(
         return;
     }
 
-
     setLoginMessage(
-        "Firebase سے login ہو رہا ہے...",
-        ""
+        "Firebase سے login ہو رہا ہے..."
     );
-
 
     try {
 
@@ -801,34 +568,22 @@ async function handleLogin(
                 password
             );
 
+        const user = credential.user;
 
-        const user =
-            credential.user;
-
-
-        if (
-            user.uid !==
-            ADMIN_UID
-        ) {
+        if (user.uid !== ADMIN_UID) {
 
             setLoginMessage(
                 "یہ account Janjua Hub Admin کے لیے authorized نہیں ہے۔",
                 "error"
             );
 
-            await signOut(
-                auth
-            );
+            await signOut(auth);
 
             return;
         }
 
-
         const isAdmin =
-            await checkAdmin(
-                user
-            );
-
+            await checkAdmin(user);
 
         if (!isAdmin) {
 
@@ -837,19 +592,15 @@ async function handleLogin(
                 "error"
             );
 
-            await signOut(
-                auth
-            );
+            await signOut(auth);
 
             return;
         }
-
 
         setLoginMessage(
             "Login successful.",
             "success"
         );
-
 
     } catch (error) {
 
@@ -858,70 +609,45 @@ async function handleLogin(
             error.code || error.message
         );
 
+        let message = "Login failed.";
 
-        let message =
-            "Login failed.";
-
-
-        switch (
-            error.code
-        ) {
+        switch (error.code) {
 
             case "auth/invalid-credential":
-
                 message =
                     "Email یا Password غلط ہے۔";
-
                 break;
-
 
             case "auth/invalid-api-key":
-
                 message =
                     "Firebase API Key غلط ہے۔";
-
                 break;
-
 
             case "auth/user-not-found":
-
                 message =
                     "یہ Firebase user موجود نہیں ہے۔";
-
                 break;
-
 
             case "auth/wrong-password":
-
                 message =
                     "Password غلط ہے۔";
-
                 break;
-
 
             case "auth/too-many-requests":
-
                 message =
                     "بہت زیادہ login attempts ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
-
                 break;
-
 
             case "auth/network-request-failed":
-
                 message =
                     "Internet/Firebase network مسئلہ ہے۔";
-
                 break;
 
-
             default:
-
                 message =
                     error.message ||
                     "Firebase login failed.";
         }
-
 
         setLoginMessage(
             message,
@@ -935,21 +661,13 @@ async function handleLogin(
 // ADMIN CHECK
 // ============================================================
 
-async function checkAdmin(
-    user
-) {
+async function checkAdmin(user) {
 
     if (!user) return false;
 
-
-    if (
-        user.uid !==
-        ADMIN_UID
-    ) {
-
+    if (user.uid !== ADMIN_UID) {
         return false;
     }
-
 
     try {
 
@@ -960,34 +678,16 @@ async function checkAdmin(
                 user.uid
             );
 
-
         const snapshot =
-            await getDoc(
-                userRef
-            );
-
+            await getDoc(userRef);
 
         if (!snapshot.exists()) {
-
             return false;
         }
 
+        const data = snapshot.data();
 
-        const data =
-            snapshot.data();
-
-
-        if (
-            data.role !==
-            "admin"
-        ) {
-
-            return false;
-        }
-
-
-        return true;
-
+        return data.role === "admin";
 
     } catch (error) {
 
@@ -1007,17 +707,12 @@ async function checkAdmin(
 
 function showDashboard() {
 
-    const loginScreen =
-        $("loginScreen");
-
-    const appShell =
-        $("appShell");
-
+    const loginScreen = $("loginScreen");
+    const appShell = $("appShell");
 
     if (loginScreen) {
 
-        loginScreen.style.display =
-            "none";
+        loginScreen.style.display = "none";
 
         loginScreen.setAttribute(
             "aria-hidden",
@@ -1025,15 +720,13 @@ function showDashboard() {
         );
     }
 
-
     if (appShell) {
 
         appShell.classList.remove(
             "app-shell-hidden"
         );
 
-        appShell.style.display =
-            "";
+        appShell.style.display = "";
 
         appShell.setAttribute(
             "aria-hidden",
@@ -1041,10 +734,8 @@ function showDashboard() {
         );
     }
 
-
     const emailDisplay =
         $("adminEmailDisplay");
-
 
     if (emailDisplay) {
 
@@ -1061,17 +752,12 @@ function showDashboard() {
 
 function showLogin() {
 
-    const loginScreen =
-        $("loginScreen");
-
-    const appShell =
-        $("appShell");
-
+    const loginScreen = $("loginScreen");
+    const appShell = $("appShell");
 
     if (loginScreen) {
 
-        loginScreen.style.display =
-            "";
+        loginScreen.style.display = "";
 
         loginScreen.setAttribute(
             "aria-hidden",
@@ -1079,15 +765,13 @@ function showLogin() {
         );
     }
 
-
     if (appShell) {
 
         appShell.classList.add(
             "app-shell-hidden"
         );
 
-        appShell.style.display =
-            "none";
+        appShell.style.display = "none";
 
         appShell.setAttribute(
             "aria-hidden",
@@ -1113,7 +797,6 @@ async function loadCategories() {
                 )
             );
 
-
         categories =
             snapshot.docs.map(
                 item => ({
@@ -1121,7 +804,6 @@ async function loadCategories() {
                     ...item.data()
                 })
             );
-
 
         if (!categories.length) {
 
@@ -1140,14 +822,12 @@ async function loadCategories() {
                 );
         }
 
-
     } catch (error) {
 
         console.error(
             "Categories load error:",
             error.message
         );
-
 
         categories =
             DEFAULT_CATEGORIES.map(
@@ -1163,7 +843,6 @@ async function loadCategories() {
                 })
             );
     }
-
 
     renderCategories();
     renderCategoryFilter();
@@ -1187,7 +866,6 @@ async function loadCombos() {
                 )
             );
 
-
         combos =
             snapshot.docs.map(
                 item => ({
@@ -1195,7 +873,6 @@ async function loadCombos() {
                     ...item.data()
                 })
             );
-
 
         combos.sort(
             (a, b) => {
@@ -1205,21 +882,17 @@ async function loadCombos() {
                     a.createdAt?.toMillis?.() ||
                     0;
 
-
                 const bDate =
                     b.updatedAt?.toMillis?.() ||
                     b.createdAt?.toMillis?.() ||
                     0;
 
-
                 return bDate - aDate;
             }
         );
 
-
         renderCombos();
         updateStats();
-
 
     } catch (error) {
 
@@ -1227,7 +900,6 @@ async function loadCombos() {
             "Combos load error:",
             error.message
         );
-
 
         combos = [];
 
@@ -1253,7 +925,6 @@ async function loadMarketingLinks() {
                 )
             );
 
-
         marketingLinks =
             snapshot.docs.map(
                 item => ({
@@ -1262,28 +933,21 @@ async function loadMarketingLinks() {
                 })
             );
 
-
         marketingLinks.sort(
             (a, b) => {
 
                 const aDate =
-                    a.createdAt?.toMillis?.() ||
-                    0;
-
+                    a.createdAt?.toMillis?.() || 0;
 
                 const bDate =
-                    b.createdAt?.toMillis?.() ||
-                    0;
-
+                    b.createdAt?.toMillis?.() || 0;
 
                 return bDate - aDate;
             }
         );
 
-
         renderMarketingLinks();
         updateStats();
-
 
     } catch (error) {
 
@@ -1291,7 +955,6 @@ async function loadMarketingLinks() {
             "Marketing links load error:",
             error.message
         );
-
 
         marketingLinks = [];
 
@@ -1321,31 +984,22 @@ async function loadAllData() {
 
 function renderCategories() {
 
-    const list =
-        $("categoryList");
+    const list = $("categoryList");
 
     if (!list) return;
 
-
     list.innerHTML = "";
-
 
     categories.forEach(
         category => {
 
             const option =
-                document.createElement(
-                    "option"
-                );
-
+                document.createElement("option");
 
             option.value =
                 category.name || "";
 
-
-            list.appendChild(
-                option
-            );
+            list.appendChild(option);
         }
     );
 }
@@ -1357,46 +1011,29 @@ function renderCategories() {
 
 function renderCategoryFilter() {
 
-    const select =
-        $("categoryFilter");
+    const select = $("categoryFilter");
 
     if (!select) return;
 
-
-    const current =
-        select.value;
-
+    const current = select.value;
 
     select.innerHTML =
         `<option value="">All Categories</option>`;
-
 
     categories.forEach(
         category => {
 
             const option =
-                document.createElement(
-                    "option"
-                );
+                document.createElement("option");
 
+            option.value = category.name;
+            option.textContent = category.name;
 
-            option.value =
-                category.name;
-
-
-            option.textContent =
-                category.name;
-
-
-            select.appendChild(
-                option
-            );
+            select.appendChild(option);
         }
     );
 
-
-    select.value =
-        current;
+    select.value = current;
 }
 
 
@@ -1411,48 +1048,34 @@ function renderCategoryList() {
 
     if (!container) return;
 
-
     container.innerHTML = "";
-
 
     categories.forEach(
         category => {
 
             const row =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             row.className =
                 "category-item";
 
-
             row.innerHTML = `
-
                 <span>
-                    ${escapeHtml(
-                        category.name || ""
-                    )}
+                    ${escapeHtml(category.name || "")}
                 </span>
 
                 <button
                     type="button"
                     class="ghost-btn"
-                    data-delete-category="${category.id}"
+                    data-delete-category="${escapeHtml(category.id)}"
                 >
                     Delete
                 </button>
-
             `;
 
-
-            container.appendChild(
-                row
-            );
+            container.appendChild(row);
         }
     );
-
 
     container
         .querySelectorAll(
@@ -1465,8 +1088,7 @@ function renderCategoryList() {
                     "click",
                     () =>
                         deleteCategory(
-                            button.dataset
-                                .deleteCategory
+                            button.dataset.deleteCategory
                         )
                 );
             }
@@ -1480,15 +1102,12 @@ function renderCategoryList() {
 
 async function addCategory() {
 
-    const input =
-        $("newCategory");
+    const input = $("newCategory");
 
     if (!input) return;
 
-
     const name =
         input.value.trim();
-
 
     if (!name) {
 
@@ -1499,16 +1118,13 @@ async function addCategory() {
         return;
     }
 
-
     const exists =
         categories.some(
             category =>
-                String(
-                    category.name || ""
-                ).toLowerCase() ===
+                String(category.name || "")
+                    .toLowerCase() ===
                 name.toLowerCase()
         );
-
 
     if (exists) {
 
@@ -1518,7 +1134,6 @@ async function addCategory() {
 
         return;
     }
-
 
     try {
 
@@ -1534,13 +1149,9 @@ async function addCategory() {
             }
         );
 
-
-        input.value =
-            "";
-
+        input.value = "";
 
         await loadCategories();
-
 
     } catch (error) {
 
@@ -1549,9 +1160,7 @@ async function addCategory() {
             error.message
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
     }
 }
 
@@ -1560,32 +1169,24 @@ async function addCategory() {
 // DELETE CATEGORY
 // ============================================================
 
-async function deleteCategory(
-    id
-) {
+async function deleteCategory(id) {
 
     if (!id) return;
 
-
     const category =
         categories.find(
-            item =>
-                item.id === id
+            item => item.id === id
         );
 
-
     if (!category) return;
-
 
     if (
         !confirm(
             `Delete category "${category.name}"?`
         )
     ) {
-
         return;
     }
-
 
     try {
 
@@ -1597,9 +1198,7 @@ async function deleteCategory(
             )
         );
 
-
         await loadCategories();
-
 
     } catch (error) {
 
@@ -1608,9 +1207,7 @@ async function deleteCategory(
             error.message
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
     }
 }
 
@@ -1621,18 +1218,11 @@ async function deleteCategory(
 
 function renderCombos() {
 
-    const container =
-        $("comboList");
-
-    const empty =
-        $("emptyState");
-
-    const resultCount =
-        $("resultCount");
-
+    const container = $("comboList");
+    const empty = $("emptyState");
+    const resultCount = $("resultCount");
 
     if (!container) return;
-
 
     const search =
         (
@@ -1642,16 +1232,11 @@ function renderCombos() {
             .trim()
             .toLowerCase();
 
-
     const category =
-        $("categoryFilter")?.value ||
-        "";
-
+        $("categoryFilter")?.value || "";
 
     const status =
-        $("statusFilter")?.value ||
-        "";
-
+        $("statusFilter")?.value || "";
 
     const filtered =
         combos.filter(
@@ -1669,25 +1254,17 @@ function renderCombos() {
                         .join(" ")
                         .toLowerCase();
 
-
                 const searchMatch =
                     !search ||
-                    text.includes(
-                        search
-                    );
-
+                    text.includes(search);
 
                 const categoryMatch =
                     !category ||
-                    combo.category ===
-                    category;
-
+                    combo.category === category;
 
                 const statusMatch =
                     !status ||
-                    combo.status ===
-                    status;
-
+                    combo.status === status;
 
                 return (
                     searchMatch &&
@@ -1697,22 +1274,16 @@ function renderCombos() {
             }
         );
 
-
-    container.innerHTML =
-        "";
-
+    container.innerHTML = "";
 
     filtered.forEach(
         combo => {
 
             container.appendChild(
-                createComboCard(
-                    combo
-                )
+                createComboCard(combo)
             );
         }
     );
-
 
     if (resultCount) {
 
@@ -1723,7 +1294,6 @@ function renderCombos() {
                     : "s"
             }`;
     }
-
 
     if (empty) {
 
@@ -1739,24 +1309,15 @@ function renderCombos() {
 // CREATE COMBO CARD
 // ============================================================
 
-function createComboCard(
-    combo
-) {
+function createComboCard(combo) {
 
     const card =
-        document.createElement(
-            "article"
-        );
+        document.createElement("article");
 
-
-    card.className =
-        "combo-card";
-
+    card.className = "combo-card";
 
     const status =
-        combo.status ||
-        "Active";
-
+        combo.status || "Active";
 
     card.innerHTML = `
 
@@ -1780,12 +1341,13 @@ function createComboCard(
 
             </div>
 
-            <span class="status-badge status-${status.toLowerCase()}">
+            <span class="status-badge status-${escapeHtml(
+                status.toLowerCase()
+            )}">
                 ${escapeHtml(status)}
             </span>
 
         </div>
-
 
         <div class="combo-links">
 
@@ -1793,9 +1355,7 @@ function createComboCard(
                 combo.mainLink
                     ? `
                         <a
-                            href="${safeUrl(
-                                combo.mainLink
-                            )}"
+                            href="${safeUrl(combo.mainLink)}"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -1809,9 +1369,7 @@ function createComboCard(
                 combo.affiliateLink
                     ? `
                         <a
-                            href="${safeUrl(
-                                combo.affiliateLink
-                            )}"
+                            href="${safeUrl(combo.affiliateLink)}"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -1823,26 +1381,22 @@ function createComboCard(
 
         </div>
 
-
         ${
             combo.notes
                 ? `
                     <p class="combo-notes">
-                        ${escapeHtml(
-                            combo.notes
-                        )}
+                        ${escapeHtml(combo.notes)}
                     </p>
                 `
                 : ""
         }
-
 
         <div class="combo-actions">
 
             <button
                 type="button"
                 class="secondary-btn"
-                data-edit="${combo.id}"
+                data-edit="${escapeHtml(combo.id)}"
             >
                 Edit
             </button>
@@ -1850,7 +1404,7 @@ function createComboCard(
             <button
                 type="button"
                 class="secondary-btn"
-                data-marketing="${combo.id}"
+                data-marketing="${escapeHtml(combo.id)}"
             >
                 Marketing Link
             </button>
@@ -1858,54 +1412,34 @@ function createComboCard(
             <button
                 type="button"
                 class="ghost-btn"
-                data-delete="${combo.id}"
+                data-delete="${escapeHtml(combo.id)}"
             >
                 Delete
             </button>
 
         </div>
-
     `;
 
-
     card
-        .querySelector(
-            "[data-edit]"
-        )
+        .querySelector("[data-edit]")
         ?.addEventListener(
             "click",
-            () =>
-                openEditCombo(
-                    combo.id
-                )
+            () => openEditCombo(combo.id)
         );
-
 
     card
-        .querySelector(
-            "[data-marketing]"
-        )
+        .querySelector("[data-marketing]")
         ?.addEventListener(
             "click",
-            () =>
-                createMarketingLink(
-                    combo
-                )
+            () => createMarketingLink(combo)
         );
-
 
     card
-        .querySelector(
-            "[data-delete]"
-        )
+        .querySelector("[data-delete]")
         ?.addEventListener(
             "click",
-            () =>
-                deleteCombo(
-                    combo.id
-                )
+            () => deleteCombo(combo.id)
         );
-
 
     return card;
 }
@@ -1917,28 +1451,20 @@ function createComboCard(
 
 function openAddCombo() {
 
-    editingComboId =
-        null;
-
+    editingComboId = null;
 
     $("comboForm")?.reset();
 
+    if ($("editId"))
+        $("editId").value = "";
 
-    $("editId").value =
-        "";
+    if ($("modalTitle"))
+        $("modalTitle").textContent = "Add Combo";
 
+    if ($("comboStatus"))
+        $("comboStatus").value = "Active";
 
-    $("modalTitle").textContent =
-        "Add Combo";
-
-
-    $("comboStatus").value =
-        "Active";
-
-
-    openModal(
-        "comboModal"
-    );
+    openModal("comboModal");
 }
 
 
@@ -1946,60 +1472,49 @@ function openAddCombo() {
 // OPEN EDIT COMBO
 // ============================================================
 
-function openEditCombo(
-    id
-) {
+function openEditCombo(id) {
 
     const combo =
         combos.find(
-            item =>
-                item.id === id
+            item => item.id === id
         );
-
 
     if (!combo) return;
 
+    editingComboId = id;
 
-    editingComboId =
-        id;
+    if ($("editId"))
+        $("editId").value = id;
 
+    if ($("comboName"))
+        $("comboName").value =
+            combo.name || "";
 
-    $("editId").value =
-        id;
+    if ($("comboCategory"))
+        $("comboCategory").value =
+            combo.category || "";
 
+    if ($("mainLink"))
+        $("mainLink").value =
+            combo.mainLink || "";
 
-    $("comboName").value =
-        combo.name || "";
+    if ($("affiliateLink"))
+        $("affiliateLink").value =
+            combo.affiliateLink || "";
 
+    if ($("comboNotes"))
+        $("comboNotes").value =
+            combo.notes || "";
 
-    $("comboCategory").value =
-        combo.category || "";
+    if ($("comboStatus"))
+        $("comboStatus").value =
+            combo.status || "Active";
 
+    if ($("modalTitle"))
+        $("modalTitle").textContent =
+            "Edit Combo";
 
-    $("mainLink").value =
-        combo.mainLink || "";
-
-
-    $("affiliateLink").value =
-        combo.affiliateLink || "";
-
-
-    $("comboNotes").value =
-        combo.notes || "";
-
-
-    $("comboStatus").value =
-        combo.status ||
-        "Active";
-
-
-    $("modalTitle").textContent =
-        "Edit Combo";
-
-
-    openModal(
-        "comboModal"
-    );
+    openModal("comboModal");
 }
 
 
@@ -2007,48 +1522,28 @@ function openEditCombo(
 // SAVE COMBO
 // ============================================================
 
-async function saveCombo(
-    event
-) {
+async function saveCombo(event) {
 
     event.preventDefault();
 
-
     const name =
-        $("comboName")
-            ?.value
-            .trim();
-
+        $("comboName")?.value.trim();
 
     const category =
-        $("comboCategory")
-            ?.value
-            .trim();
-
+        $("comboCategory")?.value.trim();
 
     const mainLink =
-        $("mainLink")
-            ?.value
-            .trim();
-
+        $("mainLink")?.value.trim();
 
     const affiliateLink =
-        $("affiliateLink")
-            ?.value
-            .trim();
-
+        $("affiliateLink")?.value.trim();
 
     const notes =
-        $("comboNotes")
-            ?.value
-            .trim();
-
+        $("comboNotes")?.value.trim();
 
     const status =
-        $("comboStatus")
-            ?.value ||
+        $("comboStatus")?.value ||
         "Active";
-
 
     if (!name || !category) {
 
@@ -2059,25 +1554,18 @@ async function saveCombo(
         return;
     }
 
-
     const data = {
 
         name,
-
         category,
-
         mainLink,
-
         affiliateLink,
-
         notes,
-
         status,
 
         updatedAt:
             serverTimestamp()
     };
-
 
     try {
 
@@ -2107,18 +1595,11 @@ async function saveCombo(
             );
         }
 
+        closeModal("comboModal");
 
-        closeModal(
-            "comboModal"
-        );
-
-
-        editingComboId =
-            null;
-
+        editingComboId = null;
 
         await loadCombos();
-
 
     } catch (error) {
 
@@ -2127,9 +1608,7 @@ async function saveCombo(
             error.message
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
     }
 }
 
@@ -2138,32 +1617,24 @@ async function saveCombo(
 // DELETE COMBO
 // ============================================================
 
-async function deleteCombo(
-    id
-) {
+async function deleteCombo(id) {
 
     if (!id) return;
 
-
     const combo =
         combos.find(
-            item =>
-                item.id === id
+            item => item.id === id
         );
 
-
     if (!combo) return;
-
 
     if (
         !confirm(
             `Delete "${combo.name}"?`
         )
     ) {
-
         return;
     }
-
 
     try {
 
@@ -2175,9 +1646,7 @@ async function deleteCombo(
             )
         );
 
-
         await loadCombos();
-
 
     } catch (error) {
 
@@ -2186,9 +1655,7 @@ async function deleteCombo(
             error.message
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
     }
 }
 
@@ -2199,20 +1666,13 @@ async function deleteCombo(
 
 function openPasteCombo() {
 
-    const box =
-        $("pasteBox");
-
+    const box = $("pasteBox");
 
     if (box) {
-
-        box.value =
-            "";
+        box.value = "";
     }
 
-
-    openModal(
-        "pasteModal"
-    );
+    openModal("pasteModal");
 }
 
 
@@ -2222,15 +1682,12 @@ function openPasteCombo() {
 
 async function importPasteCombo() {
 
-    const box =
-        $("pasteBox");
+    const box = $("pasteBox");
 
     if (!box) return;
 
-
     const text =
         box.value.trim();
-
 
     if (!text) {
 
@@ -2241,36 +1698,24 @@ async function importPasteCombo() {
         return;
     }
 
-
     try {
 
         const parsed =
-            JSON.parse(
-                text
-            );
-
+            JSON.parse(text);
 
         const items =
-            Array.isArray(
-                parsed
-            )
+            Array.isArray(parsed)
                 ? parsed
                 : [parsed];
 
-
-        for (
-            const item of items
-        ) {
+        for (const item of items) {
 
             if (
                 !item ||
-                typeof item !==
-                "object"
+                typeof item !== "object"
             ) {
-
                 continue;
             }
-
 
             await addDoc(
                 collection(
@@ -2278,7 +1723,6 @@ async function importPasteCombo() {
                     "combos"
                 ),
                 {
-
                     name:
                         item.name ||
                         item.comboName ||
@@ -2316,14 +1760,9 @@ async function importPasteCombo() {
             );
         }
 
-
-        closeModal(
-            "pasteModal"
-        );
-
+        closeModal("pasteModal");
 
         await loadCombos();
-
 
     } catch (error) {
 
@@ -2343,18 +1782,14 @@ async function importPasteCombo() {
 // CREATE MARKETING LINK
 // ============================================================
 
-async function createMarketingLink(
-    combo
-) {
+async function createMarketingLink(combo) {
 
     if (!combo?.id) return;
-
 
     const targetUrl =
         combo.affiliateLink ||
         combo.mainLink ||
         "";
-
 
     if (!targetUrl) {
 
@@ -2365,7 +1800,6 @@ async function createMarketingLink(
         return;
     }
 
-
     try {
 
         const linkDoc =
@@ -2375,27 +1809,22 @@ async function createMarketingLink(
                     "marketingLinks"
                 ),
                 {
-
                     comboId:
                         combo.id,
 
                     comboName:
-                        combo.name ||
-                        "",
+                        combo.name || "",
 
                     targetUrl,
 
-                    clicks:
-                        0,
+                    clicks: 0,
 
-                    status:
-                        "Active",
+                    status: "Active",
 
                     createdAt:
                         serverTimestamp()
                 }
             );
-
 
         const base =
             window.location.origin +
@@ -2405,12 +1834,10 @@ async function createMarketingLink(
                     ""
                 );
 
-
         const redirectUrl =
             `${base}go.html?id=${encodeURIComponent(
                 linkDoc.id
             )}`;
-
 
         await setDoc(
             doc(
@@ -2419,37 +1846,27 @@ async function createMarketingLink(
                 linkDoc.id
             ),
             {
-
                 targetUrl,
 
                 comboId:
                     combo.id,
 
-                active:
-                    true,
+                active: true,
 
                 createdAt:
                     serverTimestamp()
             }
         );
 
-
         await navigator.clipboard
-            .writeText(
-                redirectUrl
-            )
-            .catch(
-                () => {}
-            );
-
+            .writeText(redirectUrl)
+            .catch(() => {});
 
         alert(
             `Marketing Link created:\n\n${redirectUrl}`
         );
 
-
         await loadMarketingLinks();
-
 
     } catch (error) {
 
@@ -2458,9 +1875,7 @@ async function createMarketingLink(
             error.message
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
     }
 }
 
@@ -2477,26 +1892,18 @@ function renderMarketingLinks() {
     const empty =
         $("marketingEmptyState");
 
-
     if (!container) return;
 
-
-    container.innerHTML =
-        "";
-
+    container.innerHTML = "";
 
     marketingLinks.forEach(
         link => {
 
             const card =
-                document.createElement(
-                    "article"
-                );
-
+                document.createElement("article");
 
             card.className =
                 "marketing-link-card";
-
 
             const base =
                 window.location.origin +
@@ -2506,12 +1913,10 @@ function renderMarketingLinks() {
                         ""
                     );
 
-
             const redirectUrl =
                 `${base}go.html?id=${encodeURIComponent(
                     link.id
                 )}`;
-
 
             card.innerHTML = `
 
@@ -2532,7 +1937,6 @@ function renderMarketingLinks() {
 
                 </div>
 
-
                 <div>
 
                     <span>
@@ -2542,26 +1946,20 @@ function renderMarketingLinks() {
                         )}
                     </span>
 
-
                     <button
                         type="button"
                         class="secondary-btn"
-                        data-copy-link="${link.id}"
+                        data-copy-link="${escapeHtml(link.id)}"
                     >
                         Copy
                     </button>
 
                 </div>
-
             `;
 
-
-            container.appendChild(
-                card
-            );
+            container.appendChild(card);
         }
     );
-
 
     if (empty) {
 
@@ -2577,9 +1975,7 @@ function renderMarketingLinks() {
 // COPY MARKETING LINK
 // ============================================================
 
-async function copyMarketingLink(
-    id
-) {
+async function copyMarketingLink(id) {
 
     const base =
         window.location.origin +
@@ -2589,24 +1985,16 @@ async function copyMarketingLink(
                 ""
             );
 
-
     const url =
-        `${base}go.html?id=${encodeURIComponent(
-            id
-        )}`;
-
+        `${base}go.html?id=${encodeURIComponent(id)}`;
 
     try {
 
-        await navigator.clipboard.writeText(
-            url
-        );
-
+        await navigator.clipboard.writeText(url);
 
         alert(
             "Marketing Link copied."
         );
-
 
     } catch {
 
@@ -2627,69 +2015,44 @@ function updateStats() {
     const total =
         combos.length;
 
-
     const active =
         combos.filter(
-            item =>
-                item.status ===
-                "Active"
+            item => item.status === "Active"
         ).length;
-
 
     const pending =
         combos.filter(
-            item =>
-                item.status ===
-                "Pending"
+            item => item.status === "Pending"
         ).length;
-
 
     const archived =
         combos.filter(
-            item =>
-                item.status ===
-                "Archived"
+            item => item.status === "Archived"
         ).length;
-
 
     const totalClicks =
         marketingLinks.reduce(
-            (
-                sum,
-                item
-            ) =>
+            (sum, item) =>
                 sum +
-                Number(
-                    item.clicks || 0
-                ),
+                Number(item.clicks || 0),
             0
         );
 
-
     if ($("totalCount"))
-        $("totalCount").textContent =
-            total;
-
+        $("totalCount").textContent = total;
 
     if ($("activeCount"))
-        $("activeCount").textContent =
-            active;
-
+        $("activeCount").textContent = active;
 
     if ($("pendingCount"))
-        $("pendingCount").textContent =
-            pending;
-
+        $("pendingCount").textContent = pending;
 
     if ($("archivedCount"))
-        $("archivedCount").textContent =
-            archived;
-
+        $("archivedCount").textContent = archived;
 
     if ($("totalMarketingCount"))
         $("totalMarketingCount").textContent =
             marketingLinks.length;
-
 
     if ($("totalClicksCount"))
         $("totalClicksCount").textContent =
@@ -2701,35 +2064,22 @@ function updateStats() {
 // MODALS
 // ============================================================
 
-function openModal(
-    id
-) {
+function openModal(id) {
 
-    const modal =
-        $(id);
+    const modal = $(id);
 
     if (!modal) return;
 
-
-    modal.classList.remove(
-        "hidden"
-    );
+    modal.classList.remove("hidden");
 }
 
+function closeModal(id) {
 
-function closeModal(
-    id
-) {
-
-    const modal =
-        $(id);
+    const modal = $(id);
 
     if (!modal) return;
 
-
-    modal.classList.add(
-        "hidden"
-    );
+    modal.classList.add("hidden");
 }
 
 
@@ -2739,9 +2089,7 @@ function closeModal(
 
 function openHelp() {
 
-    openModal(
-        "helpModal"
-    );
+    openModal("helpModal");
 }
 
 
@@ -2754,7 +2102,6 @@ function setupEvents() {
     const loginForm =
         $("loginForm");
 
-
     if (loginForm) {
 
         loginForm.addEventListener(
@@ -2763,7 +2110,6 @@ function setupEvents() {
         );
     }
 
-
     $("logoutBtn")
         ?.addEventListener(
             "click",
@@ -2771,9 +2117,7 @@ function setupEvents() {
 
                 try {
 
-                    await signOut(
-                        auth
-                    );
+                    await signOut(auth);
 
                 } catch (error) {
 
@@ -2785,13 +2129,11 @@ function setupEvents() {
             }
         );
 
-
     $("addBtn")
         ?.addEventListener(
             "click",
             openAddCombo
         );
-
 
     $("emptyAddBtn")
         ?.addEventListener(
@@ -2799,13 +2141,11 @@ function setupEvents() {
             openAddCombo
         );
 
-
     $("pasteBtn")
         ?.addEventListener(
             "click",
             openPasteCombo
         );
-
 
     $("comboForm")
         ?.addEventListener(
@@ -2813,46 +2153,29 @@ function setupEvents() {
             saveCombo
         );
 
-
     $("closeModal")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "comboModal"
-                )
+            () => closeModal("comboModal")
         );
-
 
     $("cancelBtn")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "comboModal"
-                )
+            () => closeModal("comboModal")
         );
-
 
     $("closePasteModal")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "pasteModal"
-                )
+            () => closeModal("pasteModal")
         );
-
 
     $("cancelPasteBtn")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "pasteModal"
-                )
+            () => closeModal("pasteModal")
         );
-
 
     $("importPasteBtn")
         ?.addEventListener(
@@ -2860,26 +2183,17 @@ function setupEvents() {
             importPasteCombo
         );
 
-
     $("categoryBtn")
         ?.addEventListener(
             "click",
-            () =>
-                openModal(
-                    "categoryModal"
-                )
+            () => openModal("categoryModal")
         );
-
 
     $("closeCategoryModal")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "categoryModal"
-                )
+            () => closeModal("categoryModal")
         );
-
 
     $("addCategoryBtn")
         ?.addEventListener(
@@ -2887,16 +2201,11 @@ function setupEvents() {
             addCategory
         );
 
-
     $("closeHelpModal")
         ?.addEventListener(
             "click",
-            () =>
-                closeModal(
-                    "helpModal"
-                )
+            () => closeModal("helpModal")
         );
-
 
     $("helpBtn")
         ?.addEventListener(
@@ -2904,13 +2213,11 @@ function setupEvents() {
             openHelp
         );
 
-
     $("refreshMarketingBtn")
         ?.addEventListener(
             "click",
             loadMarketingLinks
         );
-
 
     $("searchInput")
         ?.addEventListener(
@@ -2918,20 +2225,17 @@ function setupEvents() {
             renderCombos
         );
 
-
     $("categoryFilter")
         ?.addEventListener(
             "change",
             renderCombos
         );
 
-
     $("statusFilter")
         ?.addEventListener(
             "change",
             renderCombos
         );
-
 
     $("marketingLinksList")
         ?.addEventListener(
@@ -2943,9 +2247,7 @@ function setupEvents() {
                         "[data-copy-link]"
                     );
 
-
                 if (!button) return;
-
 
                 copyMarketingLink(
                     button.dataset.copyLink
@@ -2953,9 +2255,7 @@ function setupEvents() {
             }
         );
 
-
     createLoginUserName();
-
     createPasswordControls();
 }
 
@@ -2964,33 +2264,14 @@ function setupEvents() {
 // ESCAPE HTML
 // ============================================================
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value) {
 
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -2998,18 +2279,12 @@ function escapeHtml(
 // SAFE URL
 // ============================================================
 
-function safeUrl(
-    value
-) {
+function safeUrl(value) {
 
     const text =
-        String(
-            value || ""
-        ).trim();
-
+        String(value || "").trim();
 
     if (!text) return "#";
-
 
     try {
 
@@ -3019,20 +2294,16 @@ function safeUrl(
                 window.location.origin
             );
 
-
         if (
             url.protocol === "http:" ||
             url.protocol === "https:"
         ) {
-
             return url.href;
         }
-
 
     } catch {
         // Invalid URL.
     }
-
 
     return "#";
 }
@@ -3048,50 +2319,35 @@ onAuthStateChanged(
 
         if (!user) {
 
-            currentUser =
-                null;
+            currentUser = null;
 
             showLogin();
 
             return;
         }
 
-
         const isAdmin =
-            await checkAdmin(
-                user
-            );
-
+            await checkAdmin(user);
 
         if (!isAdmin) {
 
-            currentUser =
-                null;
-
+            currentUser = null;
 
             setLoginMessage(
                 "یہ account Janjua Hub Admin نہیں ہے۔",
                 "error"
             );
 
-
-            await signOut(
-                auth
-            );
-
+            await signOut(auth);
 
             showLogin();
 
             return;
         }
 
-
-        currentUser =
-            user;
-
+        currentUser = user;
 
         showDashboard();
-
 
         await loadAllData();
     }
@@ -3110,13 +2366,9 @@ document.addEventListener(
 
         showLogin();
 
-        // Put the Admin email in the login field
-        // without requiring the user to type it every time.
         const {
             emailInput
-        } =
-            getLoginInputs();
-
+        } = getLoginInputs();
 
         if (emailInput) {
 
