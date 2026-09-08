@@ -439,10 +439,19 @@ function getMarketingTarget(combo) {
 }
 
 
-function buildMarketingUrl(
-    id,
-    targetUrl
-) {
+/*
+   IMPORTANT
+
+   Public URL میں اب targetUrl شامل نہیں ہوگا۔
+
+   پہلے:
+   go.html?id=XXXX&url=https://...
+
+   اب:
+   go.html?id=XXXX
+*/
+
+function buildMarketingUrl(id) {
 
     const goUrl =
         new URL(
@@ -453,17 +462,6 @@ function buildMarketingUrl(
     goUrl.searchParams.set(
         "id",
         id
-    );
-
-    /*
-       Target URL ابھی بھی query parameter
-       میں رکھا جا رہا ہے تاکہ موجودہ go.html
-       workflow برقرار رہے۔
-    */
-
-    goUrl.searchParams.set(
-        "url",
-        targetUrl
     );
 
     return goUrl.toString();
@@ -1324,11 +1322,10 @@ if (comboForm) {
                         };
                     }
 
-                    /*
-                       Existing Marketing Link کو
-                       Combo کی نئی معلومات کے ساتھ update کریں۔
-                       اس کا اپنا status reset نہیں ہوگا۔
-                    */
+
+                    /* =========================================
+                       EXISTING MARKETING LINK SYNC
+                    ========================================= */
 
                     if (
                         marketingLinks[
@@ -1376,6 +1373,14 @@ if (comboForm) {
                                 existingId
                             );
 
+                        const publicRef =
+                            doc(
+                                db,
+                                "publicRedirects",
+                                existingId
+                            );
+
+
                         await updateDoc(
                             linkRef,
                             {
@@ -1393,6 +1398,50 @@ if (comboForm) {
                                     serverTimestamp()
                             }
                         );
+
+
+                        /*
+                           Public redirect میں صرف
+                           ضروری redirect information رکھیں۔
+                        */
+
+                        if (newTarget) {
+
+                            await setDoc(
+                                publicRef,
+                                {
+                                    targetUrl:
+                                        newTarget,
+
+                                    status:
+                                        marketingLinks[
+                                            existingId
+                                        ].status ||
+                                        "Active",
+
+                                    updatedAt:
+                                        serverTimestamp()
+                                },
+                                {
+                                    merge:
+                                        true
+                                }
+                            );
+
+                        } else {
+
+                            await updateDoc(
+                                publicRef,
+                                {
+                                    targetUrl:
+                                        "",
+
+                                    updatedAt:
+                                        serverTimestamp()
+                                }
+                            );
+                        }
+
 
                         marketingLinks[
                             existingId
@@ -1544,18 +1593,41 @@ async function deleteCombo(id) {
             )
         );
 
+
+        /*
+           Combo delete ہونے پر public redirect
+           بھی delete کر دیا جائے گا۔
+
+           Marketing history/click document
+           marketingLinks میں محفوظ رہے گا۔
+        */
+
+        try {
+
+            await deleteDoc(
+                doc(
+                    db,
+                    "publicRedirects",
+                    id
+                )
+            );
+
+        } catch (
+            publicDeleteError
+        ) {
+
+            console.warn(
+                "Public Redirect Delete Warning:",
+                publicDeleteError
+            );
+        }
+
+
         combos =
             combos.filter(
                 item =>
                     item.id !== id
             );
-
-        /*
-           Local UI سے marketing link ہٹا دیں۔
-           Firestore marketingLinks document کو
-           delete نہیں کیا جا رہا تاکہ click/history
-           accidental طور پر ضائع نہ ہو۔
-        */
 
         delete marketingLinks[id];
 
@@ -1617,10 +1689,10 @@ async function archiveCombo(id) {
         combo.status =
             newStatus;
 
+
         /*
-           Combo archive/restore کے ساتھ
-           موجودہ Marketing Link کا status بھی
-           sync کیا جا رہا ہے۔
+           Marketing Link اور public redirect
+           دونوں کا status sync کریں۔
         */
 
         if (
@@ -1641,6 +1713,27 @@ async function archiveCombo(id) {
                         serverTimestamp()
                 }
             );
+
+
+            await setDoc(
+                doc(
+                    db,
+                    "publicRedirects",
+                    id
+                ),
+                {
+                    status:
+                        newStatus,
+
+                    updatedAt:
+                        serverTimestamp()
+                },
+                {
+                    merge:
+                        true
+                }
+            );
+
 
             marketingLinks[id].status =
                 newStatus;
@@ -2280,6 +2373,13 @@ async function createMarketingLink(id) {
                 id
             );
 
+        const publicRef =
+            doc(
+                db,
+                "publicRedirects",
+                id
+            );
+
         const existing =
             await getDoc(
                 linkRef
@@ -2296,16 +2396,21 @@ async function createMarketingLink(id) {
                 ? existingData.clicks
                 : 0;
 
+
         /*
-           اہم:
-           اگر Marketing Link پہلے سے موجود ہے
-           تو اس کا status برقرار رہے گا۔
+           Existing Marketing Link کا status
+           برقرار رکھا جائے گا۔
         */
 
         const oldStatus =
             existingData.status ||
             combo.status ||
             "Active";
+
+
+        /* ==============================================
+           PRIVATE MARKETING LINK
+        ============================================== */
 
         await setDoc(
             linkRef,
@@ -2338,6 +2443,33 @@ async function createMarketingLink(id) {
             }
         );
 
+
+        /* ==============================================
+           PUBLIC REDIRECT MAP
+
+           یہاں صرف وہ data ہے جس کی go.html
+           کو redirect کے لیے ضرورت ہے۔
+        ============================================== */
+
+        await setDoc(
+            publicRef,
+            {
+                targetUrl:
+                    target,
+
+                status:
+                    oldStatus,
+
+                updatedAt:
+                    serverTimestamp()
+            },
+            {
+                merge:
+                    true
+            }
+        );
+
+
         marketingLinks[id] = {
 
             id:
@@ -2365,11 +2497,16 @@ async function createMarketingLink(id) {
                 new Date()
         };
 
+
+        /*
+           Clean public URL
+        */
+
         const publicUrl =
             buildMarketingUrl(
-                id,
-                target
+                id
             );
+
 
         try {
 
@@ -2414,12 +2551,6 @@ async function createMarketingLink(id) {
 
 async function copyMarketingLink(id) {
 
-    const combo =
-        combos.find(
-            item =>
-                item.id === id
-        );
-
     const link =
         marketingLinks[id];
 
@@ -2434,25 +2565,9 @@ async function copyMarketingLink(id) {
         return;
     }
 
-    const target =
-        link.targetUrl ||
-        getMarketingTarget(
-            combo
-        );
-
-    if (!target) {
-
-        alert(
-            "Target URL موجود نہیں ہے۔"
-        );
-
-        return;
-    }
-
     const publicUrl =
         buildMarketingUrl(
-            id,
-            target
+            id
         );
 
     try {
@@ -2481,12 +2596,6 @@ async function copyMarketingLink(id) {
 
 function openMarketingLink(id) {
 
-    const combo =
-        combos.find(
-            item =>
-                item.id === id
-        );
-
     const link =
         marketingLinks[id];
 
@@ -2499,25 +2608,9 @@ function openMarketingLink(id) {
         return;
     }
 
-    const target =
-        link.targetUrl ||
-        getMarketingTarget(
-            combo
-        );
-
-    if (!target) {
-
-        alert(
-            "Target URL موجود نہیں ہے۔"
-        );
-
-        return;
-    }
-
     const publicUrl =
         buildMarketingUrl(
-            id,
-            target
+            id
         );
 
     window.open(
@@ -2579,6 +2672,32 @@ async function updateMarketingLinkStatus(
             }
         );
 
+
+        /*
+           Public redirect کا status بھی
+           اسی وقت sync کریں۔
+        */
+
+        await setDoc(
+            doc(
+                db,
+                "publicRedirects",
+                id
+            ),
+            {
+                status:
+                    newStatus,
+
+                updatedAt:
+                    serverTimestamp()
+            },
+            {
+                merge:
+                    true
+            }
+        );
+
+
         marketingLinks[id] = {
             ...marketingLinks[id],
 
@@ -2637,6 +2756,20 @@ async function deleteMarketingLink(id) {
                 id
             )
         );
+
+
+        /*
+           Public redirect mapping بھی ختم کریں۔
+        */
+
+        await deleteDoc(
+            doc(
+                db,
+                "publicRedirects",
+                id
+            )
+        );
+
 
         delete marketingLinks[id];
 
@@ -2765,12 +2898,9 @@ function createMarketingLinkHTML(
         );
 
     const publicUrl =
-        target
-            ? buildMarketingUrl(
-                id,
-                target
-            )
-            : "";
+        buildMarketingUrl(
+            id
+        );
 
     let statusAction = "";
 
@@ -2898,51 +3028,40 @@ function createMarketingLinkHTML(
                         `
                 }
 
-                ${
-                    publicUrl
-                        ? `
-                            <div class="notes">
-                                ${escapeHTML(
-                                    truncateText(
-                                        publicUrl,
-                                        120
-                                    )
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
+                <div class="notes">
+                    Public Link:
+                    ${escapeHTML(
+                        truncateText(
+                            publicUrl,
+                            120
+                        )
+                    )}
+                </div>
 
             </div>
 
 
             <div class="actions">
 
-                ${
-                    publicUrl
-                        ? `
-                            <button
-                                type="button"
-                                class="btn"
-                                onclick="copyMarketingLink(
-                                    '${escapeHTML(id)}'
-                                )"
-                            >
-                                Copy
-                            </button>
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="copyMarketingLink(
+                        '${escapeHTML(id)}'
+                    )"
+                >
+                    Copy
+                </button>
 
-                            <button
-                                type="button"
-                                class="btn"
-                                onclick="openMarketingLink(
-                                    '${escapeHTML(id)}'
-                                )"
-                            >
-                                Open
-                            </button>
-                        `
-                        : ""
-                }
+                <button
+                    type="button"
+                    class="btn"
+                    onclick="openMarketingLink(
+                        '${escapeHTML(id)}'
+                    )"
+                >
+                    Open
+                </button>
 
                 <button
                     type="button"
@@ -2996,11 +3115,6 @@ async function refreshMarketingLinks() {
 
         renderMarketingLinks();
 
-        /*
-           Combo list میں بھی Marketing Link
-           status/clicks تازہ دکھائیں۔
-        */
-
         render();
 
     } catch (error) {
@@ -3046,11 +3160,6 @@ if (
 ========================================================= */
 
 function render() {
-
-    /*
-       Marketing Links section کو بھی
-       ہر render کے ساتھ refresh رکھیں۔
-    */
 
     renderMarketingLinks();
 
@@ -3276,11 +3385,9 @@ function createComboHTML(
         );
 
     const marketingUrl =
-        hasMarketing &&
-        marketingTarget
+        hasMarketing
             ? buildMarketingUrl(
-                combo.id,
-                marketingTarget
+                combo.id
             )
             : "";
 
@@ -3470,8 +3577,7 @@ function createComboHTML(
 
 
                 ${
-                    hasMarketing &&
-                    marketingUrl
+                    hasMarketing
                         ? `
                             <div class="combo-notes">
                                 ${escapeHTML(
