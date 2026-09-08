@@ -393,7 +393,7 @@ addPasswordToggle();
 
 function createUidDiagnostic() {
 
-    if (!adminPassword) {
+    if (!loginScreen) {
         return;
     }
 
@@ -415,16 +415,16 @@ function createUidDiagnostic() {
         "14px";
 
     box.style.padding =
-        "12px";
+        "14px";
 
     box.style.border =
-        "1px solid rgba(255,255,255,0.12)";
+        "1px solid rgba(255,255,255,0.14)";
 
     box.style.borderRadius =
-        "10px";
+        "12px";
 
     box.style.background =
-        "rgba(255,255,255,0.04)";
+        "rgba(255,255,255,0.045)";
 
     box.style.fontSize =
         "13px";
@@ -432,119 +432,219 @@ function createUidDiagnostic() {
     box.style.lineHeight =
         "1.6";
 
+    box.style.textAlign =
+        "left";
+
+    box.style.wordBreak =
+        "break-word";
+
     box.innerHTML = `
         <div style="
-            font-weight:700;
+            font-weight:800;
+            font-size:14px;
+            margin-bottom:10px;
+        ">
+            🔐 Admin UID Diagnostic
+        </div>
+
+        <div style="
             margin-bottom:8px;
         ">
-            Admin UID Diagnostic
+            <strong>Admin Gmail:</strong>
+            <div style="
+                margin-top:3px;
+                opacity:.9;
+                word-break:break-all;
+            ">
+                ${escapeHTML(ADMIN_EMAIL)}
+            </div>
         </div>
 
         <div style="
-            margin-bottom:6px;
-            word-break:break-all;
+            margin-bottom:9px;
         ">
-            <strong>Firebase UID:</strong>
-            <span id="firebaseUidValue">
-                Login کے بعد UID یہاں آئے گی
-            </span>
+            <strong>Expected Admin UID:</strong>
+
+            <div style="
+                display:flex;
+                gap:6px;
+                align-items:center;
+                margin-top:5px;
+                flex-wrap:wrap;
+            ">
+
+                <input
+                    id="uidExpectedInput"
+                    type="text"
+                    readonly
+                    value="${escapeHTML(ADMIN_UID)}"
+                    style="
+                        flex:1;
+                        min-width:180px;
+                        box-sizing:border-box;
+                        padding:8px;
+                        border-radius:7px;
+                        border:1px solid rgba(255,255,255,.14);
+                        background:rgba(0,0,0,.2);
+                        color:inherit;
+                        font-size:12px;
+                    "
+                >
+
+                <button
+                    type="button"
+                    id="copyExpectedUidBtn"
+                    style="
+                        border:0;
+                        border-radius:7px;
+                        padding:8px 10px;
+                        cursor:pointer;
+                        font-weight:700;
+                    "
+                >
+                    Copy UID
+                </button>
+
+            </div>
         </div>
 
         <div style="
-            margin-bottom:10px;
-            word-break:break-all;
+            margin-bottom:9px;
         ">
-            <strong>Expected UID:</strong>
-            <span id="expectedUidValue">
-                ${escapeHTML(
-                    ADMIN_UID
-                )}
-            </span>
+            <strong>Firebase UID paste/check:</strong>
+
+            <div style="
+                display:flex;
+                gap:6px;
+                align-items:center;
+                margin-top:5px;
+                flex-wrap:wrap;
+            ">
+
+                <input
+                    id="uidCheckInput"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Firebase UID یہاں paste کریں"
+                    style="
+                        flex:1;
+                        min-width:180px;
+                        box-sizing:border-box;
+                        padding:8px;
+                        border-radius:7px;
+                        border:1px solid rgba(255,255,255,.14);
+                        background:rgba(0,0,0,.2);
+                        color:inherit;
+                        font-size:12px;
+                    "
+                >
+
+                <button
+                    type="button"
+                    id="checkUidBtn"
+                    style="
+                        border:0;
+                        border-radius:7px;
+                        padding:8px 10px;
+                        cursor:pointer;
+                        font-weight:700;
+                    "
+                >
+                    Check UID
+                </button>
+
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom:9px;
+        ">
+            <strong>Actual Firebase UID:</strong>
+
+            <input
+                id="uidActualInput"
+                type="text"
+                readonly
+                placeholder="Successful Firebase Login کے بعد UID آئے گی"
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    margin-top:5px;
+                    padding:8px;
+                    border-radius:7px;
+                    border:1px solid rgba(255,255,255,.14);
+                    background:rgba(0,0,0,.2);
+                    color:inherit;
+                    font-size:12px;
+                "
+            >
         </div>
 
         <div
             id="uidMatchStatus"
             style="
-                margin-bottom:10px;
-                font-weight:700;
-            "
-        >
-            Status: Waiting for Login
-        </div>
-
-        <button
-            type="button"
-            id="copyUidBtn"
-            style="
-                border:0;
+                margin-top:10px;
+                padding:8px;
                 border-radius:7px;
-                padding:7px 12px;
-                cursor:pointer;
+                background:rgba(255,255,255,.04);
                 font-weight:700;
             "
         >
-            Copy Firebase UID
-        </button>
+            Status: UID check کے لیے تیار ہے۔
+        </div>
     `;
 
-    const passwordWrapper =
-        adminPassword.parentElement;
+    /*
+     * Diagnostic کو login form کے اندر password کے بعد
+     * رکھیں گے تاکہ login screen پر واضح نظر آئے۔
+     */
 
-    if (passwordWrapper) {
+    if (loginForm) {
 
-        passwordWrapper.parentNode.insertBefore(
-            box,
-            passwordWrapper.nextSibling
+        loginForm.appendChild(
+            box
         );
 
     } else {
 
-        adminPassword.parentNode.appendChild(
+        loginScreen.appendChild(
             box
         );
     }
 
-    const copyBtn =
+    const copyExpectedUidBtn =
         document.getElementById(
-            "copyUidBtn"
+            "copyExpectedUidBtn"
         );
 
-    copyBtn?.addEventListener(
+    const checkUidBtn =
+        document.getElementById(
+            "checkUidBtn"
+        );
+
+    const uidCheckInput =
+        document.getElementById(
+            "uidCheckInput"
+        );
+
+    copyExpectedUidBtn?.addEventListener(
         "click",
         async () => {
-
-            const uidElement =
-                document.getElementById(
-                    "firebaseUidValue"
-                );
-
-            const uid =
-                uidElement?.dataset.uid ||
-                "";
-
-            if (!uid) {
-
-                alert(
-                    "پہلے Firebase Login کریں۔ UID ابھی دستیاب نہیں ہے۔"
-                );
-
-                return;
-            }
 
             try {
 
                 await navigator.clipboard.writeText(
-                    uid
+                    ADMIN_UID
                 );
 
-                copyBtn.textContent =
-                    "UID Copied ✓";
+                copyExpectedUidBtn.textContent =
+                    "Copied ✓";
 
                 setTimeout(
                     () => {
 
-                        copyBtn.textContent =
-                            "Copy Firebase UID";
+                        copyExpectedUidBtn.textContent =
+                            "Copy UID";
 
                     },
                     1500
@@ -553,20 +653,88 @@ function createUidDiagnostic() {
             } catch {
 
                 prompt(
-                    "Copy this Firebase UID:",
-                    uid
+                    "Expected Admin UID:",
+                    ADMIN_UID
                 );
+            }
+        }
+    );
+
+    checkUidBtn?.addEventListener(
+        "click",
+        () => {
+
+            const pastedUid =
+                normalizeText(
+                    uidCheckInput?.value
+                );
+
+            const statusElement =
+                document.getElementById(
+                    "uidMatchStatus"
+                );
+
+            if (!statusElement) {
+                return;
+            }
+
+            if (!pastedUid) {
+
+                statusElement.textContent =
+                    "Status: ⚠️ Firebase UID paste کریں۔";
+
+                return;
+            }
+
+            if (
+                pastedUid ===
+                ADMIN_UID
+            ) {
+
+                statusElement.textContent =
+                    "Status: ✅ UID MATCH — یہ UID Admin UID کے ساتھ match کرتا ہے۔";
+
+            } else {
+
+                statusElement.textContent =
+                    "Status: ❌ UID MISMATCH — Expected: " +
+                    ADMIN_UID +
+                    " | Pasted: " +
+                    pastedUid;
+            }
+        }
+    );
+
+    uidCheckInput?.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                checkUidBtn?.click();
             }
         }
     );
 }
 
 
-function updateUidDiagnostic(user) {
+function updateUidDiagnostic(
+    user
+) {
 
-    const uidElement =
+    const uidActualInput =
         document.getElementById(
-            "firebaseUidValue"
+            "uidActualInput"
+        );
+
+    const uidCheckInput =
+        document.getElementById(
+            "uidCheckInput"
         );
 
     const statusElement =
@@ -575,7 +743,7 @@ function updateUidDiagnostic(user) {
         );
 
     if (
-        !uidElement ||
+        !uidActualInput ||
         !statusElement
     ) {
         return;
@@ -583,38 +751,46 @@ function updateUidDiagnostic(user) {
 
     if (!user) {
 
-        uidElement.textContent =
-            "Login کے بعد UID یہاں آئے گی";
-
-        uidElement.dataset.uid =
+        uidActualInput.value =
             "";
 
         statusElement.textContent =
-            "Status: Waiting for Login";
+            "Status: Firebase Login ابھی نہیں ہوا۔ Expected UID اوپر موجود ہے۔";
 
         return;
     }
 
     const actualUid =
-        user.uid || "";
+        String(
+            user.uid || ""
+        ).trim();
 
-    uidElement.textContent =
+    uidActualInput.value =
         actualUid;
 
-    uidElement.dataset.uid =
-        actualUid;
+    /*
+     * اگر user login ہو چکا ہے تو اسی UID کو
+     * check box میں بھی ڈال دیں گے۔
+     */
+
+    if (uidCheckInput) {
+
+        uidCheckInput.value =
+            actualUid;
+    }
 
     if (
-        actualUid === ADMIN_UID
+        actualUid ===
+        ADMIN_UID
     ) {
 
         statusElement.textContent =
-            "Status: ✅ UID MATCH — Admin UID درست ہے";
+            "Status: ✅ UID MATCH — Firebase UID Admin UID کے ساتھ match کرتا ہے۔";
 
     } else {
 
         statusElement.textContent =
-            "Status: ❌ UID MISMATCH — یہ Firebase account Admin UID سے مختلف ہے";
+            "Status: ❌ UID MISMATCH — Firebase نے مختلف UID دی ہے۔";
     }
 }
 
@@ -849,6 +1025,17 @@ function showLogin() {
         "app-shell-hidden"
     );
 
+    const uidDiagnostic =
+        document.getElementById(
+            "uidDiagnostic"
+        );
+
+    if (uidDiagnostic) {
+
+        uidDiagnostic.style.display =
+            "block";
+    }
+
     updateUidDiagnostic(
         null
     );
@@ -864,6 +1051,17 @@ function showDashboard() {
     appShell?.classList.remove(
         "app-shell-hidden"
     );
+
+    const uidDiagnostic =
+        document.getElementById(
+            "uidDiagnostic"
+        );
+
+    if (uidDiagnostic) {
+
+        uidDiagnostic.style.display =
+            "none";
+    }
 
     if (adminEmail) {
 
@@ -1010,7 +1208,7 @@ function getAuthErrorMessage(
         case "auth/invalid-credential":
 
             return (
-                "Email یا Password غلط ہے۔ Password دوبارہ Show کرکے چیک کریں۔"
+                "Email یا Password غلط ہے۔ Password دوبارہ Show کرکے چیک کریں۔ Firebase نے اس کوشش میں UID نہیں دی۔"
             );
 
         case "auth/wrong-password":
@@ -1144,7 +1342,7 @@ async function handleLogin(
 
         /*
          * Firebase نے Login قبول کر لیا۔
-         * اب اصل UID فوراً diagnostic میں دکھائیں۔
+         * اب اصل UID diagnostic میں دکھائیں۔
          */
 
         updateUidDiagnostic(
@@ -1163,7 +1361,6 @@ async function handleLogin(
 
         /*
          * Email بھی verify کریں۔
-         * یہ اضافی safety check ہے۔
          */
 
         if (
@@ -1233,9 +1430,14 @@ async function handleLogin(
         );
 
         /*
-         * Login fail ہونے پر password
-         * کبھی console میں نہیں دکھایا جاتا۔
+         * Login fail ہونے پر Firebase
+         * authenticated user نہیں دیتا،
+         * اس لیے actual UID دستیاب نہیں ہوتی۔
          */
+
+        updateUidDiagnostic(
+            null
+        );
 
         setLoginMessage(
             getAuthErrorMessage(
@@ -4330,6 +4532,15 @@ onAuthStateChanged(
             return;
         }
 
+        /*
+         * Firebase Auth نے user دے دیا ہے۔
+         * اب اصل UID screen پر موجود ہے۔
+         */
+
+        updateUidDiagnostic(
+            user
+        );
+
         const isAdmin =
             await checkAdmin(
                 user
@@ -4354,6 +4565,48 @@ onAuthStateChanged(
                 uid,
                 "error"
             );
+
+            /*
+             * showLogin() کے اندر updateUidDiagnostic(null)
+             * ہوتا ہے، اس لیے actual UID دوبارہ diagnostic
+             * میں دکھانے کے لیے user object کے بغیر
+             * manually fields update کریں گے۔
+             */
+
+            const actualUidInput =
+                document.getElementById(
+                    "uidActualInput"
+                );
+
+            const uidCheckInput =
+                document.getElementById(
+                    "uidCheckInput"
+                );
+
+            const uidStatus =
+                document.getElementById(
+                    "uidMatchStatus"
+                );
+
+            if (actualUidInput) {
+
+                actualUidInput.value =
+                    uid;
+            }
+
+            if (uidCheckInput) {
+
+                uidCheckInput.value =
+                    uid;
+            }
+
+            if (uidStatus) {
+
+                uidStatus.textContent =
+                    uid === ADMIN_UID
+                        ? "Status: ✅ UID MATCH — UID درست ہے، لیکن Admin authorization/Firestore role میں مسئلہ ہے۔"
+                        : "Status: ❌ UID MISMATCH — Firebase account کی UID Expected Admin UID سے مختلف ہے۔";
+            }
 
             authInitialized =
                 true;
