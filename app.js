@@ -29,7 +29,7 @@ import {
 
 const firebaseConfig = {
     apiKey:
-        "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
+        "AIzaSyBpGwssnPxdEVJPJPiMsrhJNSJc_l_Nj8CME",
 
     authDomain:
         "all-in-one-marketing.firebaseapp.com",
@@ -47,14 +47,9 @@ const firebaseConfig = {
         "1:701353417673:web:84b5cce6029f98b89fa618"
 };
 
-const app =
-    initializeApp(firebaseConfig);
-
-const auth =
-    getAuth(app);
-
-const db =
-    getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
 /* =========================================================
@@ -87,7 +82,6 @@ let combos = [];
 let categories = [];
 let marketingLinks = {};
 let currentUser = null;
-let authInitialized = false;
 
 
 /* =========================================================
@@ -103,11 +97,32 @@ const appShell =
 const loginForm =
     document.getElementById("loginForm");
 
+
+/*
+ * IMPORTANT:
+ * Login fields کو multiple طریقوں سے پکڑا جا رہا ہے۔
+ * اس سے اگر HTML میں id/name میں معمولی فرق ہو
+ * تو Login خالی value سمجھ کر رک نہیں جائے گا۔
+ */
+
 const adminEmail =
-    document.getElementById("adminEmail");
+    document.getElementById("adminEmail") ||
+    document.querySelector(
+        '#loginForm input[type="email"]'
+    ) ||
+    document.querySelector(
+        '#loginForm input[name="email"]'
+    );
 
 const adminPassword =
-    document.getElementById("adminPassword");
+    document.getElementById("adminPassword") ||
+    document.querySelector(
+        '#loginForm input[type="password"]'
+    ) ||
+    document.querySelector(
+        '#loginForm input[name="password"]'
+    );
+
 
 const loginMessage =
     document.getElementById("loginMessage");
@@ -274,9 +289,8 @@ function addPasswordToggle() {
     wrapper.style.width =
         "100%";
 
-    if (
-        adminPassword.parentNode
-    ) {
+
+    if (adminPassword.parentNode) {
 
         adminPassword.parentNode.insertBefore(
             wrapper,
@@ -288,15 +302,18 @@ function addPasswordToggle() {
         return;
     }
 
+
     wrapper.appendChild(
         adminPassword
     );
+
 
     adminPassword.style.width =
         "100%";
 
     adminPassword.style.paddingRight =
         "75px";
+
 
     const button =
         document.createElement("button");
@@ -356,9 +373,10 @@ function addPasswordToggle() {
     button.style.zIndex =
         "5";
 
+
     button.addEventListener(
         "click",
-        function() {
+        function () {
 
             if (
                 adminPassword.type ===
@@ -402,6 +420,7 @@ function addPasswordToggle() {
         }
     );
 
+
     wrapper.appendChild(
         button
     );
@@ -412,7 +431,6 @@ addPasswordToggle();
 
 /* =========================================================
    UID DIAGNOSTIC
-   FIXED VERSION
 ========================================================= */
 
 function createUidDiagnostic() {
@@ -428,6 +446,7 @@ function createUidDiagnostic() {
     ) {
         return;
     }
+
 
     const box =
         document.createElement("div");
@@ -468,6 +487,7 @@ function createUidDiagnostic() {
     box.style.width =
         "100%";
 
+
     box.innerHTML = `
 
         <div style="
@@ -477,9 +497,6 @@ function createUidDiagnostic() {
         ">
             🔐 Admin UID Diagnostic
         </div>
-
-
-        <!-- ADMIN EMAIL -->
 
         <div style="
             margin-bottom:12px;
@@ -504,8 +521,6 @@ function createUidDiagnostic() {
 
         </div>
 
-
-        <!-- EXPECTED UID -->
 
         <div style="
             margin-bottom:12px;
@@ -564,8 +579,6 @@ function createUidDiagnostic() {
 
         </div>
 
-
-        <!-- PASTE UID -->
 
         <div style="
             margin-bottom:12px;
@@ -626,8 +639,6 @@ function createUidDiagnostic() {
         </div>
 
 
-        <!-- ACTUAL FIREBASE UID -->
-
         <div style="
             margin-bottom:12px;
         ">
@@ -661,8 +672,6 @@ function createUidDiagnostic() {
         </div>
 
 
-        <!-- STATUS -->
-
         <div
             id="uidMatchStatus"
             style="
@@ -689,10 +698,6 @@ function createUidDiagnostic() {
 
     `;
 
-
-    /*
-     * Diagnostic login form کے اندر رہے گا۔
-     */
 
     if (loginForm) {
 
@@ -723,10 +728,6 @@ function createUidDiagnostic() {
             "uidCheckInput"
         );
 
-
-    /* -----------------------------------------
-       COPY EXPECTED UID
-    ----------------------------------------- */
 
     copyExpectedUidBtn?.addEventListener(
         "click",
@@ -761,10 +762,6 @@ function createUidDiagnostic() {
         }
     );
 
-
-    /* -----------------------------------------
-       CHECK PASTED UID
-    ----------------------------------------- */
 
     checkUidBtn?.addEventListener(
         "click",
@@ -806,16 +803,10 @@ function createUidDiagnostic() {
 
                 statusElement.textContent =
                     "Status: ❌ UID MISMATCH — Firebase UID Expected Admin UID سے مختلف ہے۔";
-
             }
-
         }
     );
 
-
-    /* -----------------------------------------
-       ENTER TO CHECK
-    ----------------------------------------- */
 
     uidCheckInput?.addEventListener(
         "keydown",
@@ -830,19 +821,16 @@ function createUidDiagnostic() {
 
                 checkUidBtn?.click();
             }
-
         }
     );
 }
 
 
 /* =========================================================
-   UPDATE UID DIAGNOSTIC
+   UID DIAGNOSTIC UPDATE
 ========================================================= */
 
-function updateUidDiagnostic(
-    user
-) {
+function updateUidDiagnostic(user) {
 
     const uidActualInput =
         document.getElementById(
@@ -873,11 +861,6 @@ function updateUidDiagnostic(
         uidActualInput.value =
             "";
 
-        /*
-         * Paste field کو clear نہیں کر رہے،
-         * تاکہ user manually UID check کر سکے۔
-         */
-
         statusElement.textContent =
             "Status: ⚠️ Firebase Login ابھی نہیں ہوا۔ Expected UID اوپر موجود ہے۔";
 
@@ -894,12 +877,6 @@ function updateUidDiagnostic(
     uidActualInput.value =
         actualUid;
 
-
-    /*
-     * Successful Firebase login کے بعد
-     * actual UID automatically check field
-     * میں بھی آئے گی۔
-     */
 
     if (uidCheckInput) {
 
@@ -934,26 +911,11 @@ createUidDiagnostic();
 function escapeHTML(value) {
 
     return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -971,16 +933,12 @@ function isValidUrl(value) {
 
         const url =
             new URL(
-                String(
-                    value
-                ).trim()
+                String(value).trim()
             );
 
         return (
-            url.protocol ===
-                "http:" ||
-            url.protocol ===
-                "https:"
+            url.protocol === "http:" ||
+            url.protocol === "https:"
         );
 
     } catch {
@@ -1002,25 +960,22 @@ function getMarketingTarget(combo) {
             combo.mainLink
         );
 
+
     if (
         affiliate &&
-        isValidUrl(
-            affiliate
-        )
+        isValidUrl(affiliate)
     ) {
-
         return affiliate;
     }
 
+
     if (
         main &&
-        isValidUrl(
-            main
-        )
+        isValidUrl(main)
     ) {
-
         return main;
     }
+
 
     return "";
 }
@@ -1029,9 +984,7 @@ function getMarketingTarget(combo) {
 function getComboStatus(combo) {
 
     return (
-        normalizeText(
-            combo.status
-        ) ||
+        normalizeText(combo.status) ||
         "Active"
     );
 }
@@ -1040,9 +993,7 @@ function getComboStatus(combo) {
 function getMarketingStatus(link) {
 
     return (
-        normalizeText(
-            link?.status
-        ) ||
+        normalizeText(link?.status) ||
         "Active"
     );
 }
@@ -1053,6 +1004,7 @@ function formatDate(value) {
     if (!value) {
         return "—";
     }
+
 
     try {
 
@@ -1066,6 +1018,7 @@ function formatDate(value) {
                 .toLocaleString();
         }
 
+
         if (
             value instanceof Date
         ) {
@@ -1073,10 +1026,10 @@ function formatDate(value) {
             return value.toLocaleString();
         }
 
+
         const date =
-            new Date(
-                value
-            );
+            new Date(value);
+
 
         if (
             Number.isNaN(
@@ -1086,6 +1039,7 @@ function formatDate(value) {
 
             return "—";
         }
+
 
         return date.toLocaleString();
 
@@ -1104,9 +1058,7 @@ function buildMarketingUrl(id) {
 
     return new URL(
         "go.html?id=" +
-        encodeURIComponent(
-            id
-        ),
+        encodeURIComponent(id),
         window.location.href
     ).toString();
 }
@@ -1125,11 +1077,13 @@ function setLoginMessage(
         return;
     }
 
+
     loginMessage.textContent =
         text || "";
 
     loginMessage.className =
         "login-message";
+
 
     if (type) {
 
@@ -1160,16 +1114,13 @@ function showLogin() {
             "uidDiagnostic"
         );
 
+
     if (uidDiagnostic) {
 
         uidDiagnostic.style.display =
             "block";
     }
 
-
-    /*
-     * Expected UID ہمیشہ screen پر موجود رہے گی۔
-     */
 
     updateUidDiagnostic(
         null
@@ -1192,6 +1143,7 @@ function showDashboard() {
         document.getElementById(
             "uidDiagnostic"
         );
+
 
     if (uidDiagnostic) {
 
@@ -1219,6 +1171,11 @@ async function checkAdmin(user) {
     }
 
 
+    updateUidDiagnostic(
+        user
+    );
+
+
     console.log(
         "Firebase Auth User:",
         {
@@ -1230,18 +1187,9 @@ async function checkAdmin(user) {
     );
 
 
-    updateUidDiagnostic(
-        user
-    );
-
-
-    /*
-     * Firebase UID must exactly match
-     * configured Admin UID.
-     */
-
     if (
-        user.uid !== ADMIN_UID
+        user.uid !==
+        ADMIN_UID
     ) {
 
         console.error(
@@ -1260,11 +1208,6 @@ async function checkAdmin(user) {
     }
 
 
-    /*
-     * Firestore users document
-     * must exist and role must be admin.
-     */
-
     try {
 
         const userRef =
@@ -1273,6 +1216,7 @@ async function checkAdmin(user) {
                 "users",
                 user.uid
             );
+
 
         const userSnap =
             await getDoc(
@@ -1337,12 +1281,10 @@ async function checkAdmin(user) {
 
 
 /* =========================================================
-   AUTH ERROR MESSAGE
+   AUTH ERROR
 ========================================================= */
 
-function getAuthErrorMessage(
-    error
-) {
+function getAuthErrorMessage(error) {
 
     const code =
         error?.code || "";
@@ -1351,84 +1293,39 @@ function getAuthErrorMessage(
     switch (code) {
 
         case "auth/invalid-credential":
-
-            return (
-                "Email یا Password غلط ہے۔ Password دوبارہ Show کرکے چیک کریں۔ Firebase نے اس کوشش میں UID نہیں دی۔"
-            );
-
+            return "Email یا Password غلط ہے۔ Firebase نے login reject کیا۔";
 
         case "auth/wrong-password":
-
-            return (
-                "Password غلط ہے۔"
-            );
-
+            return "Password غلط ہے۔";
 
         case "auth/user-not-found":
-
-            return (
-                "اس Email کا Firebase Authentication account نہیں ملا۔"
-            );
-
+            return "اس Email کا Firebase Authentication account نہیں ملا۔";
 
         case "auth/user-disabled":
-
-            return (
-                "یہ Firebase account disabled ہے۔"
-            );
-
+            return "یہ Firebase account disabled ہے۔";
 
         case "auth/too-many-requests":
-
-            return (
-                "بہت زیادہ Login کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔"
-            );
-
+            return "بہت زیادہ Login کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
 
         case "auth/network-request-failed":
-
-            return (
-                "Internet یا network connection کا مسئلہ ہے۔"
-            );
-
+            return "Internet یا network connection کا مسئلہ ہے۔";
 
         case "auth/operation-not-allowed":
-
-            return (
-                "Firebase میں Email/Password Login enabled نہیں ہے۔"
-            );
-
+            return "Firebase میں Email/Password Login enabled نہیں ہے۔";
 
         case "auth/invalid-api-key":
-
-            return (
-                "Firebase API configuration میں مسئلہ ہے۔"
-            );
-
+            return "Firebase API configuration میں مسئلہ ہے۔";
 
         case "auth/app-not-authorized":
-
-            return (
-                "یہ website Firebase Authentication کے لیے authorized نہیں ہے۔"
-            );
-
+            return "یہ website Firebase Authentication کے لیے authorized نہیں ہے۔";
 
         case "auth/invalid-email":
-
-            return (
-                "Email address درست format میں نہیں ہے۔"
-            );
-
+            return "Email address درست format میں نہیں ہے۔";
 
         case "auth/user-token-expired":
-
-            return (
-                "Firebase session expire ہو گیا ہے۔ دوبارہ Login کریں۔"
-            );
-
+            return "Firebase session expire ہو گیا ہے۔ دوبارہ Login کریں۔";
 
         default:
-
             return (
                 "Login failed۔ Firebase error: " +
                 (
@@ -1441,38 +1338,142 @@ function getAuthErrorMessage(
 
 
 /* =========================================================
-   LOGIN
+   LOGIN — REBUILT
 ========================================================= */
 
-async function handleLogin(
-    event
-) {
+async function handleLogin(event) {
 
-    event.preventDefault();
+    /*
+     * Form submit کو browser refresh سے روکیں۔
+     */
+
+    if (event) {
+        event.preventDefault();
+    }
 
 
-    const email =
-        normalizeText(
-            adminEmail?.value
+    /*
+     * اصل fields دوبارہ حاصل کریں۔
+     * یہ login کے وقت live value پڑھتا ہے۔
+     */
+
+    const emailInput =
+        document.getElementById(
+            "adminEmail"
+        ) ||
+        loginForm?.querySelector(
+            'input[type="email"]'
+        ) ||
+        loginForm?.querySelector(
+            'input[name="email"]'
         );
 
 
-    const password =
-        String(
-            adminPassword?.value ||
-            ""
+    const passwordInput =
+        document.getElementById(
+            "adminPassword"
+        ) ||
+        loginForm?.querySelector(
+            'input[type="password"], input[name="password"], input[data-password]'
         );
 
 
-    if (
-        !email ||
-        !password
-    ) {
+    /*
+     * اگر password Show کیا ہوا ہے
+     * تو type text ہو سکتی ہے۔
+     * اس لیے type پر انحصار نہیں کر رہے۔
+     */
+
+    let email = "";
+
+    let password = "";
+
+
+    if (emailInput) {
+
+        email =
+            String(
+                emailInput.value ?? ""
+            ).trim();
+    }
+
+
+    if (passwordInput) {
+
+        password =
+            String(
+                passwordInput.value ?? ""
+            );
+    }
+
+
+    console.log(
+        "Login field check:",
+        {
+            emailFound:
+                Boolean(emailInput),
+            passwordFound:
+                Boolean(passwordInput),
+            emailLength:
+                email.length,
+            passwordLength:
+                password.length
+        }
+    );
+
+
+    /*
+     * اصل مسئلہ اگر یہاں field نہ ملنے کا ہو
+     * تو اب واضح message ملے گا۔
+     */
+
+    if (!emailInput) {
 
         setLoginMessage(
-            "Email اور Password دونوں درج کریں۔",
+            "Login Email field نہیں مل رہی۔ HTML میں adminEmail field check کریں۔",
             "error"
         );
+
+        return;
+    }
+
+
+    if (!passwordInput) {
+
+        setLoginMessage(
+            "Login Password field نہیں مل رہی۔ HTML میں adminPassword field check کریں۔",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * اب صرف واقعی خالی ہونے پر message دیں۔
+     */
+
+    if (!email) {
+
+        setLoginMessage(
+            "Email درج کریں۔",
+            "error"
+        );
+
+        emailInput.focus();
+
+        return;
+    }
+
+
+    if (!password) {
+
+        setLoginMessage(
+            "Password درج کریں۔",
+            "error"
+        );
+
+        passwordInput.focus();
 
         return;
     }
@@ -1495,6 +1496,11 @@ async function handleLogin(
 
     try {
 
+        /*
+         * یہاں پہلی مرتبہ Firebase کو
+         * Email + Password بھیجا جا رہا ہے۔
+         */
+
         const credential =
             await signInWithEmailAndPassword(
                 auth,
@@ -1503,13 +1509,18 @@ async function handleLogin(
             );
 
 
-        /*
-         * Firebase login successful۔
-         * اصل UID اب دستیاب ہے۔
-         */
+        const user =
+            credential.user;
+
+
+        const actualUid =
+            String(
+                user.uid || ""
+            ).trim();
+
 
         updateUidDiagnostic(
-            credential.user
+            user
         );
 
 
@@ -1517,26 +1528,29 @@ async function handleLogin(
             "Firebase Login Successful:",
             {
                 email:
-                    credential.user.email,
+                    user.email,
                 uid:
-                    credential.user.uid
+                    actualUid
             }
         );
 
 
         /*
-         * Email verify کریں۔
+         * Email check
          */
 
+        const firebaseEmail =
+            String(
+                user.email || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
         if (
-            credential.user.email
-                ?.toLowerCase() !==
+            firebaseEmail !==
             ADMIN_EMAIL.toLowerCase()
         ) {
-
-            const actualUid =
-                credential.user.uid;
-
 
             await signOut(
                 auth
@@ -1548,15 +1562,11 @@ async function handleLogin(
 
 
             setLoginMessage(
-                "Firebase Login کامیاب ہے، لیکن یہ Email Janjua Hub Admin Email نہیں ہے۔ UID: " +
+                "Firebase Login کامیاب ہے، لیکن یہ Admin Email نہیں ہے۔ Firebase UID: " +
                 actualUid,
                 "error"
             );
 
-
-            /*
-             * Actual UID diagnostic میں برقرار رکھیں۔
-             */
 
             setDiagnosticAfterLogout(
                 actualUid
@@ -1567,18 +1577,18 @@ async function handleLogin(
         }
 
 
+        /*
+         * UID + Firestore admin check
+         */
+
         const isAdmin =
             await checkAdmin(
-                credential.user
+                user
             );
 
 
         if (!isAdmin) {
 
-            const actualUid =
-                credential.user.uid;
-
-
             await signOut(
                 auth
             );
@@ -1589,15 +1599,11 @@ async function handleLogin(
 
 
             setLoginMessage(
-                "Firebase Login کامیاب ہے، لیکن UID/Admin Role match نہیں کر رہا۔ UID: " +
+                "Firebase Login کامیاب ہے، لیکن Admin authorization مکمل نہیں ہوئی۔ UID: " +
                 actualUid,
                 "error"
             );
 
-
-            /*
-             * Actual UID diagnostic میں برقرار رکھیں۔
-             */
 
             setDiagnosticAfterLogout(
                 actualUid
@@ -1608,8 +1614,12 @@ async function handleLogin(
         }
 
 
+        /*
+         * Final success
+         */
+
         currentUser =
-            credential.user;
+            user;
 
 
         setLoginMessage(
@@ -1617,17 +1627,18 @@ async function handleLogin(
             "success"
         );
 
+
     } catch (error) {
 
         console.error(
-            "Login Error:",
+            "Firebase Login Error:",
             error
         );
 
 
         /*
-         * Firebase authentication fail ہونے پر
-         * authenticated user/UID دستیاب نہیں ہوتی۔
+         * Authentication fail ہوئی،
+         * اس لیے UID available نہیں ہوگی۔
          */
 
         updateUidDiagnostic(
@@ -1641,6 +1652,7 @@ async function handleLogin(
             ),
             "error"
         );
+
 
     } finally {
 
@@ -1660,9 +1672,7 @@ async function handleLogin(
    KEEP UID AFTER AUTHORIZATION FAILURE
 ========================================================= */
 
-function setDiagnosticAfterLogout(
-    uid
-) {
+function setDiagnosticAfterLogout(uid) {
 
     const actualUidInput =
         document.getElementById(
@@ -1713,7 +1723,7 @@ function setDiagnosticAfterLogout(
         } else {
 
             uidStatus.textContent =
-                "Status: ❌ UID MISMATCH — Firebase account کی UID Expected Admin UID سے مختلف ہے.";
+                "Status: ❌ UID MISMATCH — Firebase account کی UID Expected Admin UID سے مختلف ہے۔";
         }
     }
 }
@@ -1976,18 +1986,14 @@ function updateMarketingStats() {
         );
 
 
-    if (
-        totalMarketingCount
-    ) {
+    if (totalMarketingCount) {
 
         totalMarketingCount.textContent =
             totalLinks;
     }
 
 
-    if (
-        totalClicksCount
-    ) {
+    if (totalClicksCount) {
 
         totalClicksCount.textContent =
             totalClicks;
@@ -2031,36 +2037,28 @@ function updateStats() {
         ).length;
 
 
-    if (
-        totalCount
-    ) {
+    if (totalCount) {
 
         totalCount.textContent =
             total;
     }
 
 
-    if (
-        activeCount
-    ) {
+    if (activeCount) {
 
         activeCount.textContent =
             active;
     }
 
 
-    if (
-        pendingCount
-    ) {
+    if (pendingCount) {
 
         pendingCount.textContent =
             pending;
     }
 
 
-    if (
-        archivedCount
-    ) {
+    if (archivedCount) {
 
         archivedCount.textContent =
             archived;
@@ -2360,9 +2358,7 @@ function closeComboModal() {
    SAVE COMBO
 ========================================================= */
 
-async function saveCombo(
-    event
-) {
+async function saveCombo(event) {
 
     event.preventDefault();
 
@@ -2377,36 +2373,30 @@ async function saveCombo(
             editId?.value
         );
 
-
     const name =
         normalizeText(
             comboName?.value
         );
-
 
     const category =
         normalizeText(
             comboCategory?.value
         );
 
-
     const main =
         normalizeText(
             mainLink?.value
         );
-
 
     const affiliate =
         normalizeText(
             affiliateLink?.value
         );
 
-
     const notes =
         normalizeText(
             comboNotes?.value
         );
-
 
     const status =
         normalizeText(
@@ -2427,9 +2417,7 @@ async function saveCombo(
 
     if (
         main &&
-        !isValidUrl(
-            main
-        )
+        !isValidUrl(main)
     ) {
 
         alert(
@@ -2442,9 +2430,7 @@ async function saveCombo(
 
     if (
         affiliate &&
-        !isValidUrl(
-            affiliate
-        )
+        !isValidUrl(affiliate)
     ) {
 
         alert(
@@ -2497,9 +2483,7 @@ async function saveCombo(
 
 
             const existingMarketing =
-                marketingLinks[
-                    id
-                ];
+                marketingLinks[id];
 
 
             if (
@@ -2604,9 +2588,7 @@ async function saveCombo(
                 );
 
 
-            if (
-                index !== -1
-            ) {
+            if (index !== -1) {
 
                 combos[index] = {
                     ...combos[index],
@@ -2697,9 +2679,7 @@ async function saveCombo(
    MARKETING LINK
 ========================================================= */
 
-async function createMarketingLink(
-    id
-) {
+async function createMarketingLink(id) {
 
     const combo =
         combos.find(
@@ -2873,9 +2853,7 @@ async function updateMarketingLinkStatus(
     newStatus
 ) {
 
-    if (
-        !marketingLinks[id]
-    ) {
+    if (!marketingLinks[id]) {
         return;
     }
 
@@ -2937,9 +2915,7 @@ async function updateMarketingLinkStatus(
 }
 
 
-async function deleteMarketingLink(
-    id
-) {
+async function deleteMarketingLink(id) {
 
     if (
         !confirm(
@@ -2980,10 +2956,7 @@ async function deleteMarketingLink(
         }
 
 
-        delete marketingLinks[
-            id
-        ];
-
+        delete marketingLinks[id];
 
         render();
 
@@ -3002,9 +2975,7 @@ async function deleteMarketingLink(
 }
 
 
-async function copyMarketingLink(
-    id
-) {
+async function copyMarketingLink(id) {
 
     const url =
         buildMarketingUrl(
@@ -3033,9 +3004,7 @@ async function copyMarketingLink(
 }
 
 
-function openMarketingLink(
-    id
-) {
+function openMarketingLink(id) {
 
     const url =
         buildMarketingUrl(
@@ -3060,9 +3029,7 @@ function renderMarketingLinks() {
     updateMarketingStats();
 
 
-    if (
-        !marketingLinksList
-    ) {
+    if (!marketingLinksList) {
         return;
     }
 
@@ -3119,10 +3086,7 @@ function renderMarketingLinks() {
                             );
 
 
-                    return (
-                        bDate -
-                        aDate
-                    );
+                    return bDate - aDate;
                 }
             )
             .map(
@@ -3132,9 +3096,7 @@ function renderMarketingLinks() {
 }
 
 
-function createMarketingLinkHTML(
-    link
-) {
+function createMarketingLinkHTML(link) {
 
     const combo =
         combos.find(
@@ -3355,9 +3317,7 @@ function createMarketingLinkHTML(
    COMBO DELETE / ARCHIVE / RESTORE
 ========================================================= */
 
-async function deleteCombo(
-    id
-) {
+async function deleteCombo(id) {
 
     const combo =
         combos.find(
@@ -3470,9 +3430,7 @@ async function deleteCombo(
 }
 
 
-async function archiveCombo(
-    id
-) {
+async function archiveCombo(id) {
 
     const combo =
         combos.find(
@@ -3512,9 +3470,7 @@ async function archiveCombo(
             );
 
 
-        if (
-            index !== -1
-        ) {
+        if (index !== -1) {
 
             combos[index].status =
                 "Archived";
@@ -3569,9 +3525,7 @@ async function archiveCombo(
 }
 
 
-async function restoreCombo(
-    id
-) {
+async function restoreCombo(id) {
 
     const combo =
         combos.find(
@@ -3611,9 +3565,7 @@ async function restoreCombo(
             );
 
 
-        if (
-            index !== -1
-        ) {
+        if (index !== -1) {
 
             combos[index].status =
                 "Active";
@@ -3652,9 +3604,7 @@ async function restoreCombo(
    COMBO HTML
 ========================================================= */
 
-function createComboHTML(
-    combo
-) {
+function createComboHTML(combo) {
 
     const status =
         getComboStatus(
@@ -4441,9 +4391,7 @@ async function addNewCategory() {
 }
 
 
-async function deleteCategory(
-    id
-) {
+async function deleteCategory(id) {
 
     const category =
         categories.find(
@@ -4529,10 +4477,17 @@ async function deleteCategory(
    EVENTS
 ========================================================= */
 
-loginForm?.addEventListener(
-    "submit",
-    handleLogin
-);
+/*
+ * Login listener صرف ایک جگہ۔
+ */
+
+if (loginForm) {
+
+    loginForm.addEventListener(
+        "submit",
+        handleLogin
+    );
+}
 
 
 logoutBtn?.addEventListener(
@@ -4560,9 +4515,7 @@ cancelBtn?.addEventListener(
 
 
 document
-    .getElementById(
-        "addComboBtn"
-    )
+    .getElementById("addComboBtn")
     ?.addEventListener(
         "click",
         () =>
@@ -4571,9 +4524,7 @@ document
 
 
 document
-    .getElementById(
-        "pasteComboBtn"
-    )
+    .getElementById("pasteComboBtn")
     ?.addEventListener(
         "click",
         openPasteModal
@@ -4704,8 +4655,7 @@ comboList?.addEventListener(
 
 
         const action =
-            button.dataset
-                .comboAction;
+            button.dataset.comboAction;
 
 
         const id =
@@ -4821,8 +4771,7 @@ marketingLinksList?.addEventListener(
 
 
         const action =
-            button.dataset
-                .marketingAction;
+            button.dataset.marketingAction;
 
 
         const id =
@@ -4931,8 +4880,7 @@ categoryListView?.addEventListener(
 
 
         await deleteCategory(
-            button.dataset
-                .deleteCategory
+            button.dataset.deleteCategory
         );
     }
 );
@@ -4991,16 +4939,13 @@ document.addEventListener(
             "hidden"
         );
 
-
         pasteModal?.classList.add(
             "hidden"
         );
 
-
         categoryModal?.classList.add(
             "hidden"
         );
-
 
         helpModal?.classList.add(
             "hidden"
@@ -5030,20 +4975,8 @@ onAuthStateChanged(
 
             showLogin();
 
-            authInitialized =
-                true;
-
             return;
         }
-
-
-        /*
-         * Firebase Auth نے اصل user اور UID دے دی۔
-         */
-
-        updateUidDiagnostic(
-            user
-        );
 
 
         const isAdmin =
@@ -5077,29 +5010,16 @@ onAuthStateChanged(
             );
 
 
-            /*
-             * signOut کے بعد UID کو دوبارہ diagnostic
-             * میں دکھائیں تاکہ ہمیں اصل Firebase UID
-             * نظر آتی رہے۔
-             */
-
             setDiagnosticAfterLogout(
                 uid
             );
 
-
-            authInitialized =
-                true;
 
             return;
         }
 
 
         showDashboard();
-
-
-        authInitialized =
-            true;
 
 
         await loadFirebaseData();
@@ -5114,7 +5034,6 @@ onAuthStateChanged(
 loginScreen?.classList.add(
     "login-screen-hidden"
 );
-
 
 appShell?.classList.add(
     "app-shell-hidden"
