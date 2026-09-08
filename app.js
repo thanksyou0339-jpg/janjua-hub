@@ -1,13 +1,13 @@
-import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
     getAuth,
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signOut
-}
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 import {
     getFirestore,
@@ -19,9 +19,9 @@ import {
     doc,
     getDoc,
     setDoc,
-    serverTimestamp
-}
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    serverTimestamp,
+    increment
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 /* =========================================================
@@ -29,27 +29,55 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
-    authDomain: "all-in-one-marketing.firebaseapp.com",
-    projectId: "all-in-one-marketing",
-    storageBucket: "all-in-one-marketing.firebasestorage.app",
-    messagingSenderId: "701353417673",
-    appId: "1:701353417673:web:84b5cce6029f98b89fa618"
+
+    apiKey:
+        "AIzaSyBpGwssnPxdEVJPiMsrhJNSJc_l_Nj8CME",
+
+    authDomain:
+        "all-in-one-marketing.firebaseapp.com",
+
+    projectId:
+        "all-in-one-marketing",
+
+    storageBucket:
+        "all-in-one-marketing.firebasestorage.app",
+
+    messagingSenderId:
+        "701353417673",
+
+    appId:
+        "1:701353417673:web:84b5cce6029f98b89fa618"
 };
 
-const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app =
+    initializeApp(
+        firebaseConfig
+    );
+
+
+const auth =
+    getAuth(
+        app
+    );
+
+
+const db =
+    getFirestore(
+        app
+    );
 
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
-const ADMIN_EMAIL = "thanksyou0339@gmail.com";
+const ADMIN_EMAIL =
+    "thanksyou0339@gmail.com";
+
 
 const DEFAULT_CATEGORIES = [
+
     "Finance",
     "Software",
     "Products",
@@ -57,6 +85,7 @@ const DEFAULT_CATEGORIES = [
     "Marketing",
     "Business",
     "Other"
+
 ];
 
 
@@ -65,10 +94,14 @@ const DEFAULT_CATEGORIES = [
 ========================================================= */
 
 let combos = [];
+
 let categories = [];
+
 let marketingLinks = {};
 
 let currentUser = null;
+
+let authInitialized = false;
 
 
 /* =========================================================
@@ -76,108 +109,149 @@ let currentUser = null;
 ========================================================= */
 
 const loginScreen =
-    document.getElementById("loginScreen");
-
-const loginForm =
-    document.getElementById("loginForm");
-
-const loginEmail =
-    document.getElementById("loginEmail");
-
-const loginPassword =
-    document.getElementById("loginPassword");
-
-const loginMessage =
-    document.getElementById("loginMessage");
+    document.getElementById(
+        "loginScreen"
+    );
 
 const appShell =
-    document.getElementById("appShell");
+    document.getElementById(
+        "appShell"
+    );
 
-const adminEmailDisplay =
-    document.getElementById("adminEmailDisplay");
+const loginForm =
+    document.getElementById(
+        "loginForm"
+    );
+
+const adminEmail =
+    document.getElementById(
+        "adminEmail"
+    );
+
+const adminPassword =
+    document.getElementById(
+        "adminPassword"
+    );
+
+const loginMessage =
+    document.getElementById(
+        "loginMessage"
+    );
+
+const loginBtn =
+    document.getElementById(
+        "loginBtn"
+    );
 
 const logoutBtn =
-    document.getElementById("logoutBtn");
-
-const helpBtn =
-    document.getElementById("helpBtn");
-
-const addBtn =
-    document.getElementById("addBtn");
-
-const pasteBtn =
-    document.getElementById("pasteBtn");
+    document.getElementById(
+        "logoutBtn"
+    );
 
 
 /* =========================================================
-   STATS
+   DASHBOARD STATS
 ========================================================= */
 
 const totalCount =
-    document.getElementById("totalCount");
+    document.getElementById(
+        "totalCount"
+    );
 
 const activeCount =
-    document.getElementById("activeCount");
+    document.getElementById(
+        "activeCount"
+    );
 
 const pendingCount =
-    document.getElementById("pendingCount");
+    document.getElementById(
+        "pendingCount"
+    );
 
 const archivedCount =
-    document.getElementById("archivedCount");
+    document.getElementById(
+        "archivedCount"
+    );
 
 const totalMarketingCount =
-    document.getElementById("totalMarketingCount");
+    document.getElementById(
+        "totalMarketingCount"
+    );
 
 const totalClicksCount =
-    document.getElementById("totalClicksCount");
+    document.getElementById(
+        "totalClicksCount"
+    );
 
 
 /* =========================================================
-   FILTERS
+   SEARCH / FILTER
 ========================================================= */
 
 const searchInput =
-    document.getElementById("searchInput");
+    document.getElementById(
+        "searchInput"
+    );
 
 const categoryFilter =
-    document.getElementById("categoryFilter");
+    document.getElementById(
+        "categoryFilter"
+    );
 
 const statusFilter =
-    document.getElementById("statusFilter");
+    document.getElementById(
+        "statusFilter"
+    );
 
 const categoryBtn =
-    document.getElementById("categoryBtn");
+    document.getElementById(
+        "categoryBtn"
+    );
+
+const resultCount =
+    document.getElementById(
+        "resultCount"
+    );
 
 
 /* =========================================================
    COMBO LIST
 ========================================================= */
 
-const resultCount =
-    document.getElementById("resultCount");
-
 const comboList =
-    document.getElementById("comboList");
+    document.getElementById(
+        "comboList"
+    );
 
 const emptyState =
-    document.getElementById("emptyState");
+    document.getElementById(
+        "emptyState"
+    );
 
 const emptyAddBtn =
-    document.getElementById("emptyAddBtn");
+    document.getElementById(
+        "emptyAddBtn"
+    );
 
 
 /* =========================================================
-   MARKETING LINKS CONTROL
+   MARKETING LINKS
 ========================================================= */
 
-const refreshMarketingBtn =
-    document.getElementById("refreshMarketingBtn");
-
 const marketingLinksList =
-    document.getElementById("marketingLinksList");
+    document.getElementById(
+        "marketingLinksList"
+    );
 
 const marketingEmptyState =
-    document.getElementById("marketingEmptyState");
+    document.getElementById(
+        "marketingEmptyState"
+    );
+
+const refreshMarketingBtn =
+    document.getElementById(
+        "refreshMarketingBtn"
+    );
 
 
 /* =========================================================
@@ -185,43 +259,64 @@ const marketingEmptyState =
 ========================================================= */
 
 const comboModal =
-    document.getElementById("comboModal");
-
-const closeModal =
-    document.getElementById("closeModal");
-
-const comboForm =
-    document.getElementById("comboForm");
-
-const editId =
-    document.getElementById("editId");
+    document.getElementById(
+        "comboModal"
+    );
 
 const modalTitle =
-    document.getElementById("modalTitle");
+    document.getElementById(
+        "modalTitle"
+    );
+
+const closeModal =
+    document.getElementById(
+        "closeModal"
+    );
+
+const comboForm =
+    document.getElementById(
+        "comboForm"
+    );
+
+const editId =
+    document.getElementById(
+        "editId"
+    );
 
 const comboName =
-    document.getElementById("comboName");
+    document.getElementById(
+        "comboName"
+    );
 
 const comboCategory =
-    document.getElementById("comboCategory");
-
-const categoryList =
-    document.getElementById("categoryList");
+    document.getElementById(
+        "comboCategory"
+    );
 
 const mainLink =
-    document.getElementById("mainLink");
+    document.getElementById(
+        "mainLink"
+    );
 
 const affiliateLink =
-    document.getElementById("affiliateLink");
+    document.getElementById(
+        "affiliateLink"
+    );
 
 const comboNotes =
-    document.getElementById("comboNotes");
+    document.getElementById(
+        "comboNotes"
+    );
 
 const comboStatus =
-    document.getElementById("comboStatus");
+    document.getElementById(
+        "comboStatus"
+    );
 
 const cancelBtn =
-    document.getElementById("cancelBtn");
+    document.getElementById(
+        "cancelBtn"
+    );
 
 
 /* =========================================================
@@ -229,19 +324,24 @@ const cancelBtn =
 ========================================================= */
 
 const pasteModal =
-    document.getElementById("pasteModal");
-
-const closePasteModal =
-    document.getElementById("closePasteModal");
+    document.getElementById(
+        "pasteModal"
+    );
 
 const pasteBox =
-    document.getElementById("pasteBox");
+    document.getElementById(
+        "pasteBox"
+    );
 
 const cancelPasteBtn =
-    document.getElementById("cancelPasteBtn");
+    document.getElementById(
+        "cancelPasteBtn"
+    );
 
 const importPasteBtn =
-    document.getElementById("importPasteBtn");
+    document.getElementById(
+        "importPasteBtn"
+    );
 
 
 /* =========================================================
@@ -249,180 +349,137 @@ const importPasteBtn =
 ========================================================= */
 
 const categoryModal =
-    document.getElementById("categoryModal");
-
-const closeCategoryModal =
-    document.getElementById("closeCategoryModal");
+    document.getElementById(
+        "categoryModal"
+    );
 
 const newCategory =
-    document.getElementById("newCategory");
+    document.getElementById(
+        "newCategory"
+    );
 
 const addCategoryBtn =
-    document.getElementById("addCategoryBtn");
+    document.getElementById(
+        "addCategoryBtn"
+    );
 
 const categoryListView =
-    document.getElementById("categoryListView");
+    document.getElementById(
+        "categoryListView"
+    );
 
 
 /* =========================================================
-   HELP MODAL
+   HELP CENTER
 ========================================================= */
 
 const helpModal =
-    document.getElementById("helpModal");
+    document.getElementById(
+        "helpModal"
+    );
 
 const closeHelpModal =
-    document.getElementById("closeHelpModal");
+    document.getElementById(
+        "closeHelpModal"
+    );
+
+const helpCenterBtn =
+    document.getElementById(
+        "helpCenterBtn"
+    );
 
 
 /* =========================================================
-   AUTH SCREEN CONTROL
-========================================================= */
-
-function bootApp() {
-
-    document.body.classList.add(
-        "auth-booting"
-    );
-
-    if (loginScreen) {
-        loginScreen.classList.add(
-            "hidden"
-        );
-    }
-
-    if (appShell) {
-        appShell.classList.add(
-            "app-shell-hidden"
-        );
-    }
-}
-
-
-function showLogin() {
-
-    document.body.classList.remove(
-        "auth-booting"
-    );
-
-    if (loginScreen) {
-        loginScreen.classList.remove(
-            "hidden"
-        );
-    }
-
-    if (appShell) {
-        appShell.classList.add(
-            "app-shell-hidden"
-        );
-    }
-
-    if (loginMessage) {
-        loginMessage.textContent = "";
-        loginMessage.className =
-            "login-message";
-    }
-}
-
-
-function showDashboard() {
-
-    document.body.classList.remove(
-        "auth-booting"
-    );
-
-    if (loginScreen) {
-        loginScreen.classList.add(
-            "hidden"
-        );
-    }
-
-    if (appShell) {
-        appShell.classList.remove(
-            "app-shell-hidden"
-        );
-    }
-
-    if (
-        adminEmailDisplay &&
-        currentUser
-    ) {
-        adminEmailDisplay.textContent =
-            currentUser.email ||
-            ADMIN_EMAIL;
-    }
-}
-
-
-/* =========================================================
-   HTML ESCAPE
+   GENERIC HELPERS
 ========================================================= */
 
 function escapeHTML(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
-/* =========================================================
-   URL VALIDATION
-========================================================= */
+function normalizeText(value) {
 
-function isValidHttpUrl(value) {
+    return String(
+        value ?? ""
+    )
+        .trim();
+}
+
+
+function isValidUrl(value) {
 
     try {
 
         const url =
-            new URL(value);
+            new URL(
+                String(value).trim()
+            );
 
         return (
             url.protocol === "http:" ||
             url.protocol === "https:"
         );
 
-    } catch (error) {
+    } catch {
 
         return false;
     }
 }
 
 
-/* =========================================================
-   MARKETING LINK HELPERS
-========================================================= */
-
 function getMarketingTarget(combo) {
 
-    if (!combo) {
-        return "";
-    }
-
     const affiliate =
-        String(
-            combo.affiliateLink || ""
-        ).trim();
+        normalizeText(
+            combo.affiliateLink
+        );
 
     const main =
-        String(
-            combo.mainLink || ""
-        ).trim();
+        normalizeText(
+            combo.mainLink
+        );
 
     if (
         affiliate &&
-        isValidHttpUrl(affiliate)
+        isValidUrl(
+            affiliate
+        )
     ) {
+
         return affiliate;
     }
 
     if (
         main &&
-        isValidHttpUrl(main)
+        isValidUrl(
+            main
+        )
     ) {
+
         return main;
     }
 
@@ -430,476 +487,164 @@ function getMarketingTarget(combo) {
 }
 
 
-function buildMarketingUrl(id) {
-
-    const goUrl =
-        new URL(
-            "go.html",
-            window.location.href
-        );
-
-    goUrl.searchParams.set(
-        "id",
-        id
-    );
-
-    return goUrl.toString();
-}
-
-
-/* =========================================================
-   MARKETING STATUS
-========================================================= */
-
-function getMarketingStatus(link) {
-
-    if (!link) {
-        return "Active";
-    }
+function getComboStatus(combo) {
 
     return (
-        link.status ||
+        normalizeText(
+            combo.status
+        ) ||
         "Active"
     );
 }
 
 
-function getMarketingStatusClass(status) {
-
-    return String(
-        status || "Active"
-    )
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-}
-
-
-/* =========================================================
-   DISPLAY HELPERS
-========================================================= */
-
-function shortenUrl(
-    url,
-    maxLength = 75
-) {
-
-    const value =
-        String(url || "");
-
-    if (
-        value.length <=
-        maxLength
-    ) {
-        return value;
-    }
+function getMarketingStatus(link) {
 
     return (
-        value.slice(
-            0,
-            maxLength
-        ) +
-        "..."
+        normalizeText(
+            link?.status
+        ) ||
+        "Active"
     );
 }
 
 
-function truncateText(
-    value,
-    maxLength = 90
-) {
-
-    const text =
-        String(value || "");
-
-    if (
-        text.length <=
-        maxLength
-    ) {
-        return text;
-    }
-
-    return (
-        text.slice(
-            0,
-            maxLength
-        ) +
-        "…"
-    );
-}
-
-
-function getTimeValue(value) {
+function formatDate(value) {
 
     if (!value) {
-        return 0;
+        return "—";
     }
 
-    if (
-        typeof value === "object" &&
-        typeof value.toDate === "function"
-    ) {
-
-        return value
-            .toDate()
-            .getTime();
-    }
-
-    if (
-        value instanceof Date
-    ) {
-
-        return value.getTime();
-    }
-
-    const parsed =
-        new Date(value).getTime();
-
-    return Number.isNaN(parsed)
-        ? 0
-        : parsed;
-}
-
-
-/* =========================================================
-   DASHBOARD MARKETING STATS
-========================================================= */
-
-function updateMarketingStats() {
-
-    const links =
-        Object.values(
-            marketingLinks
-        );
-
-    const totalLinks =
-        links.length;
-
-    const totalClicks =
-        links.reduce(
-            function(total, link) {
-
-                return (
-                    total +
-                    (
-                        Number(
-                            link?.clicks
-                        ) || 0
-                    )
-                );
-            },
-            0
-        );
-
-    if (totalMarketingCount) {
-
-        totalMarketingCount.textContent =
-            totalLinks;
-    }
-
-    if (totalClicksCount) {
-
-        totalClicksCount.textContent =
-            totalClicks;
-    }
-}
-
-
-/* =========================================================
-   MODALS
-========================================================= */
-
-function openComboModal(combo = null) {
-
-    if (!comboModal) {
-        return;
-    }
-
-    if (combo) {
-
-        modalTitle.textContent =
-            "Edit Combo";
-
-        editId.value =
-            combo.id || "";
-
-        comboName.value =
-            combo.name || "";
-
-        comboCategory.value =
-            combo.category || "";
-
-        mainLink.value =
-            combo.mainLink || "";
-
-        affiliateLink.value =
-            combo.affiliateLink || "";
-
-        comboNotes.value =
-            combo.notes || "";
-
-        comboStatus.value =
-            combo.status ||
-            "Active";
-
-    } else {
-
-        modalTitle.textContent =
-            "Add Combo";
-
-        editId.value = "";
-
-        comboForm.reset();
-
-        comboStatus.value =
-            "Active";
-    }
-
-    renderCategoryOptions();
-
-    comboModal.classList.remove(
-        "hidden"
-    );
-}
-
-
-function closeComboModal() {
-
-    if (comboModal) {
-
-        comboModal.classList.add(
-            "hidden"
-        );
-    }
-}
-
-
-function openPasteModal() {
-
-    if (!pasteModal) {
-        return;
-    }
-
-    pasteBox.value = "";
-
-    pasteModal.classList.remove(
-        "hidden"
-    );
-}
-
-
-function closePaste() {
-
-    if (pasteModal) {
-
-        pasteModal.classList.add(
-            "hidden"
-        );
-    }
-}
-
-
-function openCategoryModal() {
-
-    if (!categoryModal) {
-        return;
-    }
-
-    renderCategoryList();
-
-    categoryModal.classList.remove(
-        "hidden"
-    );
-}
-
-
-function closeCategory() {
-
-    if (categoryModal) {
-
-        categoryModal.classList.add(
-            "hidden"
-        );
-    }
-}
-
-
-function openHelpModal() {
-
-    if (helpModal) {
-
-        helpModal.classList.remove(
-            "hidden"
-        );
-    }
-}
-
-
-function closeHelp() {
-
-    if (helpModal) {
-
-        helpModal.classList.add(
-            "hidden"
-        );
-    }
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-if (loginForm) {
-
-    loginForm.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-            const email =
-                loginEmail.value.trim();
-
-            const password =
-                loginPassword.value;
-
-            if (
-                !email ||
-                !password
-            ) {
-
-                loginMessage.textContent =
-                    "Email اور Password دونوں درج کریں۔";
-
-                loginMessage.className =
-                    "login-message error";
-
-                return;
-            }
-
-            loginMessage.textContent =
-                "Login ہو رہا ہے...";
-
-            loginMessage.className =
-                "login-message loading";
-
-            const submitButton =
-                loginForm.querySelector(
-                    "button[type='submit']"
-                );
-
-            if (submitButton) {
-                submitButton.disabled =
-                    true;
-            }
-
-            try {
-
-                const credential =
-                    await signInWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
-
-                const isAdmin =
-                    await checkAdmin(
-                        credential.user
-                    );
-
-                if (!isAdmin) {
-
-                    await signOut(auth);
-
-                    loginMessage.textContent =
-                        "یہ اکاؤنٹ Admin نہیں ہے۔";
-
-                    loginMessage.className =
-                        "login-message error";
-
-                    return;
-                }
-
-                loginMessage.textContent =
-                    "Login کامیاب۔";
-
-                loginMessage.className =
-                    "login-message success";
-
-            } catch (error) {
-
-                console.error(
-                    "Login Error:",
-                    error
-                );
-
-                let message =
-                    "Login ناکام ہوا۔ Email یا Password چیک کریں۔";
-
-                if (
-                    error.code ===
-                        "auth/invalid-credential" ||
-                    error.code ===
-                        "auth/wrong-password" ||
-                    error.code ===
-                        "auth/user-not-found"
-                ) {
-
-                    message =
-                        "Email یا Password غلط ہے۔";
-                }
-
-                if (
-                    error.code ===
-                    "auth/too-many-requests"
-                ) {
-
-                    message =
-                        "کئی کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔";
-                }
-
-                loginMessage.textContent =
-                    message;
-
-                loginMessage.className =
-                    "login-message error";
-
-            } finally {
-
-                if (submitButton) {
-
-                    submitButton.disabled =
-                        false;
-                }
-            }
+    try {
+
+        if (
+            typeof value.toDate ===
+            "function"
+        ) {
+
+            return value
+                .toDate()
+                .toLocaleString();
         }
+
+
+        if (
+            value instanceof Date
+        ) {
+
+            return value
+                .toLocaleString();
+        }
+
+
+        const date =
+            new Date(
+                value
+            );
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "—";
+        }
+
+        return date.toLocaleString();
+
+    } catch {
+
+        return "—";
+    }
+}
+
+
+function buildMarketingUrl(id) {
+
+    return (
+        window.location.origin +
+        window.location.pathname
+            .replace(
+                /\/[^/]*$/,
+                "/go.html"
+            ) +
+        "?id=" +
+        encodeURIComponent(
+            id
+        )
     );
 }
 
 
+function setLoginMessage(
+    text,
+    type = ""
+) {
+
+    if (!loginMessage) {
+        return;
+    }
+
+    loginMessage.textContent =
+        text || "";
+
+    loginMessage.className =
+        "login-message";
+
+    if (type) {
+
+        loginMessage.classList.add(
+            type
+        );
+    }
+}
+
+
 /* =========================================================
-   LOGOUT
+   SCREEN CONTROL
 ========================================================= */
 
-if (logoutBtn) {
+function showLogin() {
 
-    logoutBtn.addEventListener(
-        "click",
-        async function() {
+    if (loginScreen) {
 
-            try {
+        loginScreen.classList.remove(
+            "login-screen-hidden"
+        );
+    }
 
-                await signOut(auth);
+    if (appShell) {
 
-            } catch (error) {
+        appShell.classList.add(
+            "app-shell-hidden"
+        );
+    }
+}
 
-                console.error(
-                    "Logout Error:",
-                    error
-                );
-            }
-        }
-    );
+
+function showDashboard() {
+
+    if (loginScreen) {
+
+        loginScreen.classList.add(
+            "login-screen-hidden"
+        );
+    }
+
+    if (appShell) {
+
+        appShell.classList.remove(
+            "app-shell-hidden"
+        );
+    }
+
+    if (adminEmail) {
+
+        adminEmail.textContent =
+            currentUser?.email ||
+            ADMIN_EMAIL;
+    }
 }
 
 
@@ -913,97 +658,214 @@ async function checkAdmin(user) {
         return false;
     }
 
-    const userRef =
-        doc(
-            db,
-            "users",
-            user.uid
-        );
-
-    const userSnap =
-        await getDoc(
-            userRef
-        );
-
     if (
-        !userSnap.exists()
+        user.email?.toLowerCase() !==
+        ADMIN_EMAIL.toLowerCase()
     ) {
+
         return false;
     }
 
-    const data =
-        userSnap.data();
+    try {
 
-    return (
-        data.role ===
-        "admin"
-    );
+        const userRef =
+            doc(
+                db,
+                "users",
+                user.uid
+            );
+
+        const userSnap =
+            await getDoc(
+                userRef
+            );
+
+        if (
+            !userSnap.exists()
+        ) {
+
+            return false;
+        }
+
+        const data =
+            userSnap.data();
+
+        return (
+            data.role ===
+            "admin"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Admin Check Error:",
+            error
+        );
+
+        return false;
+    }
 }
 
 
 /* =========================================================
-   AUTH STATE
+   AUTH
 ========================================================= */
 
-bootApp();
+async function handleLogin(event) {
 
-onAuthStateChanged(
-    auth,
-    async function(user) {
+    event.preventDefault();
 
-        if (!user) {
+    const email =
+        normalizeText(
+            adminEmail?.value
+        );
 
-            currentUser = null;
+    const password =
+        String(
+            adminPassword?.value ||
+            ""
+        );
 
-            showLogin();
+
+    if (!email || !password) {
+
+        setLoginMessage(
+            "Please enter your email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (loginBtn) {
+
+        loginBtn.disabled =
+            true;
+
+        loginBtn.textContent =
+            "Signing in...";
+    }
+
+
+    setLoginMessage(
+        "Checking your account..."
+    );
+
+
+    try {
+
+        const credential =
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+
+        const isAdmin =
+            await checkAdmin(
+                credential.user
+            );
+
+
+        if (!isAdmin) {
+
+            await signOut(
+                auth
+            );
+
+            setLoginMessage(
+                "This account is not authorized as an admin.",
+                "error"
+            );
 
             return;
         }
 
-        try {
 
-            const isAdmin =
-                await checkAdmin(
-                    user
-                );
+        setLoginMessage(
+            "Login successful.",
+            "success"
+        );
 
-            if (!isAdmin) {
+    } catch (error) {
 
-                await signOut(auth);
+        console.error(
+            "Login Error:",
+            error
+        );
 
-                currentUser = null;
 
-                showLogin();
+        let message =
+            "Login failed. Please check your email and password.";
 
-                return;
-            }
 
-            currentUser =
-                user;
+        if (
+            error.code ===
+            "auth/invalid-credential"
+        ) {
 
-            showDashboard();
+            message =
+                "Incorrect email or password.";
 
-            await loadFirebaseData();
+        } else if (
+            error.code ===
+            "auth/too-many-requests"
+        ) {
 
-        } catch (error) {
+            message =
+                "Too many attempts. Please try again later.";
 
-            console.error(
-                "Authentication verification error:",
-                error
-            );
+        } else if (
+            error.code ===
+            "auth/network-request-failed"
+        ) {
 
-            await signOut(auth);
+            message =
+                "Network error. Please check your internet connection.";
+        }
 
-            currentUser = null;
 
-            showLogin();
+        setLoginMessage(
+            message,
+            "error"
+        );
+
+    } finally {
+
+        if (loginBtn) {
+
+            loginBtn.disabled =
+                false;
+
+            loginBtn.textContent =
+                "Login";
         }
     }
-);
+}
+
+
+async function handleLogout() {
+
+    try {
+
+        await signOut(
+            auth
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Logout Error:",
+            error
+        );
+    }
+}
 
 
 /* =========================================================
-   FIRESTORE - LOAD COMBOS
+   LOAD COMBOS
 ========================================================= */
 
 async function loadCombos() {
@@ -1018,18 +880,21 @@ async function loadCombos() {
                 )
             );
 
+
         combos =
             snapshot.docs.map(
-                function(item) {
+                item => ({
 
-                    return {
-                        id:
-                            item.id,
+                    id:
+                        item.id,
 
-                        ...item.data()
-                    };
-                }
+                    ...item.data()
+
+                })
             );
+
+
+        render();
 
     } catch (error) {
 
@@ -1037,14 +902,12 @@ async function loadCombos() {
             "Load Combos Error:",
             error
         );
-
-        combos = [];
     }
 }
 
 
 /* =========================================================
-   FIRESTORE - LOAD CATEGORIES
+   LOAD CATEGORIES
 ========================================================= */
 
 async function loadCategories() {
@@ -1059,37 +922,93 @@ async function loadCategories() {
                 )
             );
 
+
         categories =
             snapshot.docs.map(
-                function(item) {
+                item => ({
 
-                    return {
+                    id:
+                        item.id,
+
+                    ...item.data()
+
+                })
+            );
+
+
+        if (
+            categories.length === 0
+        ) {
+
+            for (
+                const name
+                of DEFAULT_CATEGORIES
+            ) {
+
+                const categoryId =
+                    name
+                        .toLowerCase()
+                        .replace(
+                            /[^a-z0-9]+/g,
+                            "-"
+                        )
+                        .replace(
+                            /^-+|-+$/g,
+                            ""
+                        );
+
+
+                try {
+
+                    await setDoc(
+                        doc(
+                            db,
+                            "categories",
+                            categoryId
+                        ),
+                        {
+                            name,
+                            createdAt:
+                                serverTimestamp()
+                        }
+                    );
+
+                } catch (error) {
+
+                    console.warn(
+                        "Default Category Warning:",
+                        error
+                    );
+                }
+            }
+
+
+            const refreshed =
+                await getDocs(
+                    collection(
+                        db,
+                        "categories"
+                    )
+                );
+
+
+            categories =
+                refreshed.docs.map(
+                    item => ({
+
                         id:
                             item.id,
 
                         ...item.data()
-                    };
-                }
-            );
 
-        if (
-            !categories.length
-        ) {
-
-            categories =
-                DEFAULT_CATEGORIES.map(
-                    function(name) {
-
-                        return {
-                            id:
-                                name.toLowerCase(),
-
-                            name:
-                                name
-                        };
-                    }
+                    })
                 );
         }
+
+
+        renderCategoryOptions();
+
+        renderCategoryList();
 
     } catch (error) {
 
@@ -1097,31 +1016,15 @@ async function loadCategories() {
             "Load Categories Error:",
             error
         );
-
-        categories =
-            DEFAULT_CATEGORIES.map(
-                function(name) {
-
-                    return {
-                        id:
-                            name.toLowerCase(),
-
-                        name:
-                            name
-                    };
-                }
-            );
     }
 }
 
 
 /* =========================================================
-   FIRESTORE - LOAD MARKETING LINKS
+   LOAD MARKETING LINKS
 ========================================================= */
 
 async function loadMarketingLinks() {
-
-    marketingLinks = {};
 
     try {
 
@@ -1133,19 +1036,25 @@ async function loadMarketingLinks() {
                 )
             );
 
+
+        marketingLinks = {};
+
+
         snapshot.docs.forEach(
-            function(item) {
+            item => {
 
-                marketingLinks[
-                    item.id
-                ] = {
-                    id:
-                        item.id,
+                marketingLinks[item.id] =
+                    {
+                        id:
+                            item.id,
 
-                    ...item.data()
-                };
+                        ...item.data()
+                    };
             }
         );
+
+
+        render();
 
     } catch (error) {
 
@@ -1153,14 +1062,12 @@ async function loadMarketingLinks() {
             "Load Marketing Links Error:",
             error
         );
-
-        marketingLinks = {};
     }
 }
 
 
 /* =========================================================
-   LOAD ALL FIREBASE DATA
+   LOAD EVERYTHING
 ========================================================= */
 
 async function loadFirebaseData() {
@@ -1171,860 +1078,183 @@ async function loadFirebaseData() {
         loadMarketingLinks()
     ]);
 
-    renderCategoryOptions();
-    renderCategoryFilter();
-    renderCategoryList();
-
     render();
-    renderMarketingLinks();
 }
 
 
 /* =========================================================
-   ADD / SAVE COMBO
+   MARKETING STATS
 ========================================================= */
 
-if (comboForm) {
-
-    comboForm.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-            const name =
-                comboName.value.trim();
-
-            const category =
-                comboCategory.value.trim();
-
-            const main =
-                mainLink.value.trim();
-
-            const affiliate =
-                affiliateLink.value.trim();
-
-            const notes =
-                comboNotes.value.trim();
-
-            const status =
-                comboStatus.value ||
-                "Active";
-
-            if (!name) {
-
-                alert(
-                    "Combo Name ضروری ہے۔"
-                );
-
-                return;
-            }
-
-            const existingId =
-                editId.value.trim();
-
-            try {
-
-                if (existingId) {
-
-                    const comboRef =
-                        doc(
-                            db,
-                            "combos",
-                            existingId
-                        );
-
-                    await updateDoc(
-                        comboRef,
-                        {
-                            name:
-                                name,
-
-                            category:
-                                category,
-
-                            mainLink:
-                                main,
-
-                            affiliateLink:
-                                affiliate,
-
-                            notes:
-                                notes,
-
-                            status:
-                                status,
-
-                            updatedAt:
-                                serverTimestamp()
-                        }
-                    );
-
-                    const index =
-                        combos.findIndex(
-                            item =>
-                                item.id ===
-                                existingId
-                        );
-
-                    if (
-                        index !== -1
-                    ) {
-
-                        combos[index] = {
-                            ...combos[index],
-
-                            name:
-                                name,
-
-                            category:
-                                category,
-
-                            mainLink:
-                                main,
-
-                            affiliateLink:
-                                affiliate,
-
-                            notes:
-                                notes,
-
-                            status:
-                                status
-                        };
-                    }
-
-
-                    /* =========================================
-                       EXISTING MARKETING LINK SYNC
-                    ========================================= */
-
-                    if (
-                        marketingLinks[
-                            existingId
-                        ]
-                    ) {
-
-                        const updatedCombo = {
-                            id:
-                                existingId,
-
-                            name:
-                                name,
-
-                            category:
-                                category,
-
-                            mainLink:
-                                main,
-
-                            affiliateLink:
-                                affiliate,
-
-                            notes:
-                                notes,
-
-                            status:
-                                status
-                        };
-
-                        const newTarget =
-                            getMarketingTarget(
-                                updatedCombo
-                            );
-
-                        const linkRef =
-                            doc(
-                                db,
-                                "marketingLinks",
-                                existingId
-                            );
-
-                        const publicRef =
-                            doc(
-                                db,
-                                "publicRedirects",
-                                existingId
-                            );
-
-                        const existingLink =
-                            marketingLinks[
-                                existingId
-                            ];
-
-                        await updateDoc(
-                            linkRef,
-                            {
-                                comboName:
-                                    name,
-
-                                targetUrl:
-                                    newTarget ||
-                                    existingLink.targetUrl ||
-                                    "",
-
-                                updatedAt:
-                                    serverTimestamp()
-                            }
-                        );
-
-
-                        /*
-                           Public redirect ہمیشہ sync رہے۔
-                        */
-
-                        await setDoc(
-                            publicRef,
-                            {
-                                targetUrl:
-                                    newTarget ||
-                                    existingLink.targetUrl ||
-                                    "",
-
-                                status:
-                                    existingLink.status ||
-                                    "Active",
-
-                                updatedAt:
-                                    serverTimestamp()
-                            },
-                            {
-                                merge:
-                                    true
-                            }
-                        );
-
-
-                        marketingLinks[
-                            existingId
-                        ] = {
-                            ...existingLink,
-
-                            comboName:
-                                name,
-
-                            targetUrl:
-                                newTarget ||
-                                existingLink.targetUrl ||
-                                "",
-
-                            updatedAt:
-                                new Date()
-                        };
-                    }
-
-                } else {
-
-                    const newCombo = {
-
-                        name:
-                            name,
-
-                        category:
-                            category,
-
-                        mainLink:
-                            main,
-
-                        affiliateLink:
-                            affiliate,
-
-                        notes:
-                            notes,
-
-                        status:
-                            status,
-
-                        createdAt:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-                    };
-
-                    const created =
-                        await addDoc(
-                            collection(
-                                db,
-                                "combos"
-                            ),
-                            newCombo
-                        );
-
-                    combos.push({
-
-                        id:
-                            created.id,
-
-                        ...newCombo,
-
-                        createdAt:
-                            new Date(),
-
-                        updatedAt:
-                            new Date()
-                    });
-                }
-
-                closeComboModal();
-
-                render();
-                renderMarketingLinks();
-
-            } catch (error) {
-
-                console.error(
-                    "Save Combo Error:",
-                    error
-                );
-
-                alert(
-                    "Combo save نہیں ہو سکا۔"
-                );
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   EDIT COMBO
-========================================================= */
-
-function editCombo(id) {
-
-    const combo =
-        combos.find(
-            item =>
-                item.id === id
-        );
-
-    if (!combo) {
-        return;
-    }
-
-    openComboModal(combo);
-}
-
-
-/* =========================================================
-   DELETE COMBO
-========================================================= */
-
-async function deleteCombo(id) {
-
-    const combo =
-        combos.find(
-            item =>
-                item.id === id
-        );
-
-    if (!combo) {
-        return;
-    }
-
-    const confirmed =
-        confirm(
-            `"${combo.name}" کو delete کرنا ہے؟`
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        /* =========================================
-           DELETE COMBO
-        ========================================= */
-
-        await deleteDoc(
-            doc(
-                db,
-                "combos",
-                id
-            )
+function updateMarketingStats() {
+
+    const links =
+        Object.values(
+            marketingLinks
         );
 
 
-        /* =========================================
-           REMOVE PUBLIC REDIRECT
-           Marketing history محفوظ رہے گی۔
-        ========================================= */
-
-        try {
-
-            await deleteDoc(
-                doc(
-                    db,
-                    "publicRedirects",
-                    id
-                )
-            );
-
-        } catch (publicDeleteError) {
-
-            console.warn(
-                "Public Redirect Delete Warning:",
-                publicDeleteError
-            );
-        }
-
-
-        /* =========================================
-           PRESERVE MARKETING HISTORY
-           مگر اسے Archived کر دیں۔
-        ========================================= */
-
-        if (
-            marketingLinks[id]
-        ) {
-
-            try {
-
-                await updateDoc(
-                    doc(
-                        db,
-                        "marketingLinks",
-                        id
-                    ),
-                    {
-                        status:
-                            "Archived",
-
-                        updatedAt:
-                            serverTimestamp()
-                    }
-                );
-
-            } catch (marketingUpdateError) {
-
-                console.warn(
-                    "Marketing History Update Warning:",
-                    marketingUpdateError
-                );
-            }
-
-            marketingLinks[id] = {
-                ...marketingLinks[id],
-
-                status:
-                    "Archived",
-
-                updatedAt:
-                    new Date()
-            };
-        }
-
-
-        /* =========================================
-           REMOVE FROM LOCAL COMBO LIST
-        ========================================= */
-
-        combos =
-            combos.filter(
-                item =>
-                    item.id !== id
-            );
-
-
-        render();
-        renderMarketingLinks();
-
-        alert(
-            "Combo delete ہو گیا۔ Marketing Link کی click history محفوظ ہے۔"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Delete Combo Error:",
-            error
-        );
-
-        alert(
-            "Combo delete نہیں ہو سکا۔"
-        );
-    }
-}
-
-
-/* =========================================================
-   ARCHIVE / RESTORE COMBO
-========================================================= */
-
-async function archiveCombo(id) {
-
-    const combo =
-        combos.find(
-            item =>
-                item.id === id
-        );
-
-    if (!combo) {
-        return;
-    }
-
-    const newStatus =
-        combo.status === "Archived"
-            ? "Active"
-            : "Archived";
-
-    try {
-
-        await updateDoc(
-            doc(
-                db,
-                "combos",
-                id
-            ),
-            {
-                status:
-                    newStatus,
-
-                updatedAt:
-                    serverTimestamp()
-            }
-        );
-
-        combo.status =
-            newStatus;
-
-
-        if (
-            marketingLinks[id]
-        ) {
-
-            await updateDoc(
-                doc(
-                    db,
-                    "marketingLinks",
-                    id
-                ),
-                {
-                    status:
-                        newStatus,
-
-                    updatedAt:
-                        serverTimestamp()
-                }
-            );
-
-
-            await setDoc(
-                doc(
-                    db,
-                    "publicRedirects",
-                    id
-                ),
-                {
-                    status:
-                        newStatus,
-
-                    updatedAt:
-                        serverTimestamp()
-                },
-                {
-                    merge:
-                        true
-                }
-            );
-
-
-            marketingLinks[id].status =
-                newStatus;
-
-            marketingLinks[id].updatedAt =
-                new Date();
-        }
-
-        render();
-        renderMarketingLinks();
-
-    } catch (error) {
-
-        console.error(
-            "Archive Error:",
-            error
-        );
-
-        alert(
-            "Status update نہیں ہو سکا۔"
-        );
-    }
-}
-
-
-/* =========================================================
-   PASTE / IMPORT COMBOS
-========================================================= */
-
-if (importPasteBtn) {
-
-    importPasteBtn.addEventListener(
-        "click",
-        async function() {
-
-            const raw =
-                pasteBox.value.trim();
-
-            if (!raw) {
-
-                alert(
-                    "Paste box خالی ہے۔"
-                );
-
-                return;
-            }
-
-            let data;
-
-            try {
-
-                data =
-                    JSON.parse(raw);
-
-            } catch (error) {
-
-                alert(
-                    "JSON format درست نہیں ہے۔"
-                );
-
-                return;
-            }
-
-            let items =
-                data;
-
-            if (
-                !Array.isArray(items)
+    const totalLinks =
+        links.length;
+
+
+    const totalClicks =
+        links.reduce(
+            function(
+                total,
+                link
             ) {
 
-                if (
-                    data &&
-                    Array.isArray(
-                        data.combos
+                return (
+                    total +
+                    (
+                        Number(
+                            link?.clicks
+                        ) || 0
                     )
-                ) {
-
-                    items =
-                        data.combos;
-
-                } else {
-
-                    items =
-                        [data];
-                }
-            }
-
-            let imported = 0;
-
-            try {
-
-                for (
-                    const item of items
-                ) {
-
-                    if (
-                        !item ||
-                        typeof item !==
-                        "object"
-                    ) {
-                        continue;
-                    }
-
-                    const newCombo = {
-
-                        name:
-                            String(
-                                item.name ||
-                                ""
-                            ).trim(),
-
-                        category:
-                            String(
-                                item.category ||
-                                "Other"
-                            ).trim(),
-
-                        mainLink:
-                            String(
-                                item.mainLink ||
-                                item.main_link ||
-                                ""
-                            ).trim(),
-
-                        affiliateLink:
-                            String(
-                                item.affiliateLink ||
-                                item.affiliate_link ||
-                                ""
-                            ).trim(),
-
-                        notes:
-                            String(
-                                item.notes ||
-                                item.description ||
-                                ""
-                            ).trim(),
-
-                        status:
-                            String(
-                                item.status ||
-                                "Active"
-                            ).trim(),
-
-                        createdAt:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-                    };
-
-                    if (
-                        !newCombo.name
-                    ) {
-                        continue;
-                    }
-
-                    const created =
-                        await addDoc(
-                            collection(
-                                db,
-                                "combos"
-                            ),
-                            newCombo
-                        );
-
-                    combos.push({
-
-                        id:
-                            created.id,
-
-                        ...newCombo,
-
-                        createdAt:
-                            new Date(),
-
-                        updatedAt:
-                            new Date()
-                    });
-
-                    imported++;
-                }
-
-                closePaste();
-
-                render();
-                renderMarketingLinks();
-
-                alert(
-                    `${imported} Combo import ہو گئے۔`
                 );
 
-            } catch (error) {
+            },
+            0
+        );
 
-                console.error(
-                    "Import Error:",
-                    error
-                );
 
-                alert(
-                    "Import کے دوران مسئلہ آیا۔"
-                );
-            }
-        }
-    );
+    if (totalMarketingCount) {
+
+        totalMarketingCount.textContent =
+            totalLinks;
+    }
+
+
+    if (totalClicksCount) {
+
+        totalClicksCount.textContent =
+            totalClicks;
+    }
 }
 
 
 /* =========================================================
-   CATEGORY OPTIONS
+   GENERAL STATS
+========================================================= */
+
+function updateStats() {
+
+    const total =
+        combos.length;
+
+
+    const active =
+        combos.filter(
+            combo =>
+                getComboStatus(
+                    combo
+                ) === "Active"
+        ).length;
+
+
+    const pending =
+        combos.filter(
+            combo =>
+                getComboStatus(
+                    combo
+                ) === "Pending"
+        ).length;
+
+
+    const archived =
+        combos.filter(
+            combo =>
+                getComboStatus(
+                    combo
+                ) === "Archived"
+        ).length;
+
+
+    if (totalCount) {
+
+        totalCount.textContent =
+            total;
+    }
+
+
+    if (activeCount) {
+
+        activeCount.textContent =
+            active;
+    }
+
+
+    if (pendingCount) {
+
+        pendingCount.textContent =
+            pending;
+    }
+
+
+    if (archivedCount) {
+
+        archivedCount.textContent =
+            archived;
+    }
+
+
+    updateMarketingStats();
+}
+
+
+/* =========================================================
+   RENDER CATEGORY OPTIONS
 ========================================================= */
 
 function renderCategoryOptions() {
 
-    if (
-        !comboCategory ||
-        !categoryList
-    ) {
+    if (!comboCategory) {
         return;
     }
+
 
     const current =
         comboCategory.value;
 
-    comboCategory.innerHTML =
-        "";
 
-    const emptyOption =
-        document.createElement(
-            "option"
+    const datalist =
+        document.getElementById(
+            "categoryOptions"
         );
 
-    emptyOption.value =
-        "";
 
-    emptyOption.textContent =
-        "Select Category";
+    if (datalist) {
 
-    comboCategory.appendChild(
-        emptyOption
-    );
-
-    categories
-        .slice()
-        .sort(
-            (a, b) =>
-                String(a.name)
-                    .localeCompare(
-                        String(b.name)
-                    )
-        )
-        .forEach(
-            function(category) {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    category.name;
-
-                option.textContent =
-                    category.name;
-
-                comboCategory.appendChild(
-                    option
-                );
-            }
-        );
-
-    if (current) {
-
-        comboCategory.value =
-            current;
+        datalist.innerHTML =
+            categories
+                .sort(
+                    (a, b) =>
+                        String(
+                            a.name
+                        ).localeCompare(
+                            String(
+                                b.name
+                            )
+                        )
+                )
+                .map(
+                    category =>
+                        `<option value="${escapeHTML(
+                            category.name
+                        )}"></option>`
+                )
+                .join("");
     }
 
-    categoryList.innerHTML =
-        categories
-            .map(
-                function(category) {
 
-                    return `
-                        <option value="${escapeHTML(
-                            category.name
-                        )}">
-                        `;
-                }
-            )
-            .join("");
+    comboCategory.value =
+        current;
 }
 
 
 /* =========================================================
-   CATEGORY FILTER
+   RENDER CATEGORY FILTER
 ========================================================= */
 
 function renderCategoryFilter() {
@@ -2033,42 +1263,50 @@ function renderCategoryFilter() {
         return;
     }
 
+
     const current =
         categoryFilter.value;
 
-    categoryFilter.innerHTML =
-        `<option value="">All Categories</option>`;
 
-    categories
-        .slice()
-        .sort(
-            (a, b) =>
-                String(a.name)
-                    .localeCompare(
-                        String(b.name)
+    const options = [
+
+        `<option value="">All Categories</option>`,
+
+        ...categories
+            .sort(
+                (a, b) =>
+                    String(
+                        a.name
+                    ).localeCompare(
+                        String(
+                            b.name
+                        )
                     )
-        )
-        .forEach(
-            function(category) {
+            )
+            .map(
+                category =>
+                    `<option value="${escapeHTML(
+                        category.name
+                    )}">${escapeHTML(
+                        category.name
+                    )}</option>`
+            )
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+    ];
 
-                option.value =
-                    category.name;
 
-                option.textContent =
-                    category.name;
+    categoryFilter.innerHTML =
+        options.join("");
 
-                categoryFilter.appendChild(
-                    option
-                );
-            }
-        );
 
-    if (current) {
+    if (
+        [...categoryFilter.options]
+            .some(
+                option =>
+                    option.value ===
+                    current
+            )
+    ) {
 
         categoryFilter.value =
             current;
@@ -2077,7 +1315,7 @@ function renderCategoryFilter() {
 
 
 /* =========================================================
-   CATEGORY LIST
+   RENDER CATEGORIES
 ========================================================= */
 
 function renderCategoryList() {
@@ -2086,44 +1324,67 @@ function renderCategoryList() {
         return;
     }
 
+
     if (
-        !categories.length
+        categories.length === 0
     ) {
 
         categoryListView.innerHTML =
-            `<div class="empty-state">No categories.</div>`;
+            `<div class="empty-state">
+                No categories yet.
+            </div>`;
 
         return;
     }
 
+
     categoryListView.innerHTML =
         categories
-            .slice()
             .sort(
                 (a, b) =>
-                    String(a.name)
-                        .localeCompare(
-                            String(b.name)
+                    String(
+                        a.name
+                    ).localeCompare(
+                        String(
+                            b.name
                         )
+                    )
             )
             .map(
-                function(category) {
+                category => {
+
+                    const used =
+                        combos.filter(
+                            combo =>
+                                normalizeText(
+                                    combo.category
+                                ).toLowerCase() ===
+                                normalizeText(
+                                    category.name
+                                ).toLowerCase()
+                        ).length;
+
 
                     return `
-                        <div class="category-item">
+                        <div class="category-row">
 
-                            <span>
-                                ${escapeHTML(
-                                    category.name
-                                )}
-                            </span>
+                            <div>
+                                <strong>
+                                    ${escapeHTML(
+                                        category.name
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${used} combo${used === 1 ? "" : "s"}
+                                </small>
+                            </div>
 
                             <button
-                                type="button"
-                                class="btn danger"
-                                onclick="removeCategory('${escapeHTML(
+                                class="btn danger small"
+                                data-delete-category="${escapeHTML(
                                     category.id
-                                )}')"
+                                )}"
                             >
                                 Delete
                             </button>
@@ -2137,200 +1398,511 @@ function renderCategoryList() {
 
 
 /* =========================================================
-   ADD CATEGORY
+   OPEN COMBO MODAL
 ========================================================= */
 
-if (addCategoryBtn) {
+function openComboModal(
+    combo = null
+) {
 
-    addCategoryBtn.addEventListener(
-        "click",
-        async function() {
+    if (!comboModal) {
+        return;
+    }
 
-            const name =
-                newCategory.value.trim();
 
-            if (!name) {
+    if (combo) {
 
-                alert(
-                    "Category name درج کریں۔"
-                );
+        if (modalTitle) {
 
-                return;
-            }
-
-            const exists =
-                categories.some(
-                    item =>
-                        String(
-                            item.name
-                        ).toLowerCase() ===
-                        name.toLowerCase()
-                );
-
-            if (exists) {
-
-                alert(
-                    "یہ category پہلے سے موجود ہے۔"
-                );
-
-                return;
-            }
-
-            try {
-
-                const categoryId =
-                    name
-                        .toLowerCase()
-                        .replace(
-                            /[^a-z0-9]+/g,
-                            "-"
-                        )
-                        .replace(
-                            /^-+|-+$/g,
-                            ""
-                        )
-                        .slice(
-                            0,
-                            100
-                        ) ||
-                    `category-${Date.now()}`;
-
-                const categoryRef =
-                    doc(
-                        db,
-                        "categories",
-                        categoryId
-                    );
-
-                await setDoc(
-                    categoryRef,
-                    {
-                        name:
-                            name,
-
-                        createdAt:
-                            serverTimestamp()
-                    }
-                );
-
-                categories.push({
-
-                    id:
-                        categoryId,
-
-                    name:
-                        name
-                });
-
-                newCategory.value =
-                    "";
-
-                renderCategoryOptions();
-                renderCategoryFilter();
-                renderCategoryList();
-                render();
-
-            } catch (error) {
-
-                console.error(
-                    "Add Category Error:",
-                    error
-                );
-
-                alert(
-                    "Category add نہیں ہو سکی۔"
-                );
-            }
+            modalTitle.textContent =
+                "Edit Combo";
         }
+
+
+        if (editId) {
+
+            editId.value =
+                combo.id;
+        }
+
+
+        if (comboName) {
+
+            comboName.value =
+                combo.name || "";
+        }
+
+
+        if (comboCategory) {
+
+            comboCategory.value =
+                combo.category || "";
+        }
+
+
+        if (mainLink) {
+
+            mainLink.value =
+                combo.mainLink || "";
+        }
+
+
+        if (affiliateLink) {
+
+            affiliateLink.value =
+                combo.affiliateLink || "";
+        }
+
+
+        if (comboNotes) {
+
+            comboNotes.value =
+                combo.notes || "";
+        }
+
+
+        if (comboStatus) {
+
+            comboStatus.value =
+                getComboStatus(
+                    combo
+                );
+        }
+
+    } else {
+
+        if (modalTitle) {
+
+            modalTitle.textContent =
+                "Add Combo";
+        }
+
+
+        if (editId) {
+
+            editId.value =
+                "";
+        }
+
+
+        if (comboForm) {
+
+            comboForm.reset();
+        }
+
+
+        if (comboStatus) {
+
+            comboStatus.value =
+                "Active";
+        }
+    }
+
+
+    comboModal.classList.remove(
+        "hidden"
+    );
+
+
+    setTimeout(
+        function() {
+
+            comboName?.focus();
+
+        },
+        50
     );
 }
 
 
 /* =========================================================
-   DELETE CATEGORY
+   CLOSE COMBO MODAL
 ========================================================= */
 
-async function removeCategory(id) {
+function closeComboModal() {
+
+    comboModal?.classList.add(
+        "hidden"
+    );
+}
+
+
+/* =========================================================
+   SAVE COMBO
+========================================================= */
+
+async function saveCombo(event) {
+
+    event.preventDefault();
+
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const id =
+        normalizeText(
+            editId?.value
+        );
+
+
+    const name =
+        normalizeText(
+            comboName?.value
+        );
+
 
     const category =
-        categories.find(
-            item =>
-                item.id === id
+        normalizeText(
+            comboCategory?.value
         );
 
-    if (!category) {
-        return;
-    }
 
-    const used =
-        combos.some(
-            combo =>
-                String(
-                    combo.category || ""
-                ).toLowerCase() ===
-                String(
-                    category.name || ""
-                ).toLowerCase()
+    const main =
+        normalizeText(
+            mainLink?.value
         );
 
-    if (used) {
+
+    const affiliate =
+        normalizeText(
+            affiliateLink?.value
+        );
+
+
+    const notes =
+        normalizeText(
+            comboNotes?.value
+        );
+
+
+    const status =
+        normalizeText(
+            comboStatus?.value
+        ) ||
+        "Active";
+
+
+    if (!name) {
 
         alert(
-            "یہ category ایک یا زیادہ Combos میں استعمال ہو رہی ہے، پہلے Combo کی category تبدیل کریں۔"
+            "Combo name is required."
         );
 
         return;
     }
 
-    const confirmed =
-        confirm(
-            `"${category.name}" category delete کرنی ہے؟`
+
+    if (
+        main &&
+        !isValidUrl(main)
+    ) {
+
+        alert(
+            "Main Link must be a valid HTTP or HTTPS URL."
         );
 
-    if (!confirmed) {
         return;
     }
+
+
+    if (
+        affiliate &&
+        !isValidUrl(affiliate)
+    ) {
+
+        alert(
+            "Affiliate Link must be a valid HTTP or HTTPS URL."
+        );
+
+        return;
+    }
+
+
+    const submitButton =
+        comboForm?.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    if (submitButton) {
+
+        submitButton.disabled =
+            true;
+
+        submitButton.textContent =
+            "Saving...";
+    }
+
 
     try {
 
-        await deleteDoc(
-            doc(
-                db,
-                "categories",
-                id
-            )
-        );
+        if (id) {
 
-        categories =
-            categories.filter(
-                item =>
-                    item.id !== id
+            const comboRef =
+                doc(
+                    db,
+                    "combos",
+                    id
+                );
+
+
+            const oldCombo =
+                combos.find(
+                    combo =>
+                        combo.id === id
+                );
+
+
+            await updateDoc(
+                comboRef,
+                {
+
+                    name,
+                    category,
+                    mainLink:
+                        main,
+
+                    affiliateLink:
+                        affiliate,
+
+                    notes,
+
+                    status,
+
+                    updatedAt:
+                        serverTimestamp()
+                }
             );
 
-        renderCategoryOptions();
-        renderCategoryFilter();
-        renderCategoryList();
+
+            const existingMarketing =
+                marketingLinks[id];
+
+
+            if (existingMarketing) {
+
+                const targetUrl =
+                    getMarketingTarget({
+                        name,
+                        category,
+                        mainLink:
+                            main,
+                        affiliateLink:
+                            affiliate,
+                        notes,
+                        status
+                    });
+
+
+                if (targetUrl) {
+
+                    await updateDoc(
+                        doc(
+                            db,
+                            "marketingLinks",
+                            id
+                        ),
+                        {
+
+                            comboName:
+                                name,
+
+                            targetUrl,
+
+                            status,
+
+                            updatedAt:
+                                serverTimestamp()
+                        }
+                    );
+
+
+                    await setDoc(
+                        doc(
+                            db,
+                            "publicRedirects",
+                            id
+                        ),
+                        {
+
+                            targetUrl,
+
+                            status,
+
+                            updatedAt:
+                                serverTimestamp()
+                        },
+                        {
+                            merge:
+                                true
+                        }
+                    );
+
+                } else {
+
+                    await updateDoc(
+                        doc(
+                            db,
+                            "marketingLinks",
+                            id
+                        ),
+                        {
+
+                            comboName:
+                                name,
+
+                            status:
+                                "Archived",
+
+                            updatedAt:
+                                serverTimestamp()
+                        }
+                    );
+
+
+                    await setDoc(
+                        doc(
+                            db,
+                            "publicRedirects",
+                            id
+                        ),
+                        {
+
+                            status:
+                                "Archived",
+
+                            updatedAt:
+                                serverTimestamp()
+                        },
+                        {
+                            merge:
+                                true
+                        }
+                    );
+                }
+            }
+
+
+            const index =
+                combos.findIndex(
+                    combo =>
+                        combo.id === id
+                );
+
+
+            if (
+                index !== -1
+            ) {
+
+                combos[index] = {
+
+                    ...combos[index],
+
+                    name,
+                    category,
+                    mainLink:
+                        main,
+                    affiliateLink:
+                        affiliate,
+                    notes,
+                    status
+
+                };
+            }
+
+
+            console.log(
+                "Combo updated:",
+                oldCombo
+            );
+
+        } else {
+
+            const comboRef =
+                await addDoc(
+                    collection(
+                        db,
+                        "combos"
+                    ),
+                    {
+
+                        name,
+                        category,
+                        mainLink:
+                            main,
+                        affiliateLink:
+                            affiliate,
+                        notes,
+                        status,
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+                    }
+                );
+
+
+            combos.push({
+
+                id:
+                    comboRef.id,
+
+                name,
+                category,
+                mainLink:
+                    main,
+                affiliateLink:
+                    affiliate,
+                notes,
+                status
+
+            });
+        }
+
+
+        closeComboModal();
+
         render();
 
     } catch (error) {
 
         console.error(
-            "Delete Category Error:",
+            "Save Combo Error:",
             error
         );
 
+
         alert(
-            "Category delete نہیں ہو سکی۔"
+            "Unable to save the combo. Please try again."
         );
+
+    } finally {
+
+        if (submitButton) {
+
+            submitButton.disabled =
+                false;
+
+            submitButton.textContent =
+                id
+                    ? "Update Combo"
+                    : "Save Combo";
+        }
     }
 }
 
 
 /* =========================================================
-   CREATE / UPDATE MARKETING LINK
+   CREATE MARKETING LINK
 ========================================================= */
 
-async function createMarketingLink(id) {
+async function createMarketingLink(
+    id
+) {
 
     const combo =
         combos.find(
@@ -2338,95 +1910,91 @@ async function createMarketingLink(id) {
                 item.id === id
         );
 
+
     if (!combo) {
 
         alert(
-            "Combo نہیں ملا۔"
+            "Combo not found."
         );
 
         return;
     }
 
-    const target =
+
+    const targetUrl =
         getMarketingTarget(
             combo
         );
 
-    if (!target) {
+
+    if (!targetUrl) {
 
         alert(
-            "Marketing Link بنانے کے لیے پہلے Affiliate Link یا Main Link درج کریں۔"
+            "Please add a valid Main Link or Affiliate Link first."
         );
 
         return;
     }
 
+
     try {
 
-        const linkRef =
+        const marketingRef =
             doc(
                 db,
                 "marketingLinks",
                 id
             );
 
-        const publicRef =
-            doc(
-                db,
-                "publicRedirects",
-                id
+
+        const existingSnap =
+            await getDoc(
+                marketingRef
             );
+
 
         const existing =
-            await getDoc(
-                linkRef
-            );
-
-        const existingData =
-            existing.exists()
-                ? existing.data()
+            existingSnap.exists()
+                ? existingSnap.data()
                 : {};
 
-        const oldClicks =
-            typeof existingData.clicks ===
-            "number"
-                ? existingData.clicks
-                : 0;
 
-        const oldStatus =
-            existingData.status ||
-            combo.status ||
-            "Active";
+        const status =
+            existing.status ||
+            getComboStatus(
+                combo
+            );
 
 
-        /* ==============================================
-           PRIVATE MARKETING LINK
-        ============================================== */
+        const clicks =
+            Number(
+                existing.clicks
+            ) || 0;
+
 
         await setDoc(
-            linkRef,
+            marketingRef,
             {
+
                 comboId:
                     id,
 
                 comboName:
                     combo.name || "",
 
-                targetUrl:
-                    target,
+                targetUrl,
 
-                clicks:
-                    oldClicks,
+                clicks,
 
-                status:
-                    oldStatus,
+                status,
 
                 createdAt:
-                    existingData.createdAt ||
+                    existing.createdAt ||
                     serverTimestamp(),
 
                 updatedAt:
                     serverTimestamp()
+
             },
             {
                 merge:
@@ -2435,21 +2003,21 @@ async function createMarketingLink(id) {
         );
 
 
-        /* ==============================================
-           PUBLIC REDIRECT MAP
-        ============================================== */
-
         await setDoc(
-            publicRef,
+            doc(
+                db,
+                "publicRedirects",
+                id
+            ),
             {
-                targetUrl:
-                    target,
 
-                status:
-                    oldStatus,
+                targetUrl,
+
+                status,
 
                 updatedAt:
                     serverTimestamp()
+
             },
             {
                 merge:
@@ -2460,8 +2028,7 @@ async function createMarketingLink(id) {
 
         marketingLinks[id] = {
 
-            id:
-                id,
+            id,
 
             comboId:
                 id,
@@ -2469,21 +2036,18 @@ async function createMarketingLink(id) {
             comboName:
                 combo.name || "",
 
-            targetUrl:
-                target,
+            targetUrl,
 
-            clicks:
-                oldClicks,
+            clicks,
 
-            status:
-                oldStatus,
+            status
 
-            createdAt:
-                existingData.createdAt,
-
-            updatedAt:
-                new Date()
         };
+
+
+        renderMarketingLinks();
+
+        render();
 
 
         const publicUrl =
@@ -2499,19 +2063,17 @@ async function createMarketingLink(id) {
             );
 
             alert(
-                "Marketing Link تیار ہو گیا اور Clipboard میں Copy ہو گیا۔"
+                "Marketing link created and copied:\n\n" +
+                publicUrl
             );
 
-        } catch (clipboardError) {
+        } catch {
 
-            window.prompt(
-                "Marketing Link:",
+            alert(
+                "Marketing link created:\n\n" +
                 publicUrl
             );
         }
-
-        render();
-        renderMarketingLinks();
 
     } catch (error) {
 
@@ -2520,91 +2082,11 @@ async function createMarketingLink(id) {
             error
         );
 
-        alert(
-            "Marketing Link create نہیں ہو سکا۔"
-        );
-    }
-}
-
-
-/* =========================================================
-   COPY MARKETING LINK
-========================================================= */
-
-async function copyMarketingLink(id) {
-
-    const link =
-        marketingLinks[id];
-
-    if (!link) {
 
         alert(
-            "Marketing Link موجود نہیں ہے۔"
-        );
-
-        return;
-    }
-
-    const publicUrl =
-        buildMarketingUrl(id);
-
-    try {
-
-        await navigator.clipboard.writeText(
-            publicUrl
-        );
-
-        alert(
-            "Marketing Link Copy ہو گیا۔"
-        );
-
-    } catch (error) {
-
-        window.prompt(
-            "Marketing Link:",
-            publicUrl
+            "Unable to create the marketing link."
         );
     }
-}
-
-
-/* =========================================================
-   OPEN MARKETING LINK
-========================================================= */
-
-function openMarketingLink(id) {
-
-    const link =
-        marketingLinks[id];
-
-    if (!link) {
-
-        alert(
-            "Marketing Link پہلے Create کریں۔"
-        );
-
-        return;
-    }
-
-    if (
-        getMarketingStatus(link) ===
-        "Archived"
-    ) {
-
-        alert(
-            "یہ Marketing Link Archived ہے۔"
-        );
-
-        return;
-    }
-
-    const publicUrl =
-        buildMarketingUrl(id);
-
-    window.open(
-        publicUrl,
-        "_blank"
-    );
 }
 
 
@@ -2617,31 +2099,10 @@ async function updateMarketingLinkStatus(
     newStatus
 ) {
 
-    const link =
-        marketingLinks[id];
-
-    if (!link) {
-
-        alert(
-            "Marketing Link موجود نہیں ہے۔"
-        );
-
+    if (!marketingLinks[id]) {
         return;
     }
 
-    const allowedStatuses = [
-        "Active",
-        "Paused",
-        "Archived"
-    ];
-
-    if (
-        !allowedStatuses.includes(
-            newStatus
-        )
-    ) {
-        return;
-    }
 
     try {
 
@@ -2652,11 +2113,13 @@ async function updateMarketingLinkStatus(
                 id
             ),
             {
+
                 status:
                     newStatus,
 
                 updatedAt:
                     serverTimestamp()
+
             }
         );
 
@@ -2668,11 +2131,13 @@ async function updateMarketingLinkStatus(
                 id
             ),
             {
+
                 status:
                     newStatus,
 
                 updatedAt:
                     serverTimestamp()
+
             },
             {
                 merge:
@@ -2681,28 +2146,24 @@ async function updateMarketingLinkStatus(
         );
 
 
-        marketingLinks[id] = {
-            ...marketingLinks[id],
+        marketingLinks[id].status =
+            newStatus;
 
-            status:
-                newStatus,
-
-            updatedAt:
-                new Date()
-        };
 
         renderMarketingLinks();
+
         render();
 
     } catch (error) {
 
         console.error(
-            "Marketing Link Status Error:",
+            "Marketing Status Error:",
             error
         );
 
+
         alert(
-            "Marketing Link status update نہیں ہو سکا۔"
+            "Unable to update marketing link status."
         );
     }
 }
@@ -2712,23 +2173,20 @@ async function updateMarketingLinkStatus(
    DELETE MARKETING LINK
 ========================================================= */
 
-async function deleteMarketingLink(id) {
-
-    const link =
-        marketingLinks[id];
-
-    if (!link) {
-        return;
-    }
+async function deleteMarketingLink(
+    id
+) {
 
     const confirmed =
         confirm(
-            `"${link.comboName || "Marketing Link"}" کا Marketing Link delete کرنا ہے؟`
+            "Delete this marketing link and its click history?"
         );
+
 
     if (!confirmed) {
         return;
     }
+
 
     try {
 
@@ -2762,7 +2220,9 @@ async function deleteMarketingLink(id) {
 
         delete marketingLinks[id];
 
+
         renderMarketingLinks();
+
         render();
 
     } catch (error) {
@@ -2772,24 +2232,84 @@ async function deleteMarketingLink(id) {
             error
         );
 
+
         alert(
-            "Marketing Link delete نہیں ہو سکا۔"
+            "Unable to delete the marketing link."
         );
     }
 }
 
 
 /* =========================================================
-   MARKETING LINKS CONTROL RENDER
+   COPY MARKETING LINK
+========================================================= */
+
+async function copyMarketingLink(
+    id
+) {
+
+    const url =
+        buildMarketingUrl(
+            id
+        );
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            url
+        );
+
+
+        alert(
+            "Marketing link copied."
+        );
+
+    } catch {
+
+        prompt(
+            "Copy this marketing link:",
+            url
+        );
+    }
+}
+
+
+/* =========================================================
+   OPEN MARKETING LINK
+========================================================= */
+
+function openMarketingLink(
+    id
+) {
+
+    const url =
+        buildMarketingUrl(
+            id
+        );
+
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
+
+
+/* =========================================================
+   RENDER MARKETING LINKS
 ========================================================= */
 
 function renderMarketingLinks() {
 
     updateMarketingStats();
 
+
     if (!marketingLinksList) {
         return;
     }
+
 
     const links =
         Object.values(
@@ -2798,42 +2318,47 @@ function renderMarketingLinks() {
             .sort(
                 function(a, b) {
 
+                    const aDate =
+                        a.updatedAt?.toDate
+                            ? a.updatedAt.toDate()
+                            : new Date(
+                                a.updatedAt || 0
+                            );
+
+                    const bDate =
+                        b.updatedAt?.toDate
+                            ? b.updatedAt.toDate()
+                            : new Date(
+                                b.updatedAt || 0
+                            );
+
                     return (
-                        getTimeValue(
-                            b.updatedAt
-                        ) -
-                        getTimeValue(
-                            a.updatedAt
-                        )
+                        bDate -
+                        aDate
                     );
                 }
             );
 
-    if (!links.length) {
+
+    if (
+        links.length === 0
+    ) {
 
         marketingLinksList.innerHTML =
             "";
 
-        if (
-            marketingEmptyState
-        ) {
-
-            marketingEmptyState.classList.remove(
-                "hidden"
-            );
-        }
+        marketingEmptyState?.classList.remove(
+            "hidden"
+        );
 
         return;
     }
 
-    if (
-        marketingEmptyState
-    ) {
 
-        marketingEmptyState.classList.add(
-            "hidden"
-        );
-    }
+    marketingEmptyState?.classList.add(
+        "hidden"
+    );
+
 
     marketingLinksList.innerHTML =
         links
@@ -2845,48 +2370,53 @@ function renderMarketingLinks() {
 
 
 /* =========================================================
-   MARKETING LINK CONTROL HTML
+   MARKETING LINK HTML
 ========================================================= */
 
-function createMarketingLinkHTML(link) {
-
-    const id =
-        link.id;
+function createMarketingLinkHTML(
+    link
+) {
 
     const combo =
         combos.find(
             item =>
-                item.id === id
+                item.id ===
+                link.comboId
         );
+
 
     const comboName =
         link.comboName ||
         combo?.name ||
-        "Deleted Combo";
+        "Unknown Combo";
 
-    const clicks =
-        typeof link.clicks ===
-        "number"
-            ? link.clicks
-            : 0;
+
+    const category =
+        combo?.category ||
+        "—";
+
 
     const status =
-        getMarketingStatus(link);
+        getMarketingStatus(
+            link
+        );
 
-    const statusClass =
-        getMarketingStatusClass(status);
 
-    const target =
-        link.targetUrl ||
-        getMarketingTarget(combo);
+    const clicks =
+        Number(
+            link.clicks
+        ) || 0;
+
 
     const publicUrl =
-        buildMarketingUrl(id);
+        buildMarketingUrl(
+            link.id
+        );
 
-    const comboDeleted =
-        !combo;
 
-    let statusAction = "";
+    let statusAction =
+        "";
+
 
     if (
         status === "Active"
@@ -2894,12 +2424,11 @@ function createMarketingLinkHTML(link) {
 
         statusAction = `
             <button
-                type="button"
-                class="btn"
-                onclick="updateMarketingLinkStatus(
-                    '${escapeHTML(id)}',
-                    'Paused'
-                )"
+                class="btn secondary small"
+                data-marketing-action="pause"
+                data-id="${escapeHTML(
+                    link.id
+                )}"
             >
                 Pause
             </button>
@@ -2911,23 +2440,21 @@ function createMarketingLinkHTML(link) {
 
         statusAction = `
             <button
-                type="button"
-                class="btn"
-                onclick="updateMarketingLinkStatus(
-                    '${escapeHTML(id)}',
-                    'Active'
-                )"
+                class="btn primary small"
+                data-marketing-action="activate"
+                data-id="${escapeHTML(
+                    link.id
+                )}"
             >
                 Activate
             </button>
 
             <button
-                type="button"
-                class="btn"
-                onclick="updateMarketingLinkStatus(
-                    '${escapeHTML(id)}',
-                    'Archived'
-                )"
+                class="btn secondary small"
+                data-marketing-action="archive"
+                data-id="${escapeHTML(
+                    link.id
+                )}"
             >
                 Archive
             </button>
@@ -2937,155 +2464,116 @@ function createMarketingLinkHTML(link) {
 
         statusAction = `
             <button
-                type="button"
-                class="btn"
-                onclick="updateMarketingLinkStatus(
-                    '${escapeHTML(id)}',
-                    'Active'
-                )"
+                class="btn primary small"
+                data-marketing-action="restore"
+                data-id="${escapeHTML(
+                    link.id
+                )}"
             >
                 Restore
             </button>
         `;
     }
 
+
     return `
-        <article class="combo">
+        <article class="marketing-link-card">
 
-            <div>
+            <div class="marketing-link-head">
 
-                <h4>
-                    ${escapeHTML(
-                        comboName
-                    )}
-                </h4>
+                <div>
 
-                <div class="meta">
-
-                    <span class="tag">
-                        Marketing Link
-                    </span>
-
-                    <span class="tag ${escapeHTML(
-                        statusClass
-                    )}">
+                    <h3>
                         ${escapeHTML(
-                            status
+                            comboName
                         )}
-                    </span>
+                    </h3>
 
-                    <span class="tag">
-                        Clicks: ${clicks}
-                    </span>
+                    <div class="combo-meta">
 
-                </div>
+                        <span>
+                            ${escapeHTML(
+                                category
+                            )}
+                        </span>
 
-                ${
-                    comboDeleted
-                        ? `
-                            <div class="notes">
-                                Original Combo delete ہو چکا ہے۔ Click history محفوظ ہے۔
-                            </div>
-                        `
-                        : ""
-                }
+                        <span>
+                            ${escapeHTML(
+                                status
+                            )}
+                        </span>
 
-                ${
-                    combo?.category
-                        ? `
-                            <div class="notes">
-                                Category:
-                                ${escapeHTML(
-                                    combo.category
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
+                        <span>
+                            ${clicks} clicks
+                        </span>
 
-                ${
-                    target
-                        ? `
-                            <div class="notes">
-                                Target:
-                                ${escapeHTML(
-                                    shortenUrl(
-                                        target
-                                    )
-                                )}
-                            </div>
-                        `
-                        : `
-                            <div class="notes">
-                                Target URL موجود نہیں ہے۔
-                            </div>
-                        `
-                }
+                    </div>
 
-                <div class="notes">
-                    Public Link:
-                    ${escapeHTML(
-                        truncateText(
-                            publicUrl,
-                            120
-                        )
-                    )}
                 </div>
 
             </div>
 
 
-            <div class="actions">
+            <div class="marketing-link-url">
 
-                ${
-                    status !== "Archived" &&
-                    !comboDeleted
-                        ? `
-                            <button
-                                type="button"
-                                class="btn"
-                                onclick="copyMarketingLink(
-                                    '${escapeHTML(id)}'
-                                )"
-                            >
-                                Copy
-                            </button>
+                <strong>
+                    Public Link
+                </strong>
 
-                            <button
-                                type="button"
-                                class="btn"
-                                onclick="openMarketingLink(
-                                    '${escapeHTML(id)}'
-                                )"
-                            >
-                                Open
-                            </button>
+                <code>
+                    ${escapeHTML(
+                        publicUrl
+                    )}
+                </code>
 
-                            <button
-                                type="button"
-                                class="btn"
-                                onclick="createMarketingLink(
-                                    '${escapeHTML(id)}'
-                                )"
-                            >
-                                Update
-                            </button>
-                        `
-                        : ""
-                }
+            </div>
 
-                ${
-                    comboDeleted
-                        ? ""
-                        : statusAction
-                }
+
+            <div class="marketing-link-url">
+
+                <strong>
+                    Destination
+                </strong>
+
+                <code>
+                    ${escapeHTML(
+                        link.targetUrl || "—"
+                    )}
+                </code>
+
+            </div>
+
+
+            <div class="card-actions">
 
                 <button
-                    type="button"
-                    class="btn danger"
-                    onclick="deleteMarketingLink(
-                        '${escapeHTML(id)}'
-                    )"
+                    class="btn secondary small"
+                    data-marketing-action="copy"
+                    data-id="${escapeHTML(
+                        link.id
+                    )}"
+                >
+                    Copy
+                </button>
+
+                <button
+                    class="btn secondary small"
+                    data-marketing-action="open"
+                    data-id="${escapeHTML(
+                        link.id
+                    )}"
+                >
+                    Open
+                </button>
+
+                ${statusAction}
+
+                <button
+                    class="btn danger small"
+                    data-marketing-action="delete"
+                    data-id="${escapeHTML(
+                        link.id
+                    )}"
                 >
                     Delete
                 </button>
@@ -3098,64 +2586,696 @@ function createMarketingLinkHTML(link) {
 
 
 /* =========================================================
-   REFRESH MARKETING LINKS
+   DELETE COMBO
 ========================================================= */
 
-async function refreshMarketingLinks() {
+async function deleteCombo(
+    id
+) {
 
-    if (
-        refreshMarketingBtn
-    ) {
+    const combo =
+        combos.find(
+            item =>
+                item.id === id
+        );
 
-        refreshMarketingBtn.disabled =
-            true;
 
-        refreshMarketingBtn.textContent =
-            "Refreshing...";
+    if (!combo) {
+        return;
     }
+
+
+    const confirmed =
+        confirm(
+            `Delete "${combo.name}"?\n\nThe combo will be removed. Its marketing history will be kept, but the public redirect will be disabled.`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
 
     try {
 
-        await loadMarketingLinks();
+        await deleteDoc(
+            doc(
+                db,
+                "combos",
+                id
+            )
+        );
+
+
+        /*
+         * Keep marketingLinks history.
+         * Disable/remove the public redirect so an old
+         * marketing URL cannot continue sending traffic
+         * to a deleted combo.
+         */
+
+        if (
+            marketingLinks[id]
+        ) {
+
+            try {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "marketingLinks",
+                        id
+                    ),
+                    {
+
+                        status:
+                            "Archived",
+
+                        updatedAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+                marketingLinks[id].status =
+                    "Archived";
+
+            } catch (historyError) {
+
+                console.warn(
+                    "Marketing History Update Warning:",
+                    historyError
+                );
+            }
+
+
+            try {
+
+                await deleteDoc(
+                    doc(
+                        db,
+                        "publicRedirects",
+                        id
+                    )
+                );
+
+            } catch (publicDeleteError) {
+
+                console.warn(
+                    "Public Redirect Delete Warning:",
+                    publicDeleteError
+                );
+            }
+        }
+
+
+        combos =
+            combos.filter(
+                item =>
+                    item.id !== id
+            );
+
+
+        render();
 
         renderMarketingLinks();
+
+    } catch (error) {
+
+        console.error(
+            "Delete Combo Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to delete the combo."
+        );
+    }
+}
+
+
+/* =========================================================
+   ARCHIVE COMBO
+========================================================= */
+
+async function archiveCombo(
+    id
+) {
+
+    const combo =
+        combos.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!combo) {
+        return;
+    }
+
+
+    try {
+
+        await updateDoc(
+            doc(
+                db,
+                "combos",
+                id
+            ),
+            {
+
+                status:
+                    "Archived",
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        const index =
+            combos.findIndex(
+                item =>
+                    item.id === id
+            );
+
+
+        if (
+            index !== -1
+        ) {
+
+            combos[index].status =
+                "Archived";
+        }
+
+
+        if (
+            marketingLinks[id]
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Archived"
+            );
+
+        } else {
+
+            try {
+
+                await setDoc(
+                    doc(
+                        db,
+                        "publicRedirects",
+                        id
+                    ),
+                    {
+
+                        status:
+                            "Archived",
+
+                        updatedAt:
+                            serverTimestamp()
+
+                    },
+                    {
+                        merge:
+                            true
+                    }
+                );
+
+            } catch (publicError) {
+
+                console.warn(
+                    "Public Archive Warning:",
+                    publicError
+                );
+            }
+        }
+
 
         render();
 
     } catch (error) {
 
         console.error(
-            "Refresh Marketing Links Error:",
+            "Archive Combo Error:",
             error
         );
 
+
         alert(
-            "Marketing Links refresh نہیں ہو سکے۔"
+            "Unable to archive the combo."
         );
-
-    } finally {
-
-        if (
-            refreshMarketingBtn
-        ) {
-
-            refreshMarketingBtn.disabled =
-                false;
-
-            refreshMarketingBtn.textContent =
-                "Refresh Links";
-        }
     }
 }
 
 
-if (
-    refreshMarketingBtn
+/* =========================================================
+   RESTORE COMBO
+========================================================= */
+
+async function restoreCombo(
+    id
 ) {
 
-    refreshMarketingBtn.addEventListener(
-        "click",
-        refreshMarketingLinks
+    const combo =
+        combos.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!combo) {
+        return;
+    }
+
+
+    try {
+
+        await updateDoc(
+            doc(
+                db,
+                "combos",
+                id
+            ),
+            {
+
+                status:
+                    "Active",
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        const index =
+            combos.findIndex(
+                item =>
+                    item.id === id
+            );
+
+
+        if (
+            index !== -1
+        ) {
+
+            combos[index].status =
+                "Active";
+        }
+
+
+        if (
+            marketingLinks[id]
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Active"
+            );
+        }
+
+
+        render();
+
+    } catch (error) {
+
+        console.error(
+            "Restore Combo Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to restore the combo."
+        );
+    }
+}
+
+
+/* =========================================================
+   CREATE COMBO HTML
+========================================================= */
+
+function createComboHTML(
+    combo
+) {
+
+    const status =
+        getComboStatus(
+            combo
+        );
+
+
+    const marketing =
+        marketingLinks[
+            combo.id
+        ];
+
+
+    const clicks =
+        Number(
+            marketing?.clicks
+        ) || 0;
+
+
+    const hasMarketing =
+        Boolean(
+            marketing
+        );
+
+
+    const marketingButtons =
+        hasMarketing
+            ? `
+                <button
+                    class="btn secondary small"
+                    data-combo-action="copy-marketing"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Copy Marketing Link
+                </button>
+
+                <button
+                    class="btn secondary small"
+                    data-combo-action="open-marketing"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Open Link
+                </button>
+            `
+            : `
+                <button
+                    class="btn primary small"
+                    data-combo-action="create-marketing"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Create Marketing Link
+                </button>
+            `;
+
+
+    const archiveButton =
+        status === "Archived"
+            ? `
+                <button
+                    class="btn primary small"
+                    data-combo-action="restore"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Restore
+                </button>
+            `
+            : `
+                <button
+                    class="btn secondary small"
+                    data-combo-action="archive"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Archive
+                </button>
+            `;
+
+
+    return `
+        <article class="combo-card">
+
+            <div class="combo-card-top">
+
+                <div>
+
+                    <h3>
+                        ${escapeHTML(
+                            combo.name
+                        )}
+                    </h3>
+
+                    <div class="combo-meta">
+
+                        <span>
+                            ${escapeHTML(
+                                combo.category ||
+                                "Other"
+                            )}
+                        </span>
+
+                        <span>
+                            ${escapeHTML(
+                                status
+                            )}
+                        </span>
+
+                        <span>
+                            ${clicks} clicks
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            ${
+                combo.notes
+                    ? `
+                        <p class="combo-notes">
+                            ${escapeHTML(
+                                combo.notes
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            <div class="combo-links">
+
+                ${
+                    combo.mainLink
+                        ? `
+                            <div>
+                                <strong>
+                                    Main Link
+                                </strong>
+
+                                <a
+                                    href="${escapeHTML(
+                                        combo.mainLink
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${escapeHTML(
+                                        combo.mainLink
+                                    )}
+                                </a>
+                            </div>
+                        `
+                        : ""
+                }
+
+
+                ${
+                    combo.affiliateLink
+                        ? `
+                            <div>
+                                <strong>
+                                    Affiliate Link
+                                </strong>
+
+                                <a
+                                    href="${escapeHTML(
+                                        combo.affiliateLink
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${escapeHTML(
+                                        combo.affiliateLink
+                                    )}
+                                </a>
+                            </div>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="marketing-box">
+
+                <div>
+
+                    <strong>
+                        Marketing Link
+                    </strong>
+
+                    <span>
+                        ${
+                            hasMarketing
+                                ? `${clicks} clicks`
+                                : "Not created"
+                        }
+                    </span>
+
+                </div>
+
+                <div class="card-actions">
+
+                    ${marketingButtons}
+
+                </div>
+
+            </div>
+
+
+            <div class="card-actions">
+
+                <button
+                    class="btn secondary small"
+                    data-combo-action="edit"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Edit
+                </button>
+
+                ${archiveButton}
+
+                <button
+                    class="btn danger small"
+                    data-combo-action="delete"
+                    data-id="${escapeHTML(
+                        combo.id
+                    )}"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+
+            <div class="combo-dates">
+
+                <span>
+                    Created:
+                    ${formatDate(
+                        combo.createdAt
+                    )}
+                </span>
+
+                <span>
+                    Updated:
+                    ${formatDate(
+                        combo.updatedAt
+                    )}
+                </span>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   FILTER COMBOS
+========================================================= */
+
+function getFilteredCombos() {
+
+    const search =
+        normalizeText(
+            searchInput?.value
+        ).toLowerCase();
+
+
+    const category =
+        normalizeText(
+            categoryFilter?.value
+        ).toLowerCase();
+
+
+    const status =
+        normalizeText(
+            statusFilter?.value
+        ).toLowerCase();
+
+
+    return combos.filter(
+        combo => {
+
+            const searchable =
+                [
+
+                    combo.name,
+                    combo.category,
+                    combo.mainLink,
+                    combo.affiliateLink,
+                    combo.notes
+
+                ]
+                    .map(
+                        value =>
+                            String(
+                                value || ""
+                            ).toLowerCase()
+                    )
+                    .join(" ");
+
+
+            const comboCategory =
+                normalizeText(
+                    combo.category
+                ).toLowerCase();
+
+
+            const comboStatus =
+                getComboStatus(
+                    combo
+                ).toLowerCase();
+
+
+            const matchesSearch =
+                !search ||
+                searchable.includes(
+                    search
+                );
+
+
+            const matchesCategory =
+                !category ||
+                comboCategory ===
+                    category;
+
+
+            const matchesStatus =
+                !status ||
+                comboStatus ===
+                    status;
+
+
+            return (
+                matchesSearch &&
+                matchesCategory &&
+                matchesStatus
+            );
+        }
     );
 }
 
@@ -3164,147 +3284,15 @@ if (
    RENDER COMBOS
 ========================================================= */
 
-function render() {
+function renderCombos() {
 
-    const search =
-        String(
-            searchInput?.value ||
-            ""
-        )
-            .trim()
-            .toLowerCase();
+    if (!comboList) {
+        return;
+    }
 
-    const category =
-        String(
-            categoryFilter?.value ||
-            ""
-        );
-
-    const status =
-        String(
-            statusFilter?.value ||
-            ""
-        );
 
     const filtered =
-        combos
-            .filter(
-                function(combo) {
-
-                    if (search) {
-
-                        const text =
-                            [
-                                combo.name,
-                                combo.category,
-                                combo.mainLink,
-                                combo.affiliateLink,
-                                combo.notes,
-                                combo.status
-                            ]
-                                .join(" ")
-                                .toLowerCase();
-
-                        if (
-                            !text.includes(
-                                search
-                            )
-                        ) {
-                            return false;
-                        }
-                    }
-
-                    if (
-                        category &&
-                        combo.category !==
-                        category
-                    ) {
-
-                        return false;
-                    }
-
-                    if (
-                        status &&
-                        combo.status !==
-                        status
-                    ) {
-
-                        return false;
-                    }
-
-                    return true;
-                }
-            )
-            .sort(
-                function(a, b) {
-
-                    return (
-                        getTimeValue(
-                            b.updatedAt
-                        ) -
-                        getTimeValue(
-                            a.updatedAt
-                        )
-                    );
-                }
-            );
-
-
-    /* =====================================================
-       COUNTS
-    ===================================================== */
-
-    const total =
-        combos.length;
-
-    const active =
-        combos.filter(
-            item =>
-                item.status ===
-                "Active"
-        ).length;
-
-    const pending =
-        combos.filter(
-            item =>
-                item.status ===
-                "Pending"
-        ).length;
-
-    const archived =
-        combos.filter(
-            item =>
-                item.status ===
-                "Archived"
-        ).length;
-
-
-    if (totalCount) {
-
-        totalCount.textContent =
-            total;
-    }
-
-    if (activeCount) {
-
-        activeCount.textContent =
-            active;
-    }
-
-    if (pendingCount) {
-
-        pendingCount.textContent =
-            pending;
-    }
-
-    if (archivedCount) {
-
-        archivedCount.textContent =
-            archived;
-    }
-
-
-    updateMarketingStats();
+        getFilteredCombos();
 
 
     if (resultCount) {
@@ -3318,37 +3306,26 @@ function render() {
     }
 
 
-    /* =====================================================
-       EMPTY / LIST
-    ===================================================== */
-
-    if (!comboList) {
-        return;
-    }
-
     if (
-        !filtered.length
+        filtered.length === 0
     ) {
 
         comboList.innerHTML =
             "";
 
-        if (emptyState) {
 
-            emptyState.classList.remove(
-                "hidden"
-            );
-        }
+        emptyState?.classList.remove(
+            "hidden"
+        );
 
         return;
     }
 
-    if (emptyState) {
 
-        emptyState.classList.add(
-            "hidden"
-        );
-    }
+    emptyState?.classList.add(
+        "hidden"
+    );
+
 
     comboList.innerHTML =
         filtered
@@ -3360,501 +3337,940 @@ function render() {
 
 
 /* =========================================================
-   CREATE COMBO HTML
+   RENDER EVERYTHING
 ========================================================= */
 
-function createComboHTML(combo) {
+function render() {
 
-    const marketing =
-        marketingLinks[
-            combo.id
-        ];
+    updateStats();
 
-    const clicks =
-        marketing &&
-        typeof marketing.clicks ===
-        "number"
-            ? marketing.clicks
-            : 0;
+    renderCategoryFilter();
 
-    const hasMarketing =
-        Boolean(
-            marketing
+    renderCategoryOptions();
+
+    renderCategoryList();
+
+    renderCombos();
+
+    renderMarketingLinks();
+}
+
+
+/* =========================================================
+   PASTE / IMPORT
+========================================================= */
+
+function openPasteModal() {
+
+    pasteModal?.classList.remove(
+        "hidden"
+    );
+
+    pasteBox?.focus();
+}
+
+
+function closePasteModal() {
+
+    pasteModal?.classList.add(
+        "hidden"
+    );
+}
+
+
+async function importPastedCombos() {
+
+    const raw =
+        String(
+            pasteBox?.value ||
+            ""
+        ).trim();
+
+
+    if (!raw) {
+
+        alert(
+            "Please paste combo data first."
         );
 
-    const marketingUrl =
-        hasMarketing
-            ? buildMarketingUrl(
-                combo.id
-            )
-            : "";
+        return;
+    }
 
-    const statusClass =
-        String(
-            combo.status ||
-            "Active"
-        )
-            .toLowerCase()
-            .replace(
-                /\s+/g,
-                "-"
+
+    let parsed;
+
+
+    try {
+
+        parsed =
+            JSON.parse(
+                raw
             );
 
-    return `
-        <article class="combo-card">
+    } catch {
 
-            <div class="combo-card-header">
+        alert(
+            "Invalid JSON. Please paste valid combo JSON."
+        );
 
-                <div>
-
-                    <h3>
-                        ${escapeHTML(
-                            combo.name ||
-                            "Untitled Combo"
-                        )}
-                    </h3>
-
-                    <div class="tags">
-
-                        <span class="tag">
-                            ${escapeHTML(
-                                combo.category ||
-                                "Other"
-                            )}
-                        </span>
-
-                        <span class="tag ${escapeHTML(
-                            statusClass
-                        )}">
-                            ${escapeHTML(
-                                combo.status ||
-                                "Active"
-                            )}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
+        return;
+    }
 
 
-            ${
-                combo.notes
-                    ? `
-                        <div class="combo-notes">
-                            ${escapeHTML(
-                                combo.notes
-                            )}
-                        </div>
-                    `
-                    : ""
+    const items =
+        Array.isArray(
+            parsed
+        )
+            ? parsed
+            : [parsed];
+
+
+    let imported =
+        0;
+
+
+    try {
+
+        for (
+            const item
+            of items
+        ) {
+
+            if (
+                !item ||
+                typeof item !==
+                "object"
+            ) {
+
+                continue;
             }
 
 
-            <div class="combo-links">
-
-                ${
-                    combo.mainLink
-                        ? `
-                            <a
-                                href="${escapeHTML(
-                                    combo.mainLink
-                                )}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Main Link
-                            </a>
-                        `
-                        : ""
-                }
+            const name =
+                normalizeText(
+                    item.name
+                );
 
 
-                ${
-                    combo.affiliateLink
-                        ? `
-                            <a
-                                href="${escapeHTML(
-                                    combo.affiliateLink
-                                )}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Affiliate Link
-                            </a>
-                        `
-                        : ""
-                }
-
-            </div>
+            if (!name) {
+                continue;
+            }
 
 
-            <div class="marketing-box">
+            const category =
+                normalizeText(
+                    item.category
+                ) ||
+                "Other";
 
-                <div class="section-heading">
 
-                    <strong>
-                        Marketing Link
-                    </strong>
+            const main =
+                normalizeText(
+                    item.mainLink ||
+                    item.main ||
+                    item.url
+                );
 
-                    ${
-                        hasMarketing
-                            ? `
-                                <span class="tag">
-                                    Clicks: ${clicks}
-                                </span>
-                            `
-                            : `
-                                <span class="tag">
-                                    Not Created
-                                </span>
-                            `
+
+            const affiliate =
+                normalizeText(
+                    item.affiliateLink ||
+                    item.affiliate
+                );
+
+
+            const notes =
+                normalizeText(
+                    item.notes ||
+                    item.description
+                );
+
+
+            const status =
+                normalizeText(
+                    item.status
+                ) ||
+                "Active";
+
+
+            const ref =
+                await addDoc(
+                    collection(
+                        db,
+                        "combos"
+                    ),
+                    {
+
+                        name,
+                        category,
+
+                        mainLink:
+                            main,
+
+                        affiliateLink:
+                            affiliate,
+
+                        notes,
+
+                        status,
+
+                        createdAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+
                     }
-
-                </div>
-
-
-                <div class="actions">
-
-                    ${
-                        hasMarketing
-                            ? `
-                                <button
-                                    type="button"
-                                    class="btn"
-                                    onclick="copyMarketingLink(
-                                        '${escapeHTML(
-                                            combo.id
-                                        )}'
-                                    )"
-                                >
-                                    Copy Link
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="btn"
-                                    onclick="openMarketingLink(
-                                        '${escapeHTML(
-                                            combo.id
-                                        )}'
-                                    )"
-                                >
-                                    Open Link
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="btn"
-                                    onclick="createMarketingLink(
-                                        '${escapeHTML(
-                                            combo.id
-                                        )}'
-                                    )"
-                                >
-                                    Update Link
-                                </button>
-                            `
-                            : `
-                                <button
-                                    type="button"
-                                    class="btn"
-                                    onclick="createMarketingLink(
-                                        '${escapeHTML(
-                                            combo.id
-                                        )}'
-                                    )"
-                                >
-                                    Create Marketing Link
-                                </button>
-                            `
-                    }
-
-                </div>
+                );
 
 
-                ${
-                    hasMarketing
-                        ? `
-                            <div class="combo-notes">
-                                ${escapeHTML(
-                                    marketingUrl
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
+            combos.push({
 
-            </div>
+                id:
+                    ref.id,
 
+                name,
+                category,
 
-            <div class="actions">
+                mainLink:
+                    main,
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="editCombo(
-                        '${escapeHTML(
-                            combo.id
-                        )}'
-                    )"
-                >
-                    Edit
-                </button>
+                affiliateLink:
+                    affiliate,
+
+                notes,
+                status
+
+            });
 
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="archiveCombo(
-                        '${escapeHTML(
-                            combo.id
-                        )}'
-                    )"
-                >
-                    ${
-                        combo.status ===
-                        "Archived"
-                            ? "Restore"
-                            : "Archive"
-                    }
-                </button>
+            imported++;
+        }
 
 
-                <button
-                    type="button"
-                    class="btn danger"
-                    onclick="deleteCombo(
-                        '${escapeHTML(
-                            combo.id
-                        )}'
-                    )"
-                >
-                    Delete
-                </button>
+        closePasteModal();
 
-            </div>
 
-        </article>
-    `;
+        if (pasteBox) {
+
+            pasteBox.value =
+                "";
+        }
+
+
+        render();
+
+
+        alert(
+            `${imported} combo${
+                imported === 1
+                    ? ""
+                    : "s"
+            } imported successfully.`
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Paste Import Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to import the pasted data."
+        );
+    }
 }
 
 
 /* =========================================================
-   SEARCH / FILTER EVENTS
+   CATEGORY MANAGEMENT
 ========================================================= */
 
-if (searchInput) {
+function openCategoryModal() {
 
-    searchInput.addEventListener(
-        "input",
-        render
+    categoryModal?.classList.remove(
+        "hidden"
+    );
+
+    renderCategoryList();
+
+    newCategory?.focus();
+}
+
+
+function closeCategoryModal() {
+
+    categoryModal?.classList.add(
+        "hidden"
     );
 }
 
 
-if (categoryFilter) {
+async function addNewCategory() {
 
-    categoryFilter.addEventListener(
-        "change",
-        render
-    );
+    const name =
+        normalizeText(
+            newCategory?.value
+        );
+
+
+    if (!name) {
+
+        alert(
+            "Enter a category name."
+        );
+
+        return;
+    }
+
+
+    const exists =
+        categories.some(
+            category =>
+                normalizeText(
+                    category.name
+                ).toLowerCase() ===
+                name.toLowerCase()
+        );
+
+
+    if (exists) {
+
+        alert(
+            "This category already exists."
+        );
+
+        return;
+    }
+
+
+    const id =
+        name
+            .toLowerCase()
+            .replace(
+                /[^a-z0-9]+/g,
+                "-"
+            )
+            .replace(
+                /^-+|-+$/g,
+                "");
+
+
+    try {
+
+        let finalId =
+            id ||
+            `category-${Date.now()}`;
+
+
+        const existingDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "categories",
+                    finalId
+                )
+            );
+
+
+        if (
+            existingDoc.exists()
+        ) {
+
+            finalId =
+                `${finalId}-${Date.now()}`;
+        }
+
+
+        await setDoc(
+            doc(
+                db,
+                "categories",
+                finalId
+            ),
+            {
+
+                name,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        categories.push({
+
+            id:
+                finalId,
+
+            name
+
+        });
+
+
+        if (newCategory) {
+
+            newCategory.value =
+                "";
+        }
+
+
+        render();
+
+    } catch (error) {
+
+        console.error(
+            "Add Category Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to add category."
+        );
+    }
 }
 
 
-if (statusFilter) {
+async function deleteCategory(
+    id
+) {
 
-    statusFilter.addEventListener(
-        "change",
-        render
-    );
+    const category =
+        categories.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!category) {
+        return;
+    }
+
+
+    const used =
+        combos.some(
+            combo =>
+                normalizeText(
+                    combo.category
+                ).toLowerCase() ===
+                normalizeText(
+                    category.name
+                ).toLowerCase()
+        );
+
+
+    if (used) {
+
+        alert(
+            "This category is being used by one or more combos. Change those combos first."
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            `Delete category "${category.name}"?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        await deleteDoc(
+            doc(
+                db,
+                "categories",
+                id
+            )
+        );
+
+
+        categories =
+            categories.filter(
+                item =>
+                    item.id !== id
+            );
+
+
+        render();
+
+    } catch (error) {
+
+        console.error(
+            "Delete Category Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to delete category."
+        );
+    }
 }
 
 
 /* =========================================================
-   BUTTON EVENTS
+   EVENT HANDLERS
 ========================================================= */
 
-if (addBtn) {
+loginForm?.addEventListener(
+    "submit",
+    handleLogin
+);
 
-    addBtn.addEventListener(
+
+logoutBtn?.addEventListener(
+    "click",
+    handleLogout
+);
+
+
+comboForm?.addEventListener(
+    "submit",
+    saveCombo
+);
+
+
+closeModal?.addEventListener(
+    "click",
+    closeComboModal
+);
+
+
+cancelBtn?.addEventListener(
+    "click",
+    closeComboModal
+);
+
+
+document
+    .getElementById(
+        "addComboBtn"
+    )
+    ?.addEventListener(
         "click",
-        function() {
-
-            openComboModal();
-        }
+        () =>
+            openComboModal()
     );
-}
 
 
-if (emptyAddBtn) {
-
-    emptyAddBtn.addEventListener(
-        "click",
-        function() {
-
-            openComboModal();
-        }
-    );
-}
-
-
-if (pasteBtn) {
-
-    pasteBtn.addEventListener(
+document
+    .getElementById(
+        "pasteComboBtn"
+    )
+    ?.addEventListener(
         "click",
         openPasteModal
     );
-}
 
 
-if (categoryBtn) {
-
-    categoryBtn.addEventListener(
-        "click",
-        openCategoryModal
-    );
-}
+cancelPasteBtn?.addEventListener(
+    "click",
+    closePasteModal
+);
 
 
-if (helpBtn) {
-
-    helpBtn.addEventListener(
-        "click",
-        openHelpModal
-    );
-}
+importPasteBtn?.addEventListener(
+    "click",
+    importPastedCombos
+);
 
 
-if (closeModal) {
-
-    closeModal.addEventListener(
-        "click",
-        closeComboModal
-    );
-}
+categoryBtn?.addEventListener(
+    "click",
+    openCategoryModal
+);
 
 
-if (cancelBtn) {
-
-    cancelBtn.addEventListener(
-        "click",
-        closeComboModal
-    );
-}
+addCategoryBtn?.addEventListener(
+    "click",
+    addNewCategory
+);
 
 
-if (closePasteModal) {
+refreshMarketingBtn?.addEventListener(
+    "click",
+    async function() {
 
-    closePasteModal.addEventListener(
-        "click",
-        closePaste
-    );
-}
+        if (
+            refreshMarketingBtn
+        ) {
 
+            refreshMarketingBtn.disabled =
+                true;
 
-if (cancelPasteBtn) {
-
-    cancelPasteBtn.addEventListener(
-        "click",
-        closePaste
-    );
-}
+            refreshMarketingBtn.textContent =
+                "Refreshing...";
+        }
 
 
-if (closeCategoryModal) {
+        try {
 
-    closeCategoryModal.addEventListener(
-        "click",
-        closeCategory
-    );
-}
+            await loadMarketingLinks();
+
+        } finally {
+
+            if (
+                refreshMarketingBtn
+            ) {
+
+                refreshMarketingBtn.disabled =
+                    false;
+
+                refreshMarketingBtn.textContent =
+                    "Refresh";
+            }
+        }
+    }
+);
 
 
-if (closeHelpModal) {
+helpCenterBtn?.addEventListener(
+    "click",
+    function() {
 
-    closeHelpModal.addEventListener(
-        "click",
-        closeHelp
-    );
-}
+        helpModal?.classList.remove(
+            "hidden"
+        );
+    }
+);
+
+
+closeHelpModal?.addEventListener(
+    "click",
+    function() {
+
+        helpModal?.classList.add(
+            "hidden"
+        );
+    }
+);
 
 
 /* =========================================================
-   CLICK OUTSIDE MODALS
+   SEARCH EVENTS
 ========================================================= */
 
-if (comboModal) {
+searchInput?.addEventListener(
+    "input",
+    renderCombos
+);
 
-    comboModal.addEventListener(
-        "click",
-        function(event) {
 
-            if (
-                event.target ===
-                comboModal
-            ) {
+categoryFilter?.addEventListener(
+    "change",
+    renderCombos
+);
 
-                closeComboModal();
+
+statusFilter?.addEventListener(
+    "change",
+    renderCombos
+);
+
+
+emptyAddBtn?.addEventListener(
+    "click",
+    function() {
+
+        openComboModal();
+    }
+);
+
+
+/* =========================================================
+   COMBO LIST ACTIONS
+========================================================= */
+
+comboList?.addEventListener(
+    "click",
+    async function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-combo-action]"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const action =
+            button.dataset
+                .comboAction;
+
+
+        const id =
+            button.dataset.id;
+
+
+        if (!id) {
+            return;
+        }
+
+
+        if (
+            action ===
+            "edit"
+        ) {
+
+            const combo =
+                combos.find(
+                    item =>
+                        item.id === id
+                );
+
+            if (combo) {
+
+                openComboModal(
+                    combo
+                );
             }
+
+
+        } else if (
+            action ===
+            "delete"
+        ) {
+
+            await deleteCombo(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "archive"
+        ) {
+
+            await archiveCombo(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "restore"
+        ) {
+
+            await restoreCombo(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "create-marketing"
+        ) {
+
+            await createMarketingLink(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "copy-marketing"
+        ) {
+
+            await copyMarketingLink(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "open-marketing"
+        ) {
+
+            openMarketingLink(
+                id
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   MARKETING ACTIONS
+========================================================= */
+
+marketingLinksList?.addEventListener(
+    "click",
+    async function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-marketing-action]"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const action =
+            button.dataset
+                .marketingAction;
+
+
+        const id =
+            button.dataset.id;
+
+
+        if (!id) {
+            return;
+        }
+
+
+        if (
+            action ===
+            "copy"
+        ) {
+
+            await copyMarketingLink(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "open"
+        ) {
+
+            openMarketingLink(
+                id
+            );
+
+
+        } else if (
+            action ===
+            "pause"
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Paused"
+            );
+
+
+        } else if (
+            action ===
+            "activate"
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Active"
+            );
+
+
+        } else if (
+            action ===
+            "archive"
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Archived"
+            );
+
+
+        } else if (
+            action ===
+            "restore"
+        ) {
+
+            await updateMarketingLinkStatus(
+                id,
+                "Active"
+            );
+
+
+        } else if (
+            action ===
+            "delete"
+        ) {
+
+            await deleteMarketingLink(
+                id
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   CATEGORY ACTIONS
+========================================================= */
+
+categoryListView?.addEventListener(
+    "click",
+    async function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-delete-category]"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        await deleteCategory(
+            button.dataset
+                .deleteCategory
+        );
+    }
+);
+
+
+/* =========================================================
+   MODAL OUTSIDE CLICK
+========================================================= */
+
+[
+    comboModal,
+    pasteModal,
+    categoryModal,
+    helpModal
+]
+    .filter(Boolean)
+    .forEach(
+        modal => {
+
+            modal.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target ===
+                        modal
+                    ) {
+
+                        modal.classList.add(
+                            "hidden"
+                        );
+                    }
+                }
+            );
         }
     );
-}
-
-
-if (pasteModal) {
-
-    pasteModal.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target ===
-                pasteModal
-            ) {
-
-                closePaste();
-            }
-        }
-    );
-}
-
-
-if (categoryModal) {
-
-    categoryModal.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target ===
-                categoryModal
-            ) {
-
-                closeCategory();
-            }
-        }
-    );
-}
-
-
-if (helpModal) {
-
-    helpModal.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target ===
-                helpModal
-            ) {
-
-                closeHelp();
-            }
-        }
-    );
-}
 
 
 /* =========================================================
@@ -3872,41 +4288,135 @@ document.addEventListener(
             return;
         }
 
-        closeComboModal();
-        closePaste();
-        closeCategory();
-        closeHelp();
+
+        comboModal?.classList.add(
+            "hidden"
+        );
+
+        pasteModal?.classList.add(
+            "hidden"
+        );
+
+        categoryModal?.classList.add(
+            "hidden"
+        );
+
+        helpModal?.classList.add(
+            "hidden"
+        );
     }
 );
 
 
 /* =========================================================
-   GLOBAL FUNCTIONS
+   AUTH STATE
 ========================================================= */
 
-window.editCombo =
-    editCombo;
+onAuthStateChanged(
+    auth,
+    async function(user) {
 
-window.deleteCombo =
-    deleteCombo;
+        currentUser =
+            user;
 
-window.archiveCombo =
-    archiveCombo;
 
-window.removeCategory =
-    removeCategory;
+        if (!user) {
 
-window.createMarketingLink =
-    createMarketingLink;
+            showLogin();
 
-window.copyMarketingLink =
-    copyMarketingLink;
+            authInitialized =
+                true;
 
-window.openMarketingLink =
-    openMarketingLink;
+            return;
+        }
 
-window.updateMarketingLinkStatus =
-    updateMarketingLinkStatus;
 
-window.deleteMarketingLink =
-    deleteMarketingLink;
+        const isAdmin =
+            await checkAdmin(
+                user
+            );
+
+
+        if (!isAdmin) {
+
+            await signOut(
+                auth
+            );
+
+            currentUser =
+                null;
+
+            showLogin();
+
+            setLoginMessage(
+                "This account is not authorized as an admin.",
+                "error"
+            );
+
+            authInitialized =
+                true;
+
+            return;
+        }
+
+
+        showDashboard();
+
+
+        if (
+            !authInitialized
+        ) {
+
+            authInitialized =
+                true;
+        }
+
+
+        await loadFirebaseData();
+    }
+);
+
+
+/* =========================================================
+   INITIAL SCREEN
+========================================================= */
+
+if (loginScreen) {
+
+    loginScreen.classList.add(
+        "login-screen-hidden"
+    );
+}
+
+
+if (appShell) {
+
+    appShell.classList.add(
+        "app-shell-hidden"
+    );
+}
+
+
+/* =========================================================
+   GLOBAL ACCESS
+========================================================= */
+
+window.JanjuaHub = {
+
+    openComboModal,
+
+    openPasteModal,
+
+    openCategoryModal,
+
+    createMarketingLink,
+
+    copyMarketingLink,
+
+    openMarketingLink,
+
+    loadFirebaseData,
+
+    render
+
+};
