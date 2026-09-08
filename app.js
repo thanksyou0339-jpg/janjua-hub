@@ -65,6 +65,10 @@ const ADMIN_UID =
     "Va1ERyp4TJR8OVOf0MVjDYPC8hk2";
 
 
+const ADMIN_EMAIL =
+    "thanksyou0339@gmail.com";
+
+
 const DEFAULT_CATEGORIES = [
     "Finance",
     "Software",
@@ -280,6 +284,9 @@ function addPasswordToggle() {
         adminPassword
     );
 
+    adminPassword.style.width =
+        "100%";
+
     adminPassword.style.paddingRight =
         "75px";
 
@@ -327,6 +334,9 @@ function addPasswordToggle() {
     button.style.fontWeight =
         "700";
 
+    button.style.fontSize =
+        "13px";
+
     button.style.padding =
         "6px 8px";
 
@@ -369,10 +379,247 @@ function addPasswordToggle() {
         }
     );
 
-    wrapper.appendChild(button);
+    wrapper.appendChild(
+        button
+    );
 }
 
 addPasswordToggle();
+
+
+/* =========================================================
+   UID DIAGNOSTIC
+========================================================= */
+
+function createUidDiagnostic() {
+
+    if (!adminPassword) {
+        return;
+    }
+
+    if (
+        document.getElementById(
+            "uidDiagnostic"
+        )
+    ) {
+        return;
+    }
+
+    const box =
+        document.createElement("div");
+
+    box.id =
+        "uidDiagnostic";
+
+    box.style.marginTop =
+        "14px";
+
+    box.style.padding =
+        "12px";
+
+    box.style.border =
+        "1px solid rgba(255,255,255,0.12)";
+
+    box.style.borderRadius =
+        "10px";
+
+    box.style.background =
+        "rgba(255,255,255,0.04)";
+
+    box.style.fontSize =
+        "13px";
+
+    box.style.lineHeight =
+        "1.6";
+
+    box.innerHTML = `
+        <div style="
+            font-weight:700;
+            margin-bottom:8px;
+        ">
+            Admin UID Diagnostic
+        </div>
+
+        <div style="
+            margin-bottom:6px;
+            word-break:break-all;
+        ">
+            <strong>Firebase UID:</strong>
+            <span id="firebaseUidValue">
+                Login کے بعد UID یہاں آئے گی
+            </span>
+        </div>
+
+        <div style="
+            margin-bottom:10px;
+            word-break:break-all;
+        ">
+            <strong>Expected UID:</strong>
+            <span id="expectedUidValue">
+                ${escapeHTML(
+                    ADMIN_UID
+                )}
+            </span>
+        </div>
+
+        <div
+            id="uidMatchStatus"
+            style="
+                margin-bottom:10px;
+                font-weight:700;
+            "
+        >
+            Status: Waiting for Login
+        </div>
+
+        <button
+            type="button"
+            id="copyUidBtn"
+            style="
+                border:0;
+                border-radius:7px;
+                padding:7px 12px;
+                cursor:pointer;
+                font-weight:700;
+            "
+        >
+            Copy Firebase UID
+        </button>
+    `;
+
+    const passwordWrapper =
+        adminPassword.parentElement;
+
+    if (passwordWrapper) {
+
+        passwordWrapper.parentNode.insertBefore(
+            box,
+            passwordWrapper.nextSibling
+        );
+
+    } else {
+
+        adminPassword.parentNode.appendChild(
+            box
+        );
+    }
+
+    const copyBtn =
+        document.getElementById(
+            "copyUidBtn"
+        );
+
+    copyBtn?.addEventListener(
+        "click",
+        async () => {
+
+            const uidElement =
+                document.getElementById(
+                    "firebaseUidValue"
+                );
+
+            const uid =
+                uidElement?.dataset.uid ||
+                "";
+
+            if (!uid) {
+
+                alert(
+                    "پہلے Firebase Login کریں۔ UID ابھی دستیاب نہیں ہے۔"
+                );
+
+                return;
+            }
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    uid
+                );
+
+                copyBtn.textContent =
+                    "UID Copied ✓";
+
+                setTimeout(
+                    () => {
+
+                        copyBtn.textContent =
+                            "Copy Firebase UID";
+
+                    },
+                    1500
+                );
+
+            } catch {
+
+                prompt(
+                    "Copy this Firebase UID:",
+                    uid
+                );
+            }
+        }
+    );
+}
+
+
+function updateUidDiagnostic(user) {
+
+    const uidElement =
+        document.getElementById(
+            "firebaseUidValue"
+        );
+
+    const statusElement =
+        document.getElementById(
+            "uidMatchStatus"
+        );
+
+    if (
+        !uidElement ||
+        !statusElement
+    ) {
+        return;
+    }
+
+    if (!user) {
+
+        uidElement.textContent =
+            "Login کے بعد UID یہاں آئے گی";
+
+        uidElement.dataset.uid =
+            "";
+
+        statusElement.textContent =
+            "Status: Waiting for Login";
+
+        return;
+    }
+
+    const actualUid =
+        user.uid || "";
+
+    uidElement.textContent =
+        actualUid;
+
+    uidElement.dataset.uid =
+        actualUid;
+
+    if (
+        actualUid === ADMIN_UID
+    ) {
+
+        statusElement.textContent =
+            "Status: ✅ UID MATCH — Admin UID درست ہے";
+
+    } else {
+
+        statusElement.textContent =
+            "Status: ❌ UID MISMATCH — یہ Firebase account Admin UID سے مختلف ہے";
+    }
+}
+
+
+createUidDiagnostic();
 
 
 /* =========================================================
@@ -382,17 +629,34 @@ addPasswordToggle();
 function escapeHTML(value) {
 
     return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
 function normalizeText(value) {
 
-    return String(value ?? "").trim();
+    return String(
+        value ?? ""
+    ).trim();
 }
 
 
@@ -402,12 +666,16 @@ function isValidUrl(value) {
 
         const url =
             new URL(
-                String(value).trim()
+                String(
+                    value
+                ).trim()
             );
 
         return (
-            url.protocol === "http:" ||
-            url.protocol === "https:"
+            url.protocol ===
+                "http:" ||
+            url.protocol ===
+                "https:"
         );
 
     } catch {
@@ -431,15 +699,21 @@ function getMarketingTarget(combo) {
 
     if (
         affiliate &&
-        isValidUrl(affiliate)
+        isValidUrl(
+            affiliate
+        )
     ) {
+
         return affiliate;
     }
 
     if (
         main &&
-        isValidUrl(main)
+        isValidUrl(
+            main
+        )
     ) {
+
         return main;
     }
 
@@ -450,7 +724,9 @@ function getMarketingTarget(combo) {
 function getComboStatus(combo) {
 
     return (
-        normalizeText(combo.status) ||
+        normalizeText(
+            combo.status
+        ) ||
         "Active"
     );
 }
@@ -459,7 +735,9 @@ function getComboStatus(combo) {
 function getMarketingStatus(link) {
 
     return (
-        normalizeText(link?.status) ||
+        normalizeText(
+            link?.status
+        ) ||
         "Active"
     );
 }
@@ -491,7 +769,9 @@ function formatDate(value) {
         }
 
         const date =
-            new Date(value);
+            new Date(
+                value
+            );
 
         if (
             Number.isNaN(
@@ -519,7 +799,9 @@ function buildMarketingUrl(id) {
 
     return new URL(
         "go.html?id=" +
-        encodeURIComponent(id),
+        encodeURIComponent(
+            id
+        ),
         window.location.href
     ).toString();
 }
@@ -566,6 +848,10 @@ function showLogin() {
     appShell?.classList.add(
         "app-shell-hidden"
     );
+
+    updateUidDiagnostic(
+        null
+    );
 }
 
 
@@ -600,13 +886,21 @@ async function checkAdmin(user) {
     console.log(
         "Firebase Auth User:",
         {
-            email: user.email,
-            uid: user.uid
+            email:
+                user.email,
+            uid:
+                user.uid
         }
     );
 
+    updateUidDiagnostic(
+        user
+    );
+
     /*
-     * Admin identity is based on the Firebase UID.
+     * First check:
+     * Firebase UID must exactly match
+     * the configured Admin UID.
      */
 
     if (
@@ -619,12 +913,20 @@ async function checkAdmin(user) {
                 expected:
                     ADMIN_UID,
                 actual:
-                    user.uid
+                    user.uid,
+                email:
+                    user.email
             }
         );
 
         return false;
     }
+
+    /*
+     * Second check:
+     * The Firestore users document must exist
+     * and role must be admin.
+     */
 
     try {
 
@@ -636,7 +938,9 @@ async function checkAdmin(user) {
             );
 
         const userSnap =
-            await getDoc(userRef);
+            await getDoc(
+                userRef
+            );
 
         if (
             !userSnap.exists()
@@ -663,10 +967,20 @@ async function checkAdmin(user) {
             }
         );
 
-        return (
-            data.role ===
+        if (
+            data.role !==
             "admin"
-        );
+        ) {
+
+            console.error(
+                "Firestore role is not admin:",
+                data.role
+            );
+
+            return false;
+        }
+
+        return true;
 
     } catch (error) {
 
@@ -684,7 +998,9 @@ async function checkAdmin(user) {
    AUTH ERROR MESSAGE
 ========================================================= */
 
-function getAuthErrorMessage(error) {
+function getAuthErrorMessage(
+    error
+) {
 
     const code =
         error?.code || "";
@@ -692,60 +1008,79 @@ function getAuthErrorMessage(error) {
     switch (code) {
 
         case "auth/invalid-credential":
+
             return (
-                "Firebase نے اس Email اور Password کو قبول نہیں کیا۔ " +
-                "Password دوبارہ چیک کریں۔"
+                "Email یا Password غلط ہے۔ Password دوبارہ Show کرکے چیک کریں۔"
             );
 
         case "auth/wrong-password":
+
             return (
                 "Password غلط ہے۔"
             );
 
         case "auth/user-not-found":
+
             return (
                 "اس Email کا Firebase Authentication account نہیں ملا۔"
             );
 
         case "auth/user-disabled":
+
             return (
                 "یہ Firebase account disabled ہے۔"
             );
 
         case "auth/too-many-requests":
+
             return (
                 "بہت زیادہ Login کوششیں ہو چکی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔"
             );
 
         case "auth/network-request-failed":
+
             return (
                 "Internet یا network connection کا مسئلہ ہے۔"
             );
 
         case "auth/operation-not-allowed":
+
             return (
                 "Firebase میں Email/Password Login enabled نہیں ہے۔"
             );
 
         case "auth/invalid-api-key":
+
             return (
                 "Firebase API configuration میں مسئلہ ہے۔"
             );
 
         case "auth/app-not-authorized":
+
             return (
                 "یہ website Firebase Authentication کے لیے authorized نہیں ہے۔"
             );
 
         case "auth/invalid-email":
+
             return (
                 "Email address درست format میں نہیں ہے۔"
             );
 
+        case "auth/user-token-expired":
+
+            return (
+                "Firebase session expire ہو گیا ہے۔ دوبارہ Login کریں۔"
+            );
+
         default:
+
             return (
                 "Login failed۔ Firebase error: " +
-                (code || "unknown-error")
+                (
+                    code ||
+                    "unknown-error"
+                )
             );
     }
 }
@@ -755,7 +1090,9 @@ function getAuthErrorMessage(error) {
    LOGIN
 ========================================================= */
 
-async function handleLogin(event) {
+async function handleLogin(
+    event
+) {
 
     event.preventDefault();
 
@@ -766,7 +1103,8 @@ async function handleLogin(event) {
 
     const password =
         String(
-            adminPassword?.value || ""
+            adminPassword?.value ||
+            ""
         );
 
     if (
@@ -804,6 +1142,15 @@ async function handleLogin(event) {
                 password
             );
 
+        /*
+         * Firebase نے Login قبول کر لیا۔
+         * اب اصل UID فوراً diagnostic میں دکھائیں۔
+         */
+
+        updateUidDiagnostic(
+            credential.user
+        );
+
         console.log(
             "Firebase Login Successful:",
             {
@@ -813,6 +1160,36 @@ async function handleLogin(event) {
                     credential.user.uid
             }
         );
+
+        /*
+         * Email بھی verify کریں۔
+         * یہ اضافی safety check ہے۔
+         */
+
+        if (
+            credential.user.email
+                ?.toLowerCase() !==
+            ADMIN_EMAIL.toLowerCase()
+        ) {
+
+            const actualUid =
+                credential.user.uid;
+
+            await signOut(
+                auth
+            );
+
+            currentUser =
+                null;
+
+            setLoginMessage(
+                "Firebase Login کامیاب ہے، لیکن یہ Email Janjua Hub Admin Email نہیں ہے۔ UID: " +
+                actualUid,
+                "error"
+            );
+
+            return;
+        }
 
         const isAdmin =
             await checkAdmin(
@@ -824,10 +1201,15 @@ async function handleLogin(event) {
             const actualUid =
                 credential.user.uid;
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
+
+            currentUser =
+                null;
 
             setLoginMessage(
-                "Firebase Login کامیاب ہے، لیکن یہ account Janjua Hub Admin سے linked نہیں ہے۔ UID: " +
+                "Firebase Login کامیاب ہے، لیکن UID/Admin Role match نہیں کر رہا۔ UID: " +
                 actualUid,
                 "error"
             );
@@ -850,8 +1232,15 @@ async function handleLogin(event) {
             error
         );
 
+        /*
+         * Login fail ہونے پر password
+         * کبھی console میں نہیں دکھایا جاتا۔
+         */
+
         setLoginMessage(
-            getAuthErrorMessage(error),
+            getAuthErrorMessage(
+                error
+            ),
             "error"
         );
 
@@ -869,11 +1258,17 @@ async function handleLogin(event) {
 }
 
 
+/* =========================================================
+   LOGOUT
+========================================================= */
+
 async function handleLogout() {
 
     try {
 
-        await signOut(auth);
+        await signOut(
+            auth
+        );
 
     } catch (error) {
 
@@ -1039,7 +1434,9 @@ async function loadMarketingLinks() {
         snapshot.docs.forEach(
             item => {
 
-                marketingLinks[item.id] = {
+                marketingLinks[
+                    item.id
+                ] = {
                     id:
                         item.id,
                     ...item.data()
@@ -1107,13 +1504,17 @@ function updateMarketingStats() {
             0
         );
 
-    if (totalMarketingCount) {
+    if (
+        totalMarketingCount
+    ) {
 
         totalMarketingCount.textContent =
             totalLinks;
     }
 
-    if (totalClicksCount) {
+    if (
+        totalClicksCount
+    ) {
 
         totalClicksCount.textContent =
             totalClicks;
@@ -1129,40 +1530,58 @@ function updateStats() {
     const active =
         combos.filter(
             combo =>
-                getComboStatus(combo) ===
+                getComboStatus(
+                    combo
+                ) ===
                 "Active"
         ).length;
 
     const pending =
         combos.filter(
             combo =>
-                getComboStatus(combo) ===
+                getComboStatus(
+                    combo
+                ) ===
                 "Pending"
         ).length;
 
     const archived =
         combos.filter(
             combo =>
-                getComboStatus(combo) ===
+                getComboStatus(
+                    combo
+                ) ===
                 "Archived"
         ).length;
 
-    if (totalCount) {
+    if (
+        totalCount
+    ) {
+
         totalCount.textContent =
             total;
     }
 
-    if (activeCount) {
+    if (
+        activeCount
+    ) {
+
         activeCount.textContent =
             active;
     }
 
-    if (pendingCount) {
+    if (
+        pendingCount
+    ) {
+
         pendingCount.textContent =
             pending;
     }
 
-    if (archivedCount) {
+    if (
+        archivedCount
+    ) {
+
         archivedCount.textContent =
             archived;
     }
@@ -1194,17 +1613,25 @@ function renderCategoryOptions() {
         datalist.innerHTML =
             [...categories]
                 .sort(
-                    (a, b) =>
-                        String(a.name)
-                            .localeCompare(
-                                String(b.name)
+                    (
+                        a,
+                        b
+                    ) =>
+                        String(
+                            a.name
+                        ).localeCompare(
+                            String(
+                                b.name
                             )
+                        )
                 )
                 .map(
                     category =>
-                        `<option value="${escapeHTML(
+                        `
+                        <option value="${escapeHTML(
                             category.name
-                        )}"></option>`
+                        )}"></option>
+                        `
                 )
                 .join("");
     }
@@ -1231,21 +1658,29 @@ function renderCategoryFilter() {
         ` +
         [...categories]
             .sort(
-                (a, b) =>
-                    String(a.name)
-                        .localeCompare(
-                            String(b.name)
+                (
+                    a,
+                    b
+                ) =>
+                    String(
+                        a.name
+                    ).localeCompare(
+                        String(
+                            b.name
                         )
+                    )
             )
             .map(
                 category =>
-                    `<option value="${escapeHTML(
+                    `
+                    <option value="${escapeHTML(
                         category.name
                     )}">
                         ${escapeHTML(
                             category.name
                         )}
-                    </option>`
+                    </option>
+                    `
             )
             .join("");
 
@@ -1287,11 +1722,17 @@ function renderCategoryList() {
     categoryListView.innerHTML =
         [...categories]
             .sort(
-                (a, b) =>
-                    String(a.name)
-                        .localeCompare(
-                            String(b.name)
+                (
+                    a,
+                    b
+                ) =>
+                    String(
+                        a.name
+                    ).localeCompare(
+                        String(
+                            b.name
                         )
+                    )
             )
             .map(
                 category => {
@@ -1311,6 +1752,7 @@ function renderCategoryList() {
                     <div class="category-row">
 
                         <div>
+
                             <strong>
                                 ${escapeHTML(
                                     category.name
@@ -1320,11 +1762,13 @@ function renderCategoryList() {
                             <small>
                                 ${used}
                                 combo${
-                                    used === 1
+                                    used ===
+                                    1
                                         ? ""
                                         : "s"
                                 }
                             </small>
+
                         </div>
 
                         <button
@@ -1348,7 +1792,9 @@ function renderCategoryList() {
    COMBO MODAL
 ========================================================= */
 
-function openComboModal(combo = null) {
+function openComboModal(
+    combo = null
+) {
 
     if (!comboModal) {
         return;
@@ -1378,7 +1824,9 @@ function openComboModal(combo = null) {
             combo.notes || "";
 
         comboStatus.value =
-            getComboStatus(combo);
+            getComboStatus(
+                combo
+            );
 
     } else {
 
@@ -1399,7 +1847,8 @@ function openComboModal(combo = null) {
     );
 
     setTimeout(
-        () => comboName?.focus(),
+        () =>
+            comboName?.focus(),
         50
     );
 }
@@ -1417,7 +1866,9 @@ function closeComboModal() {
    SAVE COMBO
 ========================================================= */
 
-async function saveCombo(event) {
+async function saveCombo(
+    event
+) {
 
     event.preventDefault();
 
@@ -1458,7 +1909,8 @@ async function saveCombo(event) {
     const status =
         normalizeText(
             comboStatus?.value
-        ) || "Active";
+        ) ||
+        "Active";
 
     if (!name) {
 
@@ -1471,7 +1923,9 @@ async function saveCombo(event) {
 
     if (
         main &&
-        !isValidUrl(main)
+        !isValidUrl(
+            main
+        )
     ) {
 
         alert(
@@ -1483,7 +1937,9 @@ async function saveCombo(event) {
 
     if (
         affiliate &&
-        !isValidUrl(affiliate)
+        !isValidUrl(
+            affiliate
+        )
     ) {
 
         alert(
@@ -1532,9 +1988,13 @@ async function saveCombo(event) {
             );
 
             const existingMarketing =
-                marketingLinks[id];
+                marketingLinks[
+                    id
+                ];
 
-            if (existingMarketing) {
+            if (
+                existingMarketing
+            ) {
 
                 const targetUrl =
                     getMarketingTarget({
@@ -1625,10 +2085,13 @@ async function saveCombo(event) {
             const index =
                 combos.findIndex(
                     combo =>
-                        combo.id === id
+                        combo.id ===
+                        id
                 );
 
-            if (index !== -1) {
+            if (
+                index !== -1
+            ) {
 
                 combos[index] = {
                     ...combos[index],
@@ -1716,12 +2179,15 @@ async function saveCombo(event) {
    MARKETING LINK
 ========================================================= */
 
-async function createMarketingLink(id) {
+async function createMarketingLink(
+    id
+) {
 
     const combo =
         combos.find(
             item =>
-                item.id === id
+                item.id ===
+                id
         );
 
     if (!combo) {
@@ -1734,7 +2200,9 @@ async function createMarketingLink(id) {
     }
 
     const targetUrl =
-        getMarketingTarget(combo);
+        getMarketingTarget(
+            combo
+        );
 
     if (!targetUrl) {
 
@@ -1766,7 +2234,9 @@ async function createMarketingLink(id) {
 
         const status =
             existing.status ||
-            getComboStatus(combo);
+            getComboStatus(
+                combo
+            );
 
         const clicks =
             Number(
@@ -1827,7 +2297,9 @@ async function createMarketingLink(id) {
         render();
 
         const publicUrl =
-            buildMarketingUrl(id);
+            buildMarketingUrl(
+                id
+            );
 
         try {
 
@@ -1867,7 +2339,9 @@ async function updateMarketingLinkStatus(
     newStatus
 ) {
 
-    if (!marketingLinks[id]) {
+    if (
+        !marketingLinks[id]
+    ) {
         return;
     }
 
@@ -1924,7 +2398,9 @@ async function updateMarketingLinkStatus(
 }
 
 
-async function deleteMarketingLink(id) {
+async function deleteMarketingLink(
+    id
+) {
 
     if (
         !confirm(
@@ -1962,7 +2438,9 @@ async function deleteMarketingLink(id) {
             );
         }
 
-        delete marketingLinks[id];
+        delete marketingLinks[
+            id
+        ];
 
         render();
 
@@ -1980,10 +2458,14 @@ async function deleteMarketingLink(id) {
 }
 
 
-async function copyMarketingLink(id) {
+async function copyMarketingLink(
+    id
+) {
 
     const url =
-        buildMarketingUrl(id);
+        buildMarketingUrl(
+            id
+        );
 
     try {
 
@@ -2005,10 +2487,14 @@ async function copyMarketingLink(id) {
 }
 
 
-function openMarketingLink(id) {
+function openMarketingLink(
+    id
+) {
 
     const url =
-        buildMarketingUrl(id);
+        buildMarketingUrl(
+            id
+        );
 
     window.open(
         url,
@@ -2026,7 +2512,9 @@ function renderMarketingLinks() {
 
     updateMarketingStats();
 
-    if (!marketingLinksList) {
+    if (
+        !marketingLinksList
+    ) {
         return;
     }
 
@@ -2056,23 +2544,31 @@ function renderMarketingLinks() {
     marketingLinksList.innerHTML =
         links
             .sort(
-                (a, b) => {
+                (
+                    a,
+                    b
+                ) => {
 
                     const aDate =
                         a.updatedAt?.toDate
                             ? a.updatedAt.toDate()
                             : new Date(
-                                a.updatedAt || 0
+                                a.updatedAt ||
+                                0
                             );
 
                     const bDate =
                         b.updatedAt?.toDate
                             ? b.updatedAt.toDate()
                             : new Date(
-                                b.updatedAt || 0
+                                b.updatedAt ||
+                                0
                             );
 
-                    return bDate - aDate;
+                    return (
+                        bDate -
+                        aDate
+                    );
                 }
             )
             .map(
@@ -2082,7 +2578,9 @@ function renderMarketingLinks() {
 }
 
 
-function createMarketingLinkHTML(link) {
+function createMarketingLinkHTML(
+    link
+) {
 
     const combo =
         combos.find(
@@ -2101,7 +2599,9 @@ function createMarketingLinkHTML(link) {
         "—";
 
     const status =
-        getMarketingStatus(link);
+        getMarketingStatus(
+            link
+        );
 
     const clicks =
         Number(
@@ -2113,10 +2613,12 @@ function createMarketingLinkHTML(link) {
             link.id
         );
 
-    let statusAction = "";
+    let statusAction =
+        "";
 
     if (
-        status === "Active"
+        status ===
+        "Active"
     ) {
 
         statusAction = `
@@ -2132,7 +2634,8 @@ function createMarketingLinkHTML(link) {
         `;
 
     } else if (
-        status === "Paused"
+        status ===
+        "Paused"
     ) {
 
         statusAction = `
@@ -2200,7 +2703,8 @@ function createMarketingLinkHTML(link) {
                         </span>
 
                         <span>
-                            ${clicks} clicks
+                            ${clicks}
+                            clicks
                         </span>
 
                     </div>
@@ -2283,12 +2787,15 @@ function createMarketingLinkHTML(link) {
    COMBO DELETE / ARCHIVE / RESTORE
 ========================================================= */
 
-async function deleteCombo(id) {
+async function deleteCombo(
+    id
+) {
 
     const combo =
         combos.find(
             item =>
-                item.id === id
+                item.id ===
+                id
         );
 
     if (!combo) {
@@ -2366,7 +2873,8 @@ async function deleteCombo(id) {
         combos =
             combos.filter(
                 item =>
-                    item.id !== id
+                    item.id !==
+                    id
             );
 
         render();
@@ -2385,12 +2893,15 @@ async function deleteCombo(id) {
 }
 
 
-async function archiveCombo(id) {
+async function archiveCombo(
+    id
+) {
 
     const combo =
         combos.find(
             item =>
-                item.id === id
+                item.id ===
+                id
         );
 
     if (!combo) {
@@ -2416,10 +2927,13 @@ async function archiveCombo(id) {
         const index =
             combos.findIndex(
                 item =>
-                    item.id === id
+                    item.id ===
+                    id
             );
 
-        if (index !== -1) {
+        if (
+            index !== -1
+        ) {
 
             combos[index].status =
                 "Archived";
@@ -2471,12 +2985,15 @@ async function archiveCombo(id) {
 }
 
 
-async function restoreCombo(id) {
+async function restoreCombo(
+    id
+) {
 
     const combo =
         combos.find(
             item =>
-                item.id === id
+                item.id ===
+                id
         );
 
     if (!combo) {
@@ -2502,10 +3019,13 @@ async function restoreCombo(id) {
         const index =
             combos.findIndex(
                 item =>
-                    item.id === id
+                    item.id ===
+                    id
             );
 
-        if (index !== -1) {
+        if (
+            index !== -1
+        ) {
 
             combos[index].status =
                 "Active";
@@ -2541,10 +3061,14 @@ async function restoreCombo(id) {
    COMBO HTML
 ========================================================= */
 
-function createComboHTML(combo) {
+function createComboHTML(
+    combo
+) {
 
     const status =
-        getComboStatus(combo);
+        getComboStatus(
+            combo
+        );
 
     const marketing =
         marketingLinks[
@@ -2557,7 +3081,9 @@ function createComboHTML(combo) {
         ) || 0;
 
     const hasMarketing =
-        Boolean(marketing);
+        Boolean(
+            marketing
+        );
 
     const marketingButtons =
         hasMarketing
@@ -2595,7 +3121,8 @@ function createComboHTML(combo) {
             `;
 
     const archiveButton =
-        status === "Archived"
+        status ===
+        "Archived"
             ? `
                 <button
                     class="btn primary small"
@@ -2648,7 +3175,8 @@ function createComboHTML(combo) {
                         </span>
 
                         <span>
-                            ${clicks} clicks
+                            ${clicks}
+                            clicks
                         </span>
 
                     </div>
@@ -2744,7 +3272,9 @@ function createComboHTML(combo) {
                 </div>
 
                 <div class="card-actions">
+
                     ${marketingButtons}
+
                 </div>
 
             </div>
@@ -2833,7 +3363,8 @@ function getFilteredCombos() {
                     .map(
                         value =>
                             String(
-                                value || ""
+                                value ||
+                                ""
                             ).toLowerCase()
                     )
                     .join(" ");
@@ -2849,16 +3380,22 @@ function getFilteredCombos() {
                 ).toLowerCase();
 
             return (
-                (!search ||
+                (
+                    !search ||
                     searchable.includes(
                         search
-                    )) &&
-                (!category ||
+                    )
+                ) &&
+                (
+                    !category ||
                     comboCategory ===
-                        category) &&
-                (!status ||
+                        category
+                ) &&
+                (
+                    !status ||
                     comboStatus ===
-                        status)
+                        status
+                )
             );
         }
     );
@@ -2878,7 +3415,8 @@ function renderCombos() {
 
         resultCount.textContent =
             `${filtered.length} result${
-                filtered.length === 1
+                filtered.length ===
+                1
                     ? ""
                     : "s"
             }`;
@@ -2953,7 +3491,8 @@ async function importPastedCombos() {
 
     const raw =
         String(
-            pasteBox?.value || ""
+            pasteBox?.value ||
+            ""
         ).trim();
 
     if (!raw) {
@@ -2970,7 +3509,9 @@ async function importPastedCombos() {
     try {
 
         parsed =
-            JSON.parse(raw);
+            JSON.parse(
+                raw
+            );
 
     } catch {
 
@@ -2982,7 +3523,9 @@ async function importPastedCombos() {
     }
 
     const items =
-        Array.isArray(parsed)
+        Array.isArray(
+            parsed
+        )
             ? parsed
             : [parsed];
 
@@ -3015,7 +3558,8 @@ async function importPastedCombos() {
             const category =
                 normalizeText(
                     item.category
-                ) || "Other";
+                ) ||
+                "Other";
 
             const main =
                 normalizeText(
@@ -3039,7 +3583,8 @@ async function importPastedCombos() {
             const status =
                 normalizeText(
                     item.status
-                ) || "Active";
+                ) ||
+                "Active";
 
             const ref =
                 await addDoc(
@@ -3082,14 +3627,17 @@ async function importPastedCombos() {
         closePasteModal();
 
         if (pasteBox) {
-            pasteBox.value = "";
+
+            pasteBox.value =
+                "";
         }
 
         render();
 
         alert(
             `${imported} combo${
-                imported === 1
+                imported ===
+                1
                     ? ""
                     : "s"
             } imported successfully.`
@@ -3222,6 +3770,7 @@ async function addNewCategory() {
         });
 
         if (newCategory) {
+
             newCategory.value =
                 "";
         }
@@ -3242,12 +3791,15 @@ async function addNewCategory() {
 }
 
 
-async function deleteCategory(id) {
+async function deleteCategory(
+    id
+) {
 
     const category =
         categories.find(
             item =>
-                item.id === id
+                item.id ===
+                id
         );
 
     if (!category) {
@@ -3295,7 +3847,8 @@ async function deleteCategory(id) {
         categories =
             categories.filter(
                 item =>
-                    item.id !== id
+                    item.id !==
+                    id
             );
 
         render();
@@ -3344,7 +3897,9 @@ cancelBtn?.addEventListener(
 );
 
 document
-    .getElementById("addComboBtn")
+    .getElementById(
+        "addComboBtn"
+    )
     ?.addEventListener(
         "click",
         () =>
@@ -3352,7 +3907,9 @@ document
     );
 
 document
-    .getElementById("pasteComboBtn")
+    .getElementById(
+        "pasteComboBtn"
+    )
     ?.addEventListener(
         "click",
         openPasteModal
@@ -3470,7 +4027,8 @@ comboList?.addEventListener(
         }
 
         const action =
-            button.dataset.comboAction;
+            button.dataset
+                .comboAction;
 
         const id =
             button.dataset.id;
@@ -3480,54 +4038,77 @@ comboList?.addEventListener(
         }
 
         if (
-            action === "edit"
+            action ===
+            "edit"
         ) {
 
             const combo =
                 combos.find(
                     item =>
-                        item.id === id
+                        item.id ===
+                        id
                 );
 
             if (combo) {
-                openComboModal(combo);
+
+                openComboModal(
+                    combo
+                );
             }
 
         } else if (
-            action === "delete"
+            action ===
+            "delete"
         ) {
 
-            await deleteCombo(id);
+            await deleteCombo(
+                id
+            );
 
         } else if (
-            action === "archive"
+            action ===
+            "archive"
         ) {
 
-            await archiveCombo(id);
+            await archiveCombo(
+                id
+            );
 
         } else if (
-            action === "restore"
+            action ===
+            "restore"
         ) {
 
-            await restoreCombo(id);
+            await restoreCombo(
+                id
+            );
 
         } else if (
-            action === "create-marketing"
+            action ===
+            "create-marketing"
         ) {
 
-            await createMarketingLink(id);
+            await createMarketingLink(
+                id
+            );
 
         } else if (
-            action === "copy-marketing"
+            action ===
+            "copy-marketing"
         ) {
 
-            await copyMarketingLink(id);
+            await copyMarketingLink(
+                id
+            );
 
         } else if (
-            action === "open-marketing"
+            action ===
+            "open-marketing"
         ) {
 
-            openMarketingLink(id);
+            openMarketingLink(
+                id
+            );
         }
     }
 );
@@ -3562,19 +4143,26 @@ marketingLinksList?.addEventListener(
         }
 
         if (
-            action === "copy"
+            action ===
+            "copy"
         ) {
 
-            await copyMarketingLink(id);
+            await copyMarketingLink(
+                id
+            );
 
         } else if (
-            action === "open"
+            action ===
+            "open"
         ) {
 
-            openMarketingLink(id);
+            openMarketingLink(
+                id
+            );
 
         } else if (
-            action === "pause"
+            action ===
+            "pause"
         ) {
 
             await updateMarketingLinkStatus(
@@ -3583,7 +4171,8 @@ marketingLinksList?.addEventListener(
             );
 
         } else if (
-            action === "activate"
+            action ===
+            "activate"
         ) {
 
             await updateMarketingLinkStatus(
@@ -3592,7 +4181,8 @@ marketingLinksList?.addEventListener(
             );
 
         } else if (
-            action === "archive"
+            action ===
+            "archive"
         ) {
 
             await updateMarketingLinkStatus(
@@ -3601,7 +4191,8 @@ marketingLinksList?.addEventListener(
             );
 
         } else if (
-            action === "restore"
+            action ===
+            "restore"
         ) {
 
             await updateMarketingLinkStatus(
@@ -3610,10 +4201,13 @@ marketingLinksList?.addEventListener(
             );
 
         } else if (
-            action === "delete"
+            action ===
+            "delete"
         ) {
 
-            await deleteMarketingLink(id);
+            await deleteMarketingLink(
+                id
+            );
         }
     }
 );
@@ -3637,7 +4231,8 @@ categoryListView?.addEventListener(
         }
 
         await deleteCategory(
-            button.dataset.deleteCategory
+            button.dataset
+                .deleteCategory
         );
     }
 );
@@ -3721,6 +4316,10 @@ onAuthStateChanged(
         currentUser =
             user;
 
+        updateUidDiagnostic(
+            user
+        );
+
         if (!user) {
 
             showLogin();
@@ -3732,14 +4331,18 @@ onAuthStateChanged(
         }
 
         const isAdmin =
-            await checkAdmin(user);
+            await checkAdmin(
+                user
+            );
 
         if (!isAdmin) {
 
             const uid =
                 user.uid;
 
-            await signOut(auth);
+            await signOut(
+                auth
+            );
 
             currentUser =
                 null;
@@ -3801,6 +4404,8 @@ window.JanjuaHub = {
 
     loadFirebaseData,
 
-    render
+    render,
+
+    updateUidDiagnostic
 
 };
