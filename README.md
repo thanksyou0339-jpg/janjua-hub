@@ -1,11 +1,15 @@
-Janjua Hub
+# Janjua Hub
 
-Universal Combo Manager
+## Universal Combo Manager
 
-Janjua Hub ایک universal management website ہے جہاں Affiliate Programs، Products، Services، Software اور Business Opportunities کو ایک ہی Combo List میں manage کیا جا سکے گا۔
+Janjua Hub ایک universal management website ہے جہاں Affiliate Programs، Products، Services، Software اور Business Opportunities کو ایک ہی Combo List میں manage کیا جا سکتا ہے۔
 
-V1 Features
+---
 
+## V1 Features
+
+- Admin Login
+- Firebase Authentication
 - Dashboard
 - Universal Combo List
 - Add Combo
@@ -16,13 +20,18 @@ V1 Features
 - Search
 - Category Management
 - Status Filter
+- Marketing Links
+- Click Tracking
+- Public Redirect System
 - Help Center
 - Mobile Responsive Design
 - Lightweight 3D Animated Branding
 
-Combo Information
+---
 
-ہر Combo میں یہ معلومات رکھی جائیں گی:
+## Combo Information
+
+ہر Combo میں یہ معلومات رکھی جاتی ہیں:
 
 - Name
 - Category
@@ -33,44 +42,13 @@ Combo Information
 - Created Date
 - Updated Date
 
-Project Structure
-
-janjua-hub/
-├── index.html
-├── style.css
-├── app.js
-└── README.md
-
-Development Plan
-
-Phase 1
-
-Complete website UI and functionality.
-
-Phase 2
-
-Website testing in Chrome.
-
-Phase 3
-
-Connect Firebase Authentication and Database.
-
-Phase 4
-
-Admin Panel.
-
-Phase 5
-
-Browser / Application version.
-
-Important
-
-Janjua Hub is a universal system.
-
-New companies, products, services and affiliate programs should be added as Combo records instead of creating separate pages or separate applications.
-
-The previous projects must remain separate from this repository.
-
 ---
 
-Janjua Hub — One System, Many Combos
+## Marketing Links
+
+Janjua Hub میں Marketing Links کے ذریعے ہر Combo کے لیے ایک shareable tracking link بنایا جا سکتا ہے۔
+
+Public link کا format:
+
+```text
+https://thanksyou0339-jpg.github.io/janjua-hub/go.html?id=COMBO_ID
