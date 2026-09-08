@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Janjua Hub - Redirecting</title>
+    <title>Janjua Hub</title>
 
     <style>
 
@@ -27,86 +27,209 @@
         }
 
         body {
+
             min-height: 100vh;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             padding: 24px;
+
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
+
             background:
                 radial-gradient(
                     circle at top,
-                    #18233b 0%,
-                    #090d17 45%,
-                    #05070d 100%
+                    #172554 0%,
+                    #090d1a 45%,
+                    #03050b 100%
                 );
+
             color: #ffffff;
         }
 
-        .redirect-card {
+        .card {
+
             width: 100%;
-            max-width: 480px;
-            padding: 40px 28px;
+
+            max-width: 460px;
+
+            padding: 42px 28px;
+
             text-align: center;
+
             border-radius: 24px;
+
             background:
-                rgba(18, 25, 42, 0.88);
-            border: 1px solid
-                rgba(255,255,255,0.10);
+                rgba(
+                    15,
+                    23,
+                    42,
+                    0.88
+                );
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.10
+                );
+
             box-shadow:
                 0 30px 80px
-                rgba(0,0,0,0.45);
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.45
+                );
+
+            backdrop-filter:
+                blur(16px);
         }
 
-        .orb {
-            width: 72px;
-            height: 72px;
-            margin: 0 auto 24px;
+        .logo {
+
+            width: 78px;
+
+            height: 78px;
+
+            margin:
+                0 auto 22px;
+
             border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 32px;
+
+            font-weight: 800;
+
             background:
-                radial-gradient(
-                    circle at 30% 30%,
-                    #ffffff,
-                    #72a7ff 18%,
-                    #3867ff 42%,
-                    #161d55 72%,
-                    #080b1c 100%
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
                 );
+
             box-shadow:
                 0 0 35px
-                rgba(80,120,255,0.55);
-            animation: pulse 1.8s ease-in-out infinite;
+                rgba(
+                    59,
+                    130,
+                    246,
+                    0.35
+                );
         }
 
         h1 {
-            margin: 0 0 12px;
-            font-size: 26px;
+
+            margin:
+                0 0 10px;
+
+            font-size: 27px;
+
+            letter-spacing:
+                0.3px;
         }
 
         p {
+
             margin: 0;
-            color: #aeb9cf;
+
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.68
+                );
+
             line-height: 1.6;
         }
 
-        .error {
-            color: #ff8f8f;
+        .spinner {
+
+            width: 42px;
+
+            height: 42px;
+
+            margin:
+                28px auto 20px;
+
+            border-radius: 50%;
+
+            border:
+                4px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.12
+                );
+
+            border-top-color:
+                #60a5fa;
+
+            animation:
+                spin 0.9s
+                linear infinite;
         }
 
-        @keyframes pulse {
+        .error {
 
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            margin-top: 24px;
 
-            50% {
-                transform: scale(1.08);
-                opacity: 0.78;
+            padding: 14px 16px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(
+                    239,
+                    68,
+                    68,
+                    0.10
+                );
+
+            border:
+                1px solid
+                rgba(
+                    239,
+                    68,
+                    68,
+                    0.25
+                );
+
+            color:
+                #fecaca;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes spin {
+
+            to {
+                transform:
+                    rotate(360deg);
             }
         }
 
@@ -117,17 +240,29 @@
 
 <body>
 
-    <main class="redirect-card">
+    <main class="card">
 
-        <div class="orb"></div>
+        <div class="logo">
+            J
+        </div>
 
-        <h1 id="title">
+        <h1>
             Janjua Hub
         </h1>
 
         <p id="message">
-            Redirecting...
+            Preparing your link...
         </p>
+
+        <div
+            id="spinner"
+            class="spinner"
+        ></div>
+
+        <div
+            id="errorBox"
+            class="error hidden"
+        ></div>
 
     </main>
 
@@ -136,20 +271,23 @@
 
         import {
             initializeApp
-        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        } from
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 
         import {
             getFirestore,
             doc,
+            getDoc,
             updateDoc,
             increment
-        } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        } from
+        "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-        /* ================================================
+        /* =====================================================
            FIREBASE
-        ================================================ */
+        ===================================================== */
 
         const firebaseConfig = {
 
@@ -174,120 +312,121 @@
 
 
         const app =
-            initializeApp(firebaseConfig);
+            initializeApp(
+                firebaseConfig
+            );
+
 
         const db =
-            getFirestore(app);
+            getFirestore(
+                app
+            );
 
 
-        /* ================================================
-           ELEMENTS
-        ================================================ */
-
-        const title =
-            document.getElementById("title");
+        /* =====================================================
+           DOM
+        ===================================================== */
 
         const message =
-            document.getElementById("message");
+            document.getElementById(
+                "message"
+            );
+
+        const spinner =
+            document.getElementById(
+                "spinner"
+            );
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
 
 
-        /* ================================================
-           URL VALIDATION
-        ================================================ */
+        /* =====================================================
+           ERROR
+        ===================================================== */
 
-        function isValidHttpUrl(value) {
+        function showError(text) {
 
-            try {
+            if (spinner) {
 
-                const url =
-                    new URL(value);
-
-                return (
-                    url.protocol === "http:" ||
-                    url.protocol === "https:"
+                spinner.classList.add(
+                    "hidden"
                 );
+            }
 
-            } catch (error) {
+            if (message) {
 
-                return false;
+                message.textContent =
+                    "Link could not be opened.";
+            }
+
+            if (errorBox) {
+
+                errorBox.textContent =
+                    text;
+
+                errorBox.classList.remove(
+                    "hidden"
+                );
             }
         }
 
 
-        /* ================================================
+        /* =====================================================
+           READ MARKETING LINK ID
+        ===================================================== */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const id =
+            params.get("id");
+
+
+        /* =====================================================
+           VALIDATE ID
+        ===================================================== */
+
+        if (
+            !id ||
+            !/^[A-Za-z0-9_-]+$/.test(id)
+        ) {
+
+            showError(
+                "Invalid marketing link."
+            );
+
+        } else {
+
+            redirectToTarget();
+        }
+
+
+        /* =====================================================
            REDIRECT
-        ================================================ */
+        ===================================================== */
 
-        async function redirectUser() {
-
-            const params =
-                new URLSearchParams(
-                    window.location.search
-                );
-
-
-            const id =
-                params.get("id");
-
-            const targetUrl =
-                params.get("url");
-
-
-            if (!id || !targetUrl) {
-
-                title.textContent =
-                    "Invalid Link";
-
-                message.textContent =
-                    "Marketing link درست نہیں ہے۔";
-
-                message.classList.add(
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (
-                !/^[A-Za-z0-9_-]+$/.test(id)
-            ) {
-
-                title.textContent =
-                    "Invalid Link";
-
-                message.textContent =
-                    "Marketing link ID درست نہیں ہے۔";
-
-                message.classList.add(
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!isValidHttpUrl(targetUrl)) {
-
-                title.textContent =
-                    "Invalid Destination";
-
-                message.textContent =
-                    "Destination URL درست نہیں ہے۔";
-
-                message.classList.add(
-                    "error"
-                );
-
-                return;
-            }
-
-
-            message.textContent =
-                "Redirecting you now...";
-
+        async function redirectToTarget() {
 
             try {
+
+                if (message) {
+
+                    message.textContent =
+                        "Preparing your destination...";
+                }
+
+
+                /*
+                   ابھی destination URL
+                   marketingLinks document
+                   سے حاصل کیا جائے گا۔
+                */
 
                 const linkRef =
                     doc(
@@ -297,37 +436,159 @@
                     );
 
 
-                await updateDoc(
-                    linkRef,
-                    {
-                        clicks:
-                            increment(1)
-                    }
+                const linkSnap =
+                    await getDoc(
+                        linkRef
+                    );
+
+
+                if (
+                    !linkSnap.exists()
+                ) {
+
+                    showError(
+                        "This marketing link does not exist."
+                    );
+
+                    return;
+                }
+
+
+                const data =
+                    linkSnap.data();
+
+
+                const targetUrl =
+                    String(
+                        data.targetUrl ||
+                        ""
+                    ).trim();
+
+
+                const status =
+                    String(
+                        data.status ||
+                        "Active"
+                    );
+
+
+                if (!targetUrl) {
+
+                    showError(
+                        "Destination URL is missing."
+                    );
+
+                    return;
+                }
+
+
+                /* =================================================
+                   STATUS CHECK
+                ================================================= */
+
+                if (
+                    status !==
+                    "Active"
+                ) {
+
+                    showError(
+                        "This marketing link is currently unavailable."
+                    );
+
+                    return;
+                }
+
+
+                /* =================================================
+                   URL VALIDATION
+                ================================================= */
+
+                let destination;
+
+                try {
+
+                    destination =
+                        new URL(
+                            targetUrl
+                        );
+
+                } catch (error) {
+
+                    showError(
+                        "Destination URL is invalid."
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    destination.protocol !==
+                        "http:" &&
+                    destination.protocol !==
+                        "https:"
+                ) {
+
+                    showError(
+                        "Destination URL is not allowed."
+                    );
+
+                    return;
+                }
+
+
+                /* =================================================
+                   CLICK COUNT
+                ================================================= */
+
+                try {
+
+                    await updateDoc(
+                        linkRef,
+                        {
+                            clicks:
+                                increment(1)
+                        }
+                    );
+
+                } catch (trackingError) {
+
+                    console.warn(
+                        "Click tracking failed:",
+                        trackingError
+                    );
+
+                }
+
+
+                /* =================================================
+                   REDIRECT
+                ================================================= */
+
+                if (message) {
+
+                    message.textContent =
+                        "Redirecting...";
+                }
+
+
+                window.location.replace(
+                    destination.toString()
                 );
 
 
             } catch (error) {
 
-                /*
-                    Click tracking fail ہو بھی جائے
-                    تو user کو اصل destination
-                    پر جانا چاہیے۔
-                */
-
                 console.error(
-                    "Click tracking error:",
+                    "Marketing Redirect Error:",
                     error
                 );
+
+                showError(
+                    "Unable to open this marketing link right now."
+                );
             }
-
-
-            window.location.replace(
-                targetUrl
-            );
         }
-
-
-        redirectUser();
 
     </script>
 
